@@ -1,0 +1,306 @@
+/*-
+ * =========================LICENSE_START=========================
+ * jhc-life
+ * %%
+ * Copyright (C) 2018 Oleksandr Masniuk
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * =========================LICENSE_END=========================
+ */
+
+package com.nephest.jhclife;
+
+import java.util.concurrent.*;
+
+import javafx.event.*;
+import javafx.scene.input.*;
+
+import org.junit.*;
+import static org.junit.Assert.*;
+
+import org.mockito.*;
+import static org.mockito.Mockito.*;
+
+public class LifePresenterTest
+{
+
+    private LifeView<?> viewMock;
+    private ClassicLifeModel modelMock;
+    private MainController controllerMock;
+    private Executor executorMock;
+    private LifeViewListener listener;
+
+    private LifePresenter presenter;
+
+    @Before
+    public void init()
+    {
+        this.viewMock = mock(LifeView.class);
+        this.modelMock = mock(ClassicLifeModel.class);
+        this.controllerMock = mock(MainController.class);
+        this.executorMock = mock(Executor.class);
+
+        this.presenter = new LifePresenter
+        (
+            this.viewMock,
+            this.modelMock,
+            this.controllerMock,
+            this.executorMock
+        );
+
+        this.listener = getListener();
+    }
+
+    @Test
+    public void testMouseEventTogglePopulaiton()
+    {
+        double x = 1.0;
+        double y = 2.0;
+        boolean alive = false;
+
+        Generation generation = mock(Generation.class);
+        when(generation.isPopulationAlive( (int)x, (int)y)).thenReturn(alive);
+        when(modelMock.getLastGeneration()).thenReturn(generation);
+
+        this.listener.readyForNextFrame(); //generation must be rendered first
+
+        MouseEvent evt = new MouseEvent
+        (
+            MouseEvent.MOUSE_CLICKED, x, y, x, y, MouseButton.PRIMARY, 1,
+            false, false, false, false, //shift, ctrl, alt, meta
+            false, false, false, //primary, mid, secondary
+            false, false, false,
+            null
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onMouseEvent(evt);
+        verifyRunInBackground(captor);
+
+        verify(this.modelMock).setPopulation( (int)x, (int)y, !alive);
+    }
+
+    @Test
+    public void testMouseEventSpeedDefault()
+    {
+        testMouseEventSpeed(MouseButton.MIDDLE, LifePresenter.SPEED_INIT);
+    }
+
+    @Test
+    public void testMouseEventSpeedDown()
+    {
+        testMouseEventSpeed
+        (
+            MouseButton.SECONDARY,
+            this.presenter.getSpeed() - LifePresenter.SPEED_STEP
+        );
+    }
+
+    @Test
+    public void testMouseEventSpeedUp()
+    {
+        testMouseEventSpeed
+        (
+            MouseButton.PRIMARY,
+            this.presenter.getSpeed() + LifePresenter.SPEED_STEP
+        );
+    }
+
+    private void testMouseEventSpeed(MouseButton button, int targetSpeed)
+    {
+        MouseEvent evt = new MouseEvent
+        (
+            MouseEvent.MOUSE_CLICKED, 0, 0, 0, 0, button, 1,
+            true, false, false, false, //shift, ctrl, alt, meta
+            false, false, false, //primary, mid, secondary
+            false, false, false,
+            null
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onMouseEvent(evt);
+        verifyRunInBackground(captor);
+
+        long period = 1_000_000_000 / targetSpeed;
+        verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
+        verify(this.viewMock).setSpeedInfo(targetSpeed);
+    }
+
+    @Test
+    public void testMouseEventZoomDefault()
+    {
+        testMouseEventZoom(MouseButton.MIDDLE, LifePresenter.ZOOM_FACTOR_INIT);
+    }
+
+    @Test
+    public void testMouseEventZoomDown()
+    {
+        testMouseEventZoom(MouseButton.SECONDARY, LifePresenter.ZOOM_FACTOR_DOWN);
+    }
+
+    @Test
+    public void testMouseEventZoomUp()
+    {
+        testMouseEventZoom(MouseButton.PRIMARY, LifePresenter.ZOOM_FACTOR_UP);
+    }
+
+    private void testMouseEventZoom(MouseButton button, double factor)
+    {
+        int x = 11;
+        int y = 232;
+
+        MouseEvent evt = new MouseEvent
+        (
+            MouseEvent.MOUSE_CLICKED, x, y, x, y, button, 1,
+            false, true, false, false, //shift, ctrl, alt, meta
+            false, false, false, //primary, mid, secondary
+            false, false, false,
+            null
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onMouseEvent(evt);
+        verifyRunInBackground(captor);
+
+        verify(this.viewMock).setGenerationZoom(factor, x, y);
+        verify(this.viewMock).updateZoomInfo();
+    }
+
+    @Test
+    public void testZoomUp()
+    {
+        this.listener.onZoomUp();
+        testZoomViewControl(LifePresenter.ZOOM_FACTOR_UP);
+    }
+
+    @Test
+    public void testZoomDown()
+    {
+        this.listener.onZoomDown();
+        testZoomViewControl(LifePresenter.ZOOM_FACTOR_DOWN);
+    }
+
+    @Test
+    public void testZoomDefault()
+    {
+        this.listener.onZoomDefault();
+        testZoomViewControl(LifePresenter.ZOOM_FACTOR_INIT);
+    }
+
+    private void testZoomViewControl(double factor)
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verifyRunInBackground(captor);
+        verify(this.viewMock).setGenerationZoom(factor);
+        verify(this.viewMock).updateZoomInfo();
+    }
+
+    @Test
+    public void testSpeedUp()
+    {
+        this.listener.onSpeedUp();
+        testSpeedViewControl(this.presenter.getSpeed() + LifePresenter.SPEED_STEP);
+    }
+
+    @Test
+    public void testSpeedDown()
+    {
+        this.listener.onSpeedDown();
+        testSpeedViewControl(this.presenter.getSpeed() - LifePresenter.SPEED_STEP);
+    }
+
+    @Test
+    public void testSpeedDefault()
+    {
+        this.listener.onSpeedDefault();
+        testSpeedViewControl(LifePresenter.SPEED_INIT);
+    }
+
+    private void testSpeedViewControl(int targetSpeed)
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verifyRunInBackground(captor);
+
+        long period = 1_000_000_000 / targetSpeed;
+        verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
+        verify(this.viewMock).setSpeedInfo(targetSpeed);
+    }
+
+    @Test
+    public void testPause()
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onPause();
+        verifyRunInBackground(captor);
+        verify(this.modelMock).stop();
+    }
+
+    @Test
+    public void testPlay()
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onPlay();
+        verifyRunInBackground(captor);
+        verify(this.modelMock).start();
+    }
+
+    @Test
+    public void testNewGame()
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onNewGame();
+        verifyRunInBackground(captor);
+        InOrder inOrder = inOrder(this.modelMock, this.controllerMock);
+        inOrder.verify(this.modelMock).stop();
+        inOrder.verify(this.controllerMock).setViewType(MainView.ViewType.MAIN_MENU);
+    }
+
+    @Test
+    public void testReadyForNextFrame()
+    {
+        Generation generation = mock(Generation.class);
+        when(generation.getId()).thenReturn(10l);
+        when(generation.getGenerationNumber()).thenReturn(2l);
+        when(this.modelMock.getLastGeneration()).thenReturn(generation);
+
+        //the rendering request is running in the rendering thread to avoid missed frames
+        this.listener.readyForNextFrame();
+        this.listener.readyForNextFrame();
+
+        //do not render the same generation more than once
+        verify(this.viewMock, times(1)).render(generation);
+    }
+
+    private LifeViewListener getListener()
+    {
+        ArgumentCaptor<LifeViewListener> captor
+            = ArgumentCaptor.forClass(LifeViewListener.class);
+        verify(this.viewMock).setListener(captor.capture());
+        return captor.getValue();
+    }
+
+    //verify that a Runnable is scheduled to execute in a bg thread, then run it
+    private void verifyRunInBackground(ArgumentCaptor<Runnable> runCaptor, int times)
+    {
+        verify(executorMock, times(times)).execute(runCaptor.capture());
+        runCaptor.getValue().run();
+    }
+
+    private void verifyRunInBackground(ArgumentCaptor<Runnable> runCaptor)
+    {
+        verifyRunInBackground(runCaptor, 1);
+    }
+
+}
