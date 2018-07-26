@@ -173,61 +173,10 @@ public class ClassicLifeModel
         return getRandom().nextDouble() < getPopulationProbability();
     }
 
-    protected boolean willLive(int x, int y, boolean[][] population)
-    {
-        boolean result = false;
-        int neighborCount = calculateNeighborCount(x, y, population);
-        if(population[x][y])
-        {
-            if(neighborCount >= POPULATION_MIN && neighborCount <= POPULATION_MAX)
-                result = true;
-        }
-        else
-        {
-            if (neighborCount == POPULATION_REPRODUCTION)
-                result = true;
-        }
-        return result;
-    }
-
-    private int mod(int x, int y)
-    {
-        int result = x % y;
-        if (result < 0) result += y;
-        return result;
-    }
-
-    private int calculateNeighborCount(int x, int y, boolean[][] population)
-    {
-        int xLeft = x - 1;
-        int yUp = y + 1;
-        return calculateNighborCountRow(xLeft, yUp, population, true)
-            + calculateNighborCountRow(xLeft, yUp - 1, population, false)
-            + calculateNighborCountRow(xLeft, yUp - 2, population, true);
-    }
-
-    private int calculateNighborCountRow
-    (
-        int x, int y,
-        boolean[][] population,
-        boolean includeMiddle
-    )
-    {
-        int result = 0;
-        int mody = mod(y, getHeight());
-        for (int i = 0; i < 3; i++)
-        {
-            if (i == 1 && !includeMiddle) continue;
-
-            int modx = mod(x + i, getWidth());
-            if (population[modx][mody]) result++;
-        }
-        return result;
-    }
-
     public void nextGeneration()
     {
-        GenerationCalculator calc = new GenerationCalculator(this);
+        GenerationCalculator calc
+            = new GenerationCalculator(getLastPopulation(), getPopulation());
         ForkJoinPool pool
             = getForkJoinPool() == null
             ? ForkJoinPool.commonPool()
@@ -276,7 +225,7 @@ public class ClassicLifeModel
     {
         public static final int SURPLUS_MAX = 3;
 
-        private final ClassicLifeModel model;
+        private final boolean[][] src, dest;
         private final GenerationCalculator next;
 
         private int begin;
@@ -284,28 +233,30 @@ public class ClassicLifeModel
 
         public GenerationCalculator
         (
-            ClassicLifeModel model,
+            boolean[][] src, boolean[][] dest,
             int begin, int end,
             GenerationCalculator next
         )
         {
-            Objects.requireNonNull(model);
-            if (begin < 0 || begin > model.getWidth())
-                throw new IllegalArgumentException("begin index out of bounds");
-            if (end < begin || end > model.getWidth())
-                throw new IllegalArgumentException("end index out of bounds");
-            this.model = model;
+            if(src.length != dest.length)
+                throw new IllegalArgumentException("src and dest have different lengths");
+            this.src = src;
+            this.dest = dest;
             this.begin = begin;
             this.end = end;
             this.next = next;
         }
 
-        public GenerationCalculator
-        (
-            ClassicLifeModel model
-        )
+        public GenerationCalculator(boolean[][] src, boolean[][] dest)
         {
-            this(model, 0, model.getLastPopulation().length, null);
+            this
+            (
+                src,
+                dest,
+                0,
+                src.length,
+                null
+            );
         }
 
         @Override
@@ -317,7 +268,14 @@ public class ClassicLifeModel
             while(e - b > 1 && getSurplusQueuedTaskCount() <= SURPLUS_MAX)
             {
                 int mid = (b + e) >>> 1;
-                right = new GenerationCalculator(model, mid, e, right);
+                right = new GenerationCalculator
+                (
+                    getSource(),
+                    getDestination(),
+                    mid,
+                    e,
+                    right
+                );
                 right.fork();
                 e = mid;
             }
@@ -336,9 +294,14 @@ public class ClassicLifeModel
             }
         }
 
-        private ClassicLifeModel getModel()
+        private boolean[][] getSource()
         {
-            return this.model;
+            return this.src;
+        }
+
+        private boolean[][] getDestination()
+        {
+            return this.dest;
         }
 
         private GenerationCalculator getNext()
@@ -363,16 +326,71 @@ public class ClassicLifeModel
 
         private void calculateNextPopulation()
         {
-            boolean[][] prev = getModel().getLastPopulation();
-            boolean[][] cur = getModel().getPopulation();
             for (int x = getBeginIx(); x < getEndIx(); x++)
             {
-                for (int y = 0; y < prev[x].length; y++)
+                for (int y = 0; y < getSource()[x].length; y++)
                 {
-                    cur[x][y] = getModel().willLive(x, y, prev);
+                    getDestination()[x][y] = willLive(x, y, getSource());
                 }
             }
         }
+
+        private boolean willLive(int x, int y, boolean[][] population)
+        {
+            boolean result = false;
+            int neighborCount = calculateNeighborCount(x, y, population);
+            if(population[x][y])
+            {
+                if
+                (
+                    neighborCount >= ClassicLifeModel.POPULATION_MIN
+                    && neighborCount <= ClassicLifeModel.POPULATION_MAX
+                )
+                    result = true;
+            }
+            else
+            {
+                if (neighborCount == ClassicLifeModel.POPULATION_REPRODUCTION)
+                    result = true;
+            }
+            return result;
+        }
+
+        private int mod(int x, int y)
+        {
+            int result = x % y;
+            if (result < 0) result += y;
+            return result;
+        }
+
+        private int calculateNeighborCount(int x, int y, boolean[][] population)
+        {
+            int xLeft = x - 1;
+            int yUp = y + 1;
+            return calculateNighborCountRow(xLeft, yUp, population, true)
+                + calculateNighborCountRow(xLeft, yUp - 1, population, false)
+                + calculateNighborCountRow(xLeft, yUp - 2, population, true);
+        }
+
+        private int calculateNighborCountRow
+        (
+            int x, int y,
+            boolean[][] population,
+            boolean includeMiddle
+        )
+        {
+            int result = 0;
+            int mody = mod(y, getHeight());
+            for (int i = 0; i < 3; i++)
+            {
+                if (i == 1 && !includeMiddle) continue;
+
+                int modx = mod(x + i, getWidth());
+                if (population[modx][mody]) result++;
+            }
+            return result;
+        }
+
     }
 
 }
