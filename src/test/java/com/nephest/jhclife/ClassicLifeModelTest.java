@@ -23,6 +23,7 @@
 package com.nephest.jhclife;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -38,11 +39,23 @@ public class ClassicLifeModelTest
 
     private final Random rng = new Random();
     private ClassicLifeModel model;
+    private ScheduledExecutorService executorMock;
+    private ScheduledFuture generationFutureMock;
 
     @Before
     public void init()
     {
-       model = new ClassicLifeModel(MODEL_WIDTH, MODEL_HEIGHT);
+        this.executorMock = mock(ScheduledExecutorService.class);
+        this.generationFutureMock = mock(ScheduledFuture.class);
+        when(this.executorMock.scheduleAtFixedRate(any(), anyLong(), anyLong(), any()))
+            .thenReturn(this.generationFutureMock);
+        model = new ClassicLifeModel
+        (
+            MODEL_WIDTH,
+            MODEL_HEIGHT,
+            null,
+            executorMock
+        );
     }
 
     @Test
@@ -147,11 +160,87 @@ public class ClassicLifeModelTest
     }
 
     @Test
+    public void testStart()
+    {
+        assertFalse(this.model.isRunning());
+        nextGeneration();
+        assertTrue(this.model.isRunning());
+    }
+
+    @Test
+    public void testStop()
+    throws InterruptedException, ExecutionException
+    {
+        assertFalse(this.model.isRunning());
+        nextGeneration();
+        assertTrue(this.model.isRunning());
+        this.model.stop();
+        assertFalse(this.model.isRunning());
+        verify(this.generationFutureMock).cancel(false);
+        verify(this.generationFutureMock).get();
+    }
+
+    @Test
+    public void testExternalExecutorClose()
+    {
+        assertFalse(this.model.isClosed());
+        this.model.close();
+        assertFalse(this.model.isRunning());
+        assertTrue(this.model.isClosed());
+        verify(this.executorMock, never()).shutdown();
+    }
+
+    @Test
+    public void testInternalExecutorClose()
+    {
+        this.model = new ClassicLifeModel(MODEL_WIDTH, MODEL_HEIGHT);
+        assertFalse(this.model.isClosed());
+        this.model.close();
+        assertFalse(this.model.isRunning());
+        assertTrue(this.model.isClosed());
+        assertTrue(this.model.getExecutor().isShutdown());
+    }
+
+    @Test
+    public void testSetGenerationLifeTime()
+    throws InterruptedException, ExecutionException
+    {
+        TimeUnit unit = TimeUnit.SECONDS;
+        long count = 10;
+
+        //do not start the model if it was not running
+        assertFalse(this.model.isRunning());
+        this.model.setGenerationLifeTime(count, unit);
+        assertFalse(this.model.isRunning());
+        assertEquals(count, this.model.getGenerationLifeTime(unit));
+        verify(executorMock, never())
+            .scheduleAtFixedRate(any(), eq(count), eq(count), eq(unit));
+
+        //normal start with updated parameters
+        this.model.start();
+        verify(executorMock)
+            .scheduleAtFixedRate(any(), eq(count), eq(count), eq(unit));
+
+        //auto restart with the new life time if the model was already running
+        TimeUnit newUnit = TimeUnit.HOURS;
+        long newCount = 22;
+        assertTrue(this.model.isRunning());
+        this.model.setGenerationLifeTime(newCount, newUnit);
+        assertTrue(this.model.isRunning());
+        assertEquals(newCount, this.model.getGenerationLifeTime(newUnit));
+        verify(executorMock)
+            .scheduleAtFixedRate(any(), eq(newCount), eq(newCount), eq(newUnit));
+        //verify that previous tasks were canceled gracefully on restart
+        verify(this.generationFutureMock).cancel(false);
+        verify(this.generationFutureMock).get();
+    }
+
+    @Test
     public void testGenerationNumberIncrement()
     {
         assertEquals(0, this.model.getGenerationNumber());
         assertEquals(0, this.model.getLastGeneration().getGenerationNumber());
-        this.model.nextGeneration();
+        nextGeneration();
         assertEquals(1, this.model.getGenerationNumber());
         assertEquals(1, this.model.getLastGeneration().getGenerationNumber());
     }
@@ -162,12 +251,12 @@ public class ClassicLifeModelTest
         assertEquals(0, this.model.getGenerationNumber());
         assertEquals(0, this.model.getLastGeneration().getGenerationNumber());
 
-        this.model.nextGeneration();
+        nextGeneration();
         this.model.populate(this.rng.nextLong(), 0.5);
         assertEquals(0, this.model.getGenerationNumber());
         assertEquals(0, this.model.getLastGeneration().getGenerationNumber());
 
-        this.model.nextGeneration();
+        nextGeneration(2);
         this.model.createNewPopulation(MODEL_WIDTH, MODEL_HEIGHT);
         assertEquals(0, this.model.getGenerationNumber());
         assertEquals(0, this.model.getLastGeneration().getGenerationNumber());
@@ -203,7 +292,7 @@ public class ClassicLifeModelTest
         this.model.setPopulation(2, 0, true);
         this.model.setPopulation(1, 2, true);
         this.model.setPopulation(1, 1, true);
-        this.model.nextGeneration();
+        nextGeneration();
         assertFalse(this.model.getLastGeneration().isPopulationAlive(1, 1));
     }
 
@@ -215,7 +304,7 @@ public class ClassicLifeModelTest
         this.model.setPopulation(2, 0, true);
         this.model.setPopulation(1, 2, true);
         this.model.setPopulation(1, 1, true);
-        this.model.nextGeneration();
+        nextGeneration();
         assertTrue(this.model.getLastGeneration().isPopulationAlive(1, 1));
     }
 
@@ -226,7 +315,7 @@ public class ClassicLifeModelTest
         this.model.setPopulation(2, 0, true);
         this.model.setPopulation(1, 2, true);
         this.model.setPopulation(1, 1, true);
-        this.model.nextGeneration();
+        nextGeneration();
         assertTrue(this.model.getLastGeneration().isPopulationAlive(1, 1));
     }
 
@@ -236,7 +325,7 @@ public class ClassicLifeModelTest
         this.model.populate(rng.nextLong(), 0);
         this.model.setPopulation(2, 0, true);
         this.model.setPopulation(1, 1, true);
-        this.model.nextGeneration();
+        nextGeneration();
         assertFalse(this.model.getLastGeneration().isPopulationAlive(1, 1));
     }
 
@@ -261,6 +350,28 @@ public class ClassicLifeModelTest
             }
         }
         return count;
+    }
+
+    private void nextGeneration(int times)
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        TimeUnit unit = TimeUnit.SECONDS;
+        long count = 10;
+        this.model.setGenerationLifeTime(count, unit);
+        this.model.start();
+        verify(this.executorMock, times(times)).scheduleAtFixedRate
+        (
+            captor.capture(),
+            eq(count),
+            eq(count),
+            eq(unit)
+        );
+        captor.getValue().run();
+    }
+
+    private void nextGeneration()
+    {
+        nextGeneration(1);
     }
 
 }
