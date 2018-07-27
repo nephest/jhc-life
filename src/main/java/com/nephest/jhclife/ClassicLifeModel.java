@@ -95,7 +95,7 @@ implements java.io.Closeable
         this.externalExecutor = false;
     }
 
-    public final synchronized void createNewPopulation(int width, int height)
+    public synchronized void createNewPopulation(int width, int height)
     {
         if (width < 0) throw new IllegalArgumentException("width must be more than 0");
         if (height < 0) throw new IllegalArgumentException("height must be more than 0");
