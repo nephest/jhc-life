@@ -63,16 +63,17 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         LifeViewListener listener = new LifeViewListener()
         {
             @Override
-            public void onMouseEvent(MouseEvent evt)
+            public void onMouseEvent(MouseEvent evt, LifeView.Zone zone)
             {
-                getExecutor().execute(()->mouseEvent(evt));
+                if (mustConsumeEvent(evt, zone)) evt.consume();
+                getExecutor().execute(()->mouseEvent(evt, zone));
             }
 
             @Override
-            public void onScrollEvent(ScrollEvent evt)
+            public void onScrollEvent(ScrollEvent evt, LifeView.Zone zone)
             {
-                if (mustConsumeEvent(evt)) evt.consume();
-                getExecutor().execute(()->scrollEvent(evt));
+                if (mustConsumeEvent(evt, zone)) evt.consume();
+                getExecutor().execute(()->scrollEvent(evt, zone));
             }
 
             @Override
@@ -138,33 +139,33 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         getView().setListener(listener);
     }
 
-    private void mouseEvent(MouseEvent evt)
+    private void mouseEvent(MouseEvent evt, LifeView.Zone zone)
     {
         Objects.requireNonNull(evt);
-
+        Objects.requireNonNull(zone);
         if (evt.getEventType() == MouseEvent.MOUSE_CLICKED)
         {
-            mouseClick(evt);
+            mouseClick(evt, zone);
         }
     }
 
-    private void mouseClick(MouseEvent evt)
+    private void mouseClick(MouseEvent evt, LifeView.Zone zone)
     {
         if (evt.isControlDown())
         {
-            changeZoom(evt);
+            changeZoom(evt, zone);
         }
         else if (evt.isShiftDown())
         {
-            changeSpeed(evt);
+            changeSpeed(evt, zone);
         }
         else
         {
-            togglePopulation(evt);
+            togglePopulation(evt, zone);
         }
     }
 
-    private void changeZoom(MouseEvent evt)
+    private void changeZoom(MouseEvent evt, LifeView.Zone zone)
     {
         double factor = ZOOM_FACTOR_INIT;
         switch(evt.getButton())
@@ -179,10 +180,18 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
                 factor = ZOOM_FACTOR_INIT;
                 break;
         }
-        changeZoom(factor, (int) evt.getX(), (int) evt.getY());
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            changeZoom(factor);
+        }
+        else if (zone == LifeView.Zone.GENERATION_CONTAINER)
+        {
+            changeZoom(factor, (int) evt.getX(), (int) evt.getY());
+        }
+        //generation zoom event is not consumed is and passed to its container
     }
 
-    private void changeSpeed(MouseEvent evt)
+    private void changeSpeed(MouseEvent evt, LifeView.Zone zone)
     {
         int speed = getSpeed();
         switch(evt.getButton())
@@ -200,48 +209,65 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         changeSpeed(speed);
     }
 
-    private void togglePopulation(MouseEvent evt)
+    private void togglePopulation(MouseEvent evt, LifeView.Zone zone)
     {
+        if (zone != LifeView.Zone.GENERATION) return;
         int x = (int) evt.getX();
         int y = (int) evt.getY();
         boolean pop = getLastGeneration().isPopulationAlive(x, y);
         getModel().setPopulation(x, y, !pop);
     }
 
-    private boolean mustConsumeEvent(ScrollEvent evt)
+    private boolean mustConsumeEvent(MouseEvent evt, LifeView.Zone zone)
     {
-        return evt.isControlDown() || evt.isShiftDown();
+        return zone != LifeView.Zone.GENERATION
+            && (evt.isControlDown() || evt.isShiftDown());
     }
 
-    private void scrollEvent(ScrollEvent evt)
+    private boolean mustConsumeEvent(ScrollEvent evt, LifeView.Zone zone)
+    {
+        return zone != LifeView.Zone.GENERATION
+            && (evt.isControlDown() || evt.isShiftDown());
+    }
+
+    private void scrollEvent(ScrollEvent evt, LifeView.Zone zone)
     {
         Objects.requireNonNull(evt);
+        Objects.requireNonNull(zone);
 
         if (evt.getEventType() == ScrollEvent.SCROLL)
         {
-            scrollScroll(evt);
+            scrollScroll(evt, zone);
         }
     }
 
-    private void scrollScroll(ScrollEvent evt)
+    private void scrollScroll(ScrollEvent evt, LifeView.Zone zone)
     {
         if (evt.isControlDown())
         {
-            changeZoom(evt);
+            changeZoom(evt, zone);
         }
         else if (evt.isShiftDown())
         {
-            changeSpeed(evt);
+            changeSpeed(evt, zone);
         }
     }
 
-    private void changeZoom(ScrollEvent evt)
+    private void changeZoom(ScrollEvent evt, LifeView.Zone zone)
     {
         double factor = evt.getDeltaY() < 0 ? ZOOM_FACTOR_DOWN : ZOOM_FACTOR_UP;
-        changeZoom(factor, (int) evt.getX(), (int) evt.getY());
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            changeZoom(factor);
+        }
+        else if (zone == LifeView.Zone.GENERATION_CONTAINER)
+        {
+            changeZoom(factor, (int) evt.getX(), (int) evt.getY());
+        }
+        //generation zoom event is not consumed and is passed to its container
     }
 
-    private void changeSpeed(ScrollEvent evt)
+    private void changeSpeed(ScrollEvent evt, LifeView.Zone zone)
     {
         int delta = evt.getDeltaY() < 0 ? -SPEED_STEP : SPEED_STEP;
         changeSpeed(getSpeed() + delta);

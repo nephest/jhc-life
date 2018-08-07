@@ -27,9 +27,9 @@ import javafx.scene.input.*;
 public interface LifeViewListener
 {
 
-    public void onMouseEvent(MouseEvent evt);
+    public void onMouseEvent(MouseEvent evt, LifeView.Zone zone);
 
-    public void onScrollEvent(ScrollEvent evt);
+    public void onScrollEvent(ScrollEvent evt, LifeView.Zone zone);
 
     public void onZoomUp();
 

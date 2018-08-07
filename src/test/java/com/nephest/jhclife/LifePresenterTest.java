@@ -84,12 +84,14 @@ public class LifePresenterTest
             false, false, false,
             null
         );
+        MouseEvent spy = spy(evt);
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onMouseEvent(evt);
+        this.listener.onMouseEvent(spy, LifeView.Zone.GENERATION);
         verifyRunInBackground(captor);
 
         verify(this.modelMock).setPopulation( (int)x, (int)y, !alive);
+        verify(spy, never()).consume();
     }
 
     @Test
@@ -120,6 +122,15 @@ public class LifePresenterTest
 
     private void testMouseEventSpeed(MouseButton button, int targetSpeed)
     {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            init();
+            testMouseEventSpeed(button, targetSpeed, zone);
+        }
+    }
+
+    private void testMouseEventSpeed(MouseButton button, int targetSpeed, LifeView.Zone zone)
+    {
         MouseEvent evt = new MouseEvent
         (
             MouseEvent.MOUSE_CLICKED, 0, 0, 0, 0, button, 1,
@@ -128,9 +139,12 @@ public class LifePresenterTest
             false, false, false,
             null
         );
+        MouseEvent spy = spy(evt);
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onMouseEvent(evt);
+        this.listener.onMouseEvent(spy, zone);
+        //consume in the GUI thread to properly stop the propagation chain
+        if (zone != LifeView.Zone.GENERATION) verify(spy).consume();
         verifyRunInBackground(captor);
 
         long period = 1_000_000_000 / targetSpeed;
@@ -158,6 +172,15 @@ public class LifePresenterTest
 
     private void testMouseEventZoom(MouseButton button, double factor)
     {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            init();
+            testMouseEventZoom(button, factor, zone);
+        }
+    }
+
+    private void testMouseEventZoom(MouseButton button, double factor, LifeView.Zone zone)
+    {
         int x = 11;
         int y = 232;
 
@@ -169,13 +192,29 @@ public class LifePresenterTest
             false, false, false,
             null
         );
+        MouseEvent spy = spy(evt);
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onMouseEvent(evt);
+        this.listener.onMouseEvent(spy, zone);
+        //consume in the GUI thread to properly stop the propagation chain
+        if (zone != LifeView.Zone.GENERATION) verify(spy).consume();
         verifyRunInBackground(captor);
 
-        verify(this.viewMock).setGenerationZoom(factor, x, y);
-        verify(this.viewMock).updateZoomInfo();
+        switch(zone)
+        {
+            case GENERATION_CONTAINER:
+                verify(this.viewMock).setGenerationZoom(factor, x, y);
+                verify(this.viewMock).updateZoomInfo();
+                break;
+            case GLOBAL:
+                verify(this.viewMock).setGenerationZoom(factor);
+                verify(this.viewMock).updateZoomInfo();
+                break;
+            case GENERATION:
+                //the generation handler must pass it to the container handler
+                verifyNoMoreInteractions(this.viewMock);
+                break;
+        }
     }
 
     @Test

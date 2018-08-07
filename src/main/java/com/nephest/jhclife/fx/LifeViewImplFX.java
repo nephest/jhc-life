@@ -84,8 +84,15 @@ implements LifeView<Parent>
         this.listener = listener;
         if (listener == null) return;
 
-        this.canvasPane.setOnMouseClicked((e)->listener.onMouseEvent(e));
-        this.canvasPane.setOnScroll((e)->listener.onScrollEvent(e));
+        LifeView.Zone canvasZone = LifeView.Zone.GENERATION;
+        LifeView.Zone canvasPaneZone = LifeView.Zone.GENERATION_CONTAINER;
+        LifeView.Zone topZone = LifeView.Zone.GLOBAL;
+        this.canvas.setOnMouseClicked((e)->listener.onMouseEvent(e, canvasZone));
+        this.canvas.setOnScroll((e)->listener.onScrollEvent(e, canvasZone));
+        this.canvasPane.setOnMouseClicked((e)->listener.onMouseEvent(e, canvasPaneZone));
+        this.canvasPane.setOnScroll((e)->listener.onScrollEvent(e, canvasPaneZone));
+        this.borderPane.setOnMouseClicked((e)->listener.onMouseEvent(e, topZone));
+        this.borderPane.setOnScroll((e)->listener.onScrollEvent(e, topZone));
 
         this.zoomUpButton.setOnAction((e)->listener.onZoomUp());
         this.zoomDownButton.setOnAction((e)->listener.onZoomDown());
@@ -183,8 +190,12 @@ implements LifeView<Parent>
 
     private void unsetListener()
     {
+        this.canvas.setOnMouseClicked(null);
+        this.canvas.setOnScroll(null);
         this.canvasPane.setOnMouseClicked(null);
         this.canvasPane.setOnScroll(null);
+        this.borderPane.setOnMouseClicked(null);
+        this.borderPane.setOnScroll(null);
 
         this.zoomUpButton.setOnAction(null);
         this.zoomDownButton.setOnAction(null);

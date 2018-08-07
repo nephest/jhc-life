@@ -26,6 +26,11 @@ public interface LifeView<N>
 extends ViewBase<N>
 {
 
+    public static enum Zone
+    {
+        GLOBAL, GENERATION_CONTAINER, GENERATION
+    }
+
     public void setListener(LifeViewListener listener);
 
     public void render(Generation generation);
