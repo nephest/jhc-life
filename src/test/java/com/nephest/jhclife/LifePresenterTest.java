@@ -218,6 +218,118 @@ public class LifePresenterTest
     }
 
     @Test
+    public void testScrollEventSpeedDown()
+    {
+        testScrollEventSpeed
+        (
+            true,
+            this.presenter.getSpeed() - LifePresenter.SPEED_STEP
+        );
+    }
+
+    @Test
+    public void testScrollEventSpeedUp()
+    {
+        testScrollEventSpeed
+        (
+            false,
+            this.presenter.getSpeed() + LifePresenter.SPEED_STEP
+        );
+    }
+
+    private void testScrollEventSpeed(boolean down, int targetSpeed)
+    {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            init();
+            testScrollEventSpeed(down, targetSpeed, zone);
+        }
+    }
+
+    private void testScrollEventSpeed(boolean down, int targetSpeed, LifeView.Zone zone)
+    {
+        //the sign is the ONLY thing that matters
+        double deltaY = down ? -32.0 : 1.0;
+        ScrollEvent evt = new ScrollEvent
+        (
+            ScrollEvent.SCROLL, 0, 0, 0, 0, //type, x, y
+            true, false, false, false, //shift, ctrl, alt, meta
+            false, false,
+            0, deltaY, 0, 0, //deltaX, deltaY
+            null, 0, null, 0, 1, null
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onScrollEvent(evt, zone);
+        //consume in the GUI thread to properly stop the propagation chain
+        if (zone != LifeView.Zone.GENERATION) assertTrue(evt.isConsumed());
+        verifyRunInBackground(captor);
+        long period = 1_000_000_000 / targetSpeed;
+        verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
+        verify(this.viewMock).setSpeedInfo(targetSpeed);
+    }
+
+    @Test
+    public void testScrollEventZoomDown()
+    {
+        testScrollEventZoom(true, LifePresenter.ZOOM_FACTOR_DOWN);
+    }
+
+    @Test
+    public void testScrollEventZoomUp()
+    {
+        testScrollEventZoom(false, LifePresenter.ZOOM_FACTOR_UP);
+    }
+
+    private void testScrollEventZoom(boolean down, double factor)
+    {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            init();
+            testScrollEventZoom(down, factor, zone);
+        }
+    }
+
+    private void testScrollEventZoom(boolean down, double factor, LifeView.Zone zone)
+    {
+        int x = 11;
+        int y = 232;
+
+        //the sign is the ONLY thing that matters
+        double deltaY = down ? -32.0 : 1.0;
+        ScrollEvent evt = new ScrollEvent
+        (
+            ScrollEvent.SCROLL, x, y, 0, 0, //type, x, y
+            false, true, false, false, //shift, ctrl, alt, meta
+            false, false,
+            0, deltaY, 0, 0, //deltaX, deltaY
+            null, 0, null, 0, 1, null
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onScrollEvent(evt, zone);
+        //consume in the GUI thread to properly stop the propagation chain
+        if (zone != LifeView.Zone.GENERATION) assertTrue(evt.isConsumed());
+        verifyRunInBackground(captor);
+
+        switch(zone)
+        {
+            case GENERATION_CONTAINER:
+                verify(this.viewMock).setGenerationZoom(factor, x, y);
+                verify(this.viewMock).updateZoomInfo();
+                break;
+            case GLOBAL:
+                verify(this.viewMock).setGenerationZoom(factor);
+                verify(this.viewMock).updateZoomInfo();
+                break;
+            case GENERATION:
+                //the generation handler must pass it to the container handler
+                verifyNoMoreInteractions(this.viewMock);
+                break;
+        }
+    }
+
+    @Test
     public void testZoomUp()
     {
         this.listener.onZoomUp();
