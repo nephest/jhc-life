@@ -50,6 +50,10 @@ implements LifeView<Parent>
     public static final String BUTTON_PLUS_CLASS="button-plus";
     public static final String BUTTON_MINUS_CLASS="button-minus";
     public static final String BUTTON_DEFAULT_CLASS="button-default";
+    public static final String GROUP_BUTTON_CLASS="group-button";
+    public static final String SEPARATOR_CLASS="separator";
+    public static final String TEXT_LABEL_CLASS="text-label";
+    public static final String TEXT_VALUE_CLASS="text-value";
 
     private BorderPane borderPane;
     private Button playButton, pauseButton, newGameButton,
@@ -231,7 +235,7 @@ implements LifeView<Parent>
     private void initBorderPane()
     {
         this.borderPane = new BorderPane();
-        this.borderPane.setId("border-pane-life");
+        this.borderPane.setId("root-life");
     }
 
     private void initControls()
@@ -239,6 +243,7 @@ implements LifeView<Parent>
 
         this.speedText = new Text();
         this.speedText.setId("text-speed");
+        this.speedText.getStyleClass().add(TEXT_VALUE_CLASS);
 
         this.speedUpButton = new Button("+");
         this.speedUpButton.getStyleClass().add(BUTTON_PLUS_CLASS);
@@ -249,6 +254,7 @@ implements LifeView<Parent>
 
         this.zoomText = new Text();
         this.zoomText.setId("text-zoom");
+        this.zoomText.getStyleClass().add(TEXT_VALUE_CLASS);
 
         this.zoomUpButton = new Button("+");
         this.zoomUpButton.getStyleClass().add(BUTTON_PLUS_CLASS);
@@ -268,38 +274,67 @@ implements LifeView<Parent>
 
         this.generationNumberText = new Text();
         this.generationNumberText.setId("text-generation-number");
+        this.generationNumberText.getStyleClass().add(TEXT_VALUE_CLASS);
 
         this.tipText = new Text();
         this.tipText.setId("text-tip");
+        this.tipText.getStyleClass().add(TEXT_VALUE_CLASS);
 
         this.statusText = new Text();
         this.statusText.setId("text-status");
+        this.statusText.getStyleClass().add(TEXT_VALUE_CLASS);
     }
 
     private void layoutControls()
     {
         HBox ctrls = new HBox
         (
-            new Label("Speed", this.speedDownButton),
-            this.speedDownButton, this.speedText, this.speedUpButton,
-            this.speedDefaultButton,
+            newLabelText("Speed"),
+            this.speedDownButton, this.speedText,
+            newButtonGroup(this.speedUpButton, this.speedDefaultButton),
+            newSeparator(Orientation.VERTICAL),
 
-            new Label("Zoom", this.zoomDownButton),
-            this.zoomDownButton, this.zoomText, this.zoomUpButton,
-            this.zoomDefaultButton,
+            newLabelText("Zoom"),
+            this.zoomDownButton, this.zoomText,
+            newButtonGroup(this.zoomUpButton, this.zoomDefaultButton),
+            newSeparator(Orientation.VERTICAL),
 
-            this.newGameButton,
-            this.pauseButton,
-            this.playButton
+            newButtonGroup(this.newGameButton, this.pauseButton, this.playButton)
         );
+        ctrls.setId("box-control");
         HBox info = new HBox
         (
-            new Label("Generation:"), this.generationNumberText,
-            new Label("Status:"), this.statusText,
+            newLabelText("Generation:"), this.generationNumberText,
+            newSeparator(Orientation.VERTICAL),
+            newLabelText("Status:"), this.statusText,
+            newSeparator(Orientation.VERTICAL),
             this.tipText
         );
+        info.setId("box-info");
         VBox allCtrls = new VBox(ctrls, info);
+        allCtrls.setId("box-all");
         this.borderPane.setTop(allCtrls);
+    }
+
+    private Separator newSeparator(Orientation orientation)
+    {
+        Separator result = new Separator(orientation);
+        result.getStyleClass().add(SEPARATOR_CLASS);
+        return result;
+    }
+
+    private Text newLabelText(String content)
+    {
+        Text result = new Text(content);
+        result.getStyleClass().add(TEXT_LABEL_CLASS);
+        return result;
+    }
+
+    private HBox newButtonGroup(Button... buttons)
+    {
+        HBox box = new HBox(buttons);
+        box.getStyleClass().add(GROUP_BUTTON_CLASS);
+        return box;
     }
 
     private void initCanvas()
