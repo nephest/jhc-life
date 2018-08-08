@@ -1,0 +1,61 @@
+/*-
+ * =========================LICENSE_START=========================
+ * jhc-life
+ * %%
+ * Copyright (C) 2018 Oleksandr Masniuk
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * =========================LICENSE_END=========================
+ */
+
+/*********************** MAIN MENU VIEW ********************************/
+
+#root-grid-main-menu
+{
+    -fx-padding: 1em;
+    -fx-hgap: 1em;
+    -fx-vgap: 1em;
+    -fx-alignment: center;
+}
+
+#root-grid-main-menu #button-cancel,
+#root-grid-main-menu #button-new-game
+{
+    -fx-max-width: 9999em;
+}
+
+/*********************** LIFE VIEW ********************************/
+
+#root-life #box-control,
+#root-life #box-info
+{
+    -fx-alignment: center-left;
+    -fx-padding: 0.5em;
+    -fx-spacing: 1em;
+}
+
+#root-life .button-minus,
+#root-life .button-plus
+{
+    -fx-pref-width: 3em;
+}
+
+
+#root-life #button-play,
+#root-life #button-pause,
+#root-life #button-new-game
+{
+    -fx-pref-width: 10em;
+}

@@ -38,9 +38,10 @@ implements MainView<Scene>
 
     private static final Logger LOG
         = Logger.getLogger(MainViewImplFX.class.getName());
-
     public static final MainView.ViewType DEFAULT_VIEW
         = MainView.ViewType.MAIN_MENU;
+    public static final String STYLESHEET_RESOURCE
+        = "com/nephest/jhclife/resources/style/fx/default.css";
 
     private final Stage mainStage;
     private Scene mainScene;
@@ -105,6 +106,7 @@ implements MainView<Scene>
     private void init()
     {
         this.mainScene = new Scene( getViews().get(DEFAULT_VIEW).getRoot() );
+        this.mainScene.getStylesheets().add(STYLESHEET_RESOURCE);
         getMainStage().setScene(getMainScene());
     }
 
