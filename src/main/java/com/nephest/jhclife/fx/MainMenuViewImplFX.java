@@ -102,7 +102,7 @@ implements MainMenuView<GridPane>
     private void initGrid()
     {
         this.grid = new GridPane();
-        this.grid.setId("grid-main-menu");
+        this.grid.setId("root-grid-main-menu");
     }
 
     private void initControls()
@@ -130,16 +130,16 @@ implements MainMenuView<GridPane>
 
     private void layoutControls()
     {
-        this.grid.add(new Label("Width", this.widthSpinner), 0, 0);
+        this.grid.add(new Label("Width"), 0, 0);
         this.grid.add(this.widthSpinner, 1, 0);
 
-        this.grid.add(new Label("Height", this.heightSpinner), 2, 0);
+        this.grid.add(new Label("Height"), 2, 0);
         this.grid.add(this.heightSpinner, 3, 0);
 
-        this.grid.add(new Label("Seed", this.seedSpinner), 0, 1);
+        this.grid.add(new Label("Seed"), 0, 1);
         this.grid.add(this.seedSpinner, 1, 1);
 
-        this.grid.add(new Label("Density", this.probabilitySpinner), 2, 1);
+        this.grid.add(new Label("Density"), 2, 1);
         this.grid.add(this.probabilitySpinner, 3, 1);
 
         this.grid.add(this.newGameButton, 0, 2, 2, 1);
