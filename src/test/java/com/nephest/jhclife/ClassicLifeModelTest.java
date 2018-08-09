@@ -160,6 +160,44 @@ public class ClassicLifeModelTest
     }
 
     @Test
+    public void testNumerousGenerations()
+    {
+        int depth = this.rng.nextInt(250);
+        long seed = this.rng.nextLong();
+        double prob = 0.5;
+        int width = 500 + this.rng.nextInt(50);
+        int height = 500 + this.rng.nextInt(50);
+
+        this.model.createNewPopulation(width, height);
+        this.model.populate(seed, prob);
+        for (int i = 0; i < depth; i++)
+        {
+            this.model.nextGeneration();
+        }
+        Generation first = this.model.getLastGeneration();
+
+        this.model.createNewPopulation(width, height);
+        this.model.populate(seed, prob);
+        for (int i = 0; i < depth; i++)
+        {
+            this.model.nextGeneration();
+        }
+        Generation second = this.model.getLastGeneration();
+
+        for (int col = 0; col < first.getWidth(); col++)
+        {
+            for (int row = 0; row < first.getHeight(); row++)
+            {
+                assertEquals
+                (
+                    first.isPopulationAlive(col, row),
+                    second.isPopulationAlive(col, row)
+                );
+            }
+        }
+    }
+
+    @Test
     public void testStart()
     {
         assertFalse(this.model.isRunning());
