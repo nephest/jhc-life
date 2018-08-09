@@ -72,6 +72,7 @@ extends Application
         );
 
         stage.show();
+        stage.setMaximized(true);
     }
 
     @Override
