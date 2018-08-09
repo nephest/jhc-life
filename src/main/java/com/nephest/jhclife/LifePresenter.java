@@ -58,6 +58,13 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     private void init()
     {
         listen();
+        initInfo();
+    }
+
+    private void initInfo()
+    {
+        getView().setSpeedInfo(String.format(SPEED_FORMAT, getSpeed()));
+        getView().updateZoomInfo(ZOOM_FORMAT);
     }
 
     private void listen()

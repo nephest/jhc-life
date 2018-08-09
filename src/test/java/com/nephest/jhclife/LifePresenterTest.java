@@ -64,6 +64,14 @@ public class LifePresenterTest
         );
 
         this.listener = getListener();
+
+        verify(this.viewMock).updateZoomInfo(ZOOM_FORMAT);
+        verify(this.viewMock)
+            .setSpeedInfo(String.format(SPEED_FORMAT, this.presenter.getSpeed()));
+        //clear for easier zoom/speed testing
+        //need to specify the exact invocation count or use ordering otherwise
+        verifyNoMoreInteractions(this.viewMock);
+        clearInvocations(this.viewMock);
     }
 
     @Test
