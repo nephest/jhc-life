@@ -55,6 +55,8 @@ implements LifeView<Parent>
     public static final String TEXT_LABEL_CLASS="text-label";
     public static final String TEXT_VALUE_CLASS="text-value";
 
+    private Generation lastGeneration;
+
     private BorderPane borderPane;
     private Button playButton, pauseButton, newGameButton,
         speedUpButton, speedDownButton, speedDefaultButton,
@@ -118,19 +120,57 @@ implements LifeView<Parent>
     {
         Objects.requireNonNull(generation);
         prepareCanvas(generation);
+        if (isFirstGeneration(generation))
+        {
+            renderFirstGeneraiton(generation);
+        }
+        else
+        {
+            renderGenerationDelta(getLastGeneration(), generation);
+        }
+        this.generationNumberText
+            .setText(String.valueOf(generation.getGenerationNumber()));
+        this.lastGeneration = generation;
+    }
+
+    private boolean isFirstGeneration(Generation generation)
+    {
+        return getLastGeneration() == null
+            || getLastGeneration().getWidth() != generation.getWidth()
+            || getLastGeneration().getHeight() != generation.getHeight();
+    }
+
+    private void renderFirstGeneraiton(Generation generation)
+    {
+        this.canvas.getGraphicsContext2D()
+            .fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
         PixelWriter pixelWriter = this.canvas.getGraphicsContext2D().getPixelWriter();
         for (int col = 0; col < generation.getWidth(); col++)
         {
             for (int row = 0; row < generation.getHeight(); row++)
             {
-                Color color = generation.isPopulationAlive(col, row)
-                    ? ALIVE_COLOR
-                    : DEAD_COLOR;
-                pixelWriter.setColor(col, row, color);
+                if (generation.isPopulationAlive(col, row))
+                    pixelWriter.setColor(col, row, ALIVE_COLOR);
             }
         }
-        this.generationNumberText
-            .setText(String.valueOf(generation.getGenerationNumber()));
+    }
+
+    private void renderGenerationDelta(Generation prev, Generation next)
+    {
+        PixelWriter pixelWriter = this.canvas.getGraphicsContext2D().getPixelWriter();
+        for (int col = 0; col < next.getWidth(); col++)
+        {
+            for (int row = 0; row < next.getHeight(); row++)
+            {
+                Color nColor = next.isPopulationAlive(col, row)
+                    ? ALIVE_COLOR
+                    : DEAD_COLOR;
+                Color pColor = prev.isPopulationAlive(col, row)
+                    ? ALIVE_COLOR
+                    : DEAD_COLOR;
+                if (nColor != pColor) pixelWriter.setColor(col, row, nColor);
+            }
+        }
     }
 
     @Override
@@ -340,6 +380,7 @@ implements LifeView<Parent>
     private void initCanvas()
     {
         this.canvas = new Canvas();
+        this.canvas.getGraphicsContext2D().setFill(DEAD_COLOR);
         this.canvasGroup = new Group(canvas);
         this.canvasPane = new StackPane(this.canvasGroup);
         this.canvasGroup.layoutBoundsProperty().addListener
@@ -375,6 +416,11 @@ implements LifeView<Parent>
                 if (getListener() != null) getListener().readyForNextFrame();
             }
         };
+    }
+
+    private Generation getLastGeneration()
+    {
+        return this.lastGeneration;
     }
 
     private LifeViewListener getListener()
