@@ -37,6 +37,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
 
     public static final int SPEED_STEP = 1;
     public static final int SPEED_INIT = 4;
+    public static final String SPEED_FORMAT="%03d";
 
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
@@ -358,7 +359,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         long nanos = 1_000_000_000;
         long period = nanos / speed;
         getModel().setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
-        getView().setSpeedInfo(speed);
+        getView().setSpeedInfo(String.format(SPEED_FORMAT, speed));
         this.speed = speed;
     }
 

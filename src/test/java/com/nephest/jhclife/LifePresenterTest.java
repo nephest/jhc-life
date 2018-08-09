@@ -36,6 +36,8 @@ import static org.mockito.Mockito.*;
 public class LifePresenterTest
 {
 
+    public static final String SPEED_FORMAT="%03d";
+
     private LifeView<?> viewMock;
     private ClassicLifeModel modelMock;
     private MainController controllerMock;
@@ -149,7 +151,7 @@ public class LifePresenterTest
 
         long period = 1_000_000_000 / targetSpeed;
         verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
-        verify(this.viewMock).setSpeedInfo(targetSpeed);
+        verify(this.viewMock).setSpeedInfo(String.format(SPEED_FORMAT, targetSpeed));
     }
 
     @Test
@@ -266,7 +268,7 @@ public class LifePresenterTest
         verifyRunInBackground(captor);
         long period = 1_000_000_000 / targetSpeed;
         verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
-        verify(this.viewMock).setSpeedInfo(targetSpeed);
+        verify(this.viewMock).setSpeedInfo(String.format(SPEED_FORMAT, targetSpeed));
     }
 
     @Test
@@ -386,7 +388,7 @@ public class LifePresenterTest
 
         long period = 1_000_000_000 / targetSpeed;
         verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
-        verify(this.viewMock).setSpeedInfo(targetSpeed);
+        verify(this.viewMock).setSpeedInfo(String.format(SPEED_FORMAT, targetSpeed));
     }
 
     @Test

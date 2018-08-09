@@ -45,6 +45,6 @@ extends ViewBase<N>
 
     public void updateZoomInfo();
 
-    public void setSpeedInfo(int speed);
+    public void setSpeedInfo(String speed);
 
 }

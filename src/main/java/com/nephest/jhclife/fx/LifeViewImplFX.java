@@ -227,9 +227,9 @@ implements LifeView<Parent>
     }
 
     @Override
-    public void setSpeedInfo(int speed)
+    public void setSpeedInfo(String speed)
     {
-        Platform.runLater( ()->this.speedText.setText(String.valueOf(speed)) );
+        Platform.runLater( ()->this.speedText.setText(speed) );
     }
 
     private void unsetListener()
