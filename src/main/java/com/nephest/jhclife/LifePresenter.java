@@ -34,6 +34,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     public static final double ZOOM_FACTOR_UP = 1.5;
     public static final double ZOOM_FACTOR_DOWN = 0.5;
     public static final double ZOOM_FACTOR_INIT = 0.0;
+    public static final String ZOOM_FORMAT="%06.2f";
 
     public static final int SPEED_STEP = 1;
     public static final int SPEED_INIT = 4;
@@ -344,13 +345,13 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     private void changeZoom(double factor, int x, int y)
     {
         getView().setGenerationZoom(factor, x, y);
-        getView().updateZoomInfo();
+        getView().updateZoomInfo(ZOOM_FORMAT);
     }
 
     private void changeZoom(double factor)
     {
         getView().setGenerationZoom(factor);
-        getView().updateZoomInfo();
+        getView().updateZoomInfo(ZOOM_FORMAT);
     }
 
     private void changeSpeed(int speed)

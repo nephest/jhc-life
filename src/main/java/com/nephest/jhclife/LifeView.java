@@ -43,7 +43,7 @@ extends ViewBase<N>
 
     public double getFinalGenerationZoom();
 
-    public void updateZoomInfo();
+    public void updateZoomInfo(String format);
 
     public void setSpeedInfo(String speed);
 

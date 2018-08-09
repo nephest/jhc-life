@@ -36,6 +36,7 @@ import static org.mockito.Mockito.*;
 public class LifePresenterTest
 {
 
+    public static final String ZOOM_FORMAT="%06.2f";
     public static final String SPEED_FORMAT="%03d";
 
     private LifeView<?> viewMock;
@@ -206,11 +207,11 @@ public class LifePresenterTest
         {
             case GENERATION_CONTAINER:
                 verify(this.viewMock).setGenerationZoom(factor, x, y);
-                verify(this.viewMock).updateZoomInfo();
+                verify(this.viewMock).updateZoomInfo(ZOOM_FORMAT);
                 break;
             case GLOBAL:
                 verify(this.viewMock).setGenerationZoom(factor);
-                verify(this.viewMock).updateZoomInfo();
+                verify(this.viewMock).updateZoomInfo(ZOOM_FORMAT);
                 break;
             case GENERATION:
                 //the generation handler must pass it to the container handler
@@ -318,11 +319,11 @@ public class LifePresenterTest
         {
             case GENERATION_CONTAINER:
                 verify(this.viewMock).setGenerationZoom(factor, x, y);
-                verify(this.viewMock).updateZoomInfo();
+                verify(this.viewMock).updateZoomInfo(ZOOM_FORMAT);
                 break;
             case GLOBAL:
                 verify(this.viewMock).setGenerationZoom(factor);
-                verify(this.viewMock).updateZoomInfo();
+                verify(this.viewMock).updateZoomInfo(ZOOM_FORMAT);
                 break;
             case GENERATION:
                 //the generation handler must pass it to the container handler
@@ -357,7 +358,7 @@ public class LifePresenterTest
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verifyRunInBackground(captor);
         verify(this.viewMock).setGenerationZoom(factor);
-        verify(this.viewMock).updateZoomInfo();
+        verify(this.viewMock).updateZoomInfo(ZOOM_FORMAT);
     }
 
     @Test

@@ -218,11 +218,11 @@ implements LifeView<Parent>
     }
 
     @Override
-    public void updateZoomInfo()
+    public void updateZoomInfo(String format)
     {
         Platform.runLater
         (
-            ()->this.zoomText.setText(String.valueOf(getFinalGenerationZoom()))
+            ()->this.zoomText.setText(String.format(format, getFinalGenerationZoom()))
         );
     }
 
