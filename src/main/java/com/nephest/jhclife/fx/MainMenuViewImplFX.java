@@ -109,16 +109,20 @@ implements MainMenuView<GridPane>
     {
         this.widthSpinner = new Spinner(1, Integer.MAX_VALUE, 800, 1);
         this.widthSpinner.setEditable(true);
+        FX.standardSpinner(this.widthSpinner, 800, 1);
 
         this.heightSpinner = new Spinner(1, Integer.MAX_VALUE, 600, 1);
         this.heightSpinner.setEditable(true);
+        FX.standardSpinner(this.heightSpinner, 600, 1);
 
         this.seedSpinner = new Spinner(Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 1);
         this.seedSpinner.setEditable(true);
+        FX.standardSpinner(this.seedSpinner, 0, 0);
         this.seedSpinner.setTooltip(new Tooltip("Provide the same seed and density to get the same population layout"));
 
         this.probabilitySpinner = new Spinner(0.0, 100.0, 50.0, 1.0);
         this.probabilitySpinner.setEditable(true);
+        FX.standardSpinner(this.probabilitySpinner, 50.0, 0.0);
         this.probabilitySpinner.setTooltip(new Tooltip("Population density percentage"));
 
         this.newGameButton = new Button("New Game");
