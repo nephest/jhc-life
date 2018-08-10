@@ -305,7 +305,7 @@ public class ClassicLifeModelTest
         assertEquals(0, this.model.getGenerationNumber());
         assertEquals(0, this.model.getLastGeneration().getGenerationNumber());
 
-        nextGeneration(2);
+        nextGeneration(3); //generation, population, generation
         this.model.createNewPopulation(MODEL_WIDTH, MODEL_HEIGHT);
         assertEquals(0, this.model.getGenerationNumber());
         assertEquals(0, this.model.getLastGeneration().getGenerationNumber());

@@ -100,6 +100,8 @@ implements java.io.Closeable
     {
         if (width < 0) throw new IllegalArgumentException("width must be more than 0");
         if (height < 0) throw new IllegalArgumentException("height must be more than 0");
+        boolean wasRunning = isRunning();
+        if (wasRunning) stop();
         this.width = width;
         this.height = height;
         this.population = new boolean[width][height];
@@ -107,6 +109,7 @@ implements java.io.Closeable
         savePopulation();
         resetGenerationNumber();
         externalModification();
+        if (wasRunning) start();
     }
 
     @Override
@@ -275,6 +278,8 @@ implements java.io.Closeable
     {
         if (populationProbability < 0 || populationProbability > 1.0)
             throw new IllegalArgumentException("population probability must be in 0-1 range");
+        boolean wasRunning = isRunning();
+        if (wasRunning) stop();
         getRandom().setSeed(seed);
         setPopulationProbability(populationProbability);
         for (int col = 0; col < getPopulation().length; col++)
@@ -287,6 +292,7 @@ implements java.io.Closeable
         savePopulation();
         resetGenerationNumber();
         externalModification();
+        if (wasRunning) start();
     }
 
     private void savePopulation()
@@ -334,8 +340,11 @@ implements java.io.Closeable
             throw new IllegalArgumentException("x out of bounds");
         if (y < 0 || y > getHeight())
             throw new IllegalArgumentException("y out of bounds");
+        boolean wasRunning = isRunning();
+        if (wasRunning) stop();
         getLastPopulation()[x][y] = pop;
         externalModification();
+        if (wasRunning) start();
     }
 
     private void saveGeneration()
