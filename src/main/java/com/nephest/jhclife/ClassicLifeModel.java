@@ -272,6 +272,7 @@ implements java.io.Closeable
     private void externalModification()
     {
         this.id++;
+        saveGeneration();
     }
 
     public synchronized void populate(long seed, double populationProbability)
@@ -331,6 +332,7 @@ implements java.io.Closeable
         pool.invoke(getGenerationCalculator());
         savePopulation();
         this.generation++;
+        saveGeneration();
         this.lastGenerationNanos = System.nanoTime();
     }
 
