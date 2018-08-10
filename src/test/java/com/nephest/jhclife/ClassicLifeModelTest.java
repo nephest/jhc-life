@@ -29,6 +29,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import org.mockito.*;
+import org.mockito.internal.matchers.*;
 import static org.mockito.Mockito.*;
 
 public class ClassicLifeModelTest
@@ -256,8 +257,13 @@ public class ClassicLifeModelTest
 
         //normal start with updated parameters
         this.model.start();
-        verify(executorMock)
-            .scheduleAtFixedRate(any(), eq(count), eq(count), eq(unit));
+        verify(executorMock).scheduleAtFixedRate
+        (
+            any(),
+            longThat(new LessOrEqual(count)),
+            eq(count),
+            eq(unit)
+        );
 
         //auto restart with the new life time if the model was already running
         TimeUnit newUnit = TimeUnit.HOURS;
@@ -266,8 +272,13 @@ public class ClassicLifeModelTest
         this.model.setGenerationLifeTime(newCount, newUnit);
         assertTrue(this.model.isRunning());
         assertEquals(newCount, this.model.getGenerationLifeTime(newUnit));
-        verify(executorMock)
-            .scheduleAtFixedRate(any(), eq(newCount), eq(newCount), eq(newUnit));
+        verify(executorMock).scheduleAtFixedRate
+        (
+            any(),
+            longThat(new LessOrEqual(newCount)),
+            eq(newCount),
+            eq(newUnit)
+        );
         //verify that previous tasks were canceled gracefully on restart
         verify(this.generationFutureMock).cancel(false);
         verify(this.generationFutureMock).get();
@@ -400,7 +411,7 @@ public class ClassicLifeModelTest
         verify(this.executorMock, times(times)).scheduleAtFixedRate
         (
             captor.capture(),
-            eq(count),
+            longThat(new LessOrEqual(count)),
             eq(count),
             eq(unit)
         );

@@ -57,6 +57,7 @@ implements java.io.Closeable
     private volatile boolean running = false;
     private long generationLifeTimePeriod = 1;
     private TimeUnit generationLifeTimeUnit = TimeUnit.SECONDS;
+    private long lastGenerationNanos = System.nanoTime();
 
     public ClassicLifeModel
     (
@@ -210,11 +211,18 @@ implements java.io.Closeable
         this.generationFuture = getExecutor().scheduleAtFixedRate
         (
             ()->nextGeneration(),
-            this.generationLifeTimePeriod,
+            calculateFinalDelay(),
             this.generationLifeTimePeriod,
             this.generationLifeTimeUnit
         );
         this.running = true;
+    }
+
+    private long calculateFinalDelay()
+    {
+        long delta = System.nanoTime() - getLastGenerationNanos();
+        return this.generationLifeTimePeriod
+            - this.generationLifeTimeUnit.convert(delta, TimeUnit.NANOSECONDS);
     }
 
     public synchronized void stop()
@@ -317,6 +325,7 @@ implements java.io.Closeable
         pool.invoke(getGenerationCalculator());
         savePopulation();
         this.generation++;
+        this.lastGenerationNanos = System.nanoTime();
     }
 
     public synchronized void setPopulation(int x, int y, boolean pop)
@@ -351,6 +360,11 @@ implements java.io.Closeable
     {
         saveGeneration();
         return this.lastGeneration;
+    }
+
+    public long getLastGenerationNanos()
+    {
+        return this.lastGenerationNanos;
     }
 
 }
