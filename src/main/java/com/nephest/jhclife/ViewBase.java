@@ -25,6 +25,13 @@ package com.nephest.jhclife;
 public interface ViewBase<N>
 {
 
+    public static enum AlertType
+    {
+        INFO, ERROR;
+    }
+
+    public void fireAlert(AlertType type, String header, String text);
+
     public void fireInfoAlert(String header, String text);
 
     public void fireErrorAlert(String header, String text);

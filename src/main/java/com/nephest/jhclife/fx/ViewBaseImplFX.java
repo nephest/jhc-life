@@ -47,6 +47,20 @@ implements ViewBase<Parent>
     }
 
     @Override
+    public void fireAlert(ViewBase.AlertType type, String header, String text)
+    {
+        switch(type)
+        {
+            case ERROR:
+                fireErrorAlert(header, text);
+                break;
+            case INFO:
+                fireInfoAlert(header, text);
+                break;
+        }
+    }
+
+    @Override
     public void fireInfoAlert(String header, String text)
     {
         Platform.runLater
