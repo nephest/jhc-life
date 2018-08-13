@@ -92,7 +92,7 @@ public class LifePresenterTest
             MouseEvent.MOUSE_CLICKED, x, y, x, y, MouseButton.PRIMARY, 1,
             false, false, false, false, //shift, ctrl, alt, meta
             false, false, false, //primary, mid, secondary
-            false, false, false,
+            false, false, true, //synthesized, popup, still
             null
         );
         MouseEvent spy = spy(evt);
@@ -103,6 +103,36 @@ public class LifePresenterTest
 
         verify(this.modelMock).setPopulation( (int)x, (int)y, !alive);
         verify(spy, never()).consume();
+    }
+
+    @Test
+    public void testMouseEventTogglePopulaitonDrag()
+    {
+        double x = 1.0;
+        double y = 2.0;
+        boolean alive = false;
+
+        Generation generation = mock(Generation.class);
+        when(generation.isPopulationAlive( (int)x, (int)y)).thenReturn(alive);
+        when(modelMock.getLastGeneration()).thenReturn(generation);
+
+        this.listener.readyForNextFrame(); //generation must be rendered first
+
+        MouseEvent evt = new MouseEvent
+        (
+            MouseEvent.MOUSE_CLICKED, x, y, x, y, MouseButton.PRIMARY, 1,
+            false, false, false, false, //shift, ctrl, alt, meta
+            false, false, false, //primary, mid, secondary
+            false, false, false, //synthesized, popup, still
+            null
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onMouseEvent(evt, LifeView.Zone.GENERATION);
+        verifyRunInBackground(captor);
+
+        verify(this.modelMock, never()).setPopulation( (int)x, (int)y, !alive);
+        assertFalse(evt.isConsumed());
     }
 
     @Test

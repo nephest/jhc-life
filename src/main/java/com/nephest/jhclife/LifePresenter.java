@@ -220,7 +220,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
 
     private void togglePopulation(MouseEvent evt, LifeView.Zone zone)
     {
-        if (zone != LifeView.Zone.GENERATION) return;
+        if (zone != LifeView.Zone.GENERATION || !evt.isStillSincePress()) return;
         int x = (int) evt.getX();
         int y = (int) evt.getY();
         boolean pop = getLastGeneration().isPopulationAlive(x, y);
