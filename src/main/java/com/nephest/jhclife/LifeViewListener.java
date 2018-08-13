@@ -51,6 +51,8 @@ public interface LifeViewListener
 
     public void onNewGame();
 
+    public void onHelp();
+
     public void readyForNextFrame();
 
 }

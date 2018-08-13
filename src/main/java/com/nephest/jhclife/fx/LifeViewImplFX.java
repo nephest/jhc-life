@@ -60,7 +60,7 @@ implements LifeView<Parent>
     private BorderPane borderPane;
     private Button playButton, pauseButton, newGameButton,
         speedUpButton, speedDownButton, speedDefaultButton,
-        zoomUpButton, zoomDownButton, zoomDefaultButton;
+        zoomUpButton, zoomDownButton, zoomDefaultButton, helpButton;
     private Text generationNumberText, tipText, statusText, speedText, zoomText;
 
     private LifeViewListener listener;
@@ -123,6 +123,7 @@ implements LifeView<Parent>
         this.playButton.setOnAction((e)->listener.onPlay());
         this.pauseButton.setOnAction((e)->listener.onPause());
         this.newGameButton.setOnAction((e)->listener.onNewGame());
+        this.helpButton.setOnAction((e)->listener.onHelp());
         getFrameTimer().start();
     }
 
@@ -275,6 +276,7 @@ implements LifeView<Parent>
         this.playButton.setOnAction(null);
         this.pauseButton.setOnAction(null);
         this.newGameButton.setOnAction(null);
+        this.helpButton.setOnAction(null);
         getFrameTimer().stop();
     }
 
@@ -335,6 +337,9 @@ implements LifeView<Parent>
         this.newGameButton = new Button("New Game");
         this.newGameButton.setId("button-new-game");
 
+        this.helpButton = new Button("Help");
+        this.helpButton.setId("button-help");
+
         this.generationNumberText = new Text();
         this.generationNumberText.setId("text-generation-number");
         this.generationNumberText.getStyleClass().add(TEXT_VALUE_CLASS);
@@ -362,7 +367,9 @@ implements LifeView<Parent>
             newButtonGroup(this.zoomUpButton, this.zoomDefaultButton),
             newSeparator(Orientation.VERTICAL),
 
-            newButtonGroup(this.newGameButton, this.pauseButton, this.playButton)
+            newButtonGroup(this.newGameButton, this.pauseButton, this.playButton),
+
+            this.helpButton
         );
         ctrls.setId("box-control");
         HBox info = new HBox
