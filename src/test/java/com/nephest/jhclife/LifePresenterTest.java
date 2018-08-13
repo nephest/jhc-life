@@ -99,14 +99,13 @@ public class LifePresenterTest
             false, false, true, //synthesized, popup, still
             null
         );
-        MouseEvent spy = spy(evt);
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onMouseEvent(spy, LifeView.Zone.GENERATION);
+        this.listener.onMouseEvent(evt, LifeView.Zone.GENERATION);
         verifyRunInBackground(captor);
 
         verify(this.modelMock).setPopulation( (int)x, (int)y, !alive);
-        verify(spy, never()).consume();
+        assertFalse(evt.isConsumed());
     }
 
     @Test
@@ -184,12 +183,11 @@ public class LifePresenterTest
             false, false, false,
             null
         );
-        MouseEvent spy = spy(evt);
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onMouseEvent(spy, zone);
+        this.listener.onMouseEvent(evt, zone);
         //consume in the GUI thread to properly stop the propagation chain
-        if (zone != LifeView.Zone.GENERATION) verify(spy).consume();
+        if (zone != LifeView.Zone.GENERATION) assertTrue(evt.isConsumed());
         verifyRunInBackground(captor);
 
         long period = 1_000_000_000 / targetSpeed;
@@ -237,12 +235,11 @@ public class LifePresenterTest
             false, false, false,
             null
         );
-        MouseEvent spy = spy(evt);
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onMouseEvent(spy, zone);
+        this.listener.onMouseEvent(evt, zone);
         //consume in the GUI thread to properly stop the propagation chain
-        if (zone != LifeView.Zone.GENERATION) verify(spy).consume();
+        if (zone != LifeView.Zone.GENERATION) assertTrue(evt.isConsumed());
         verifyRunInBackground(captor);
 
         switch(zone)
