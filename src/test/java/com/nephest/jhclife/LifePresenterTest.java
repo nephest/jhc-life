@@ -43,6 +43,29 @@ public class LifePresenterTest
     public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
     public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
 
+    public static final String HELP_MSG =
+        "Info:\n"
+        + "This is a basic Conway's Game of Life implementation.\n"
+        + "\n"
+        + "Rules:\n"
+        + "Any live cell with fewer than two live neighbors dies.\n"
+        + "Any live cell with two or three live neighbors lives on.\n"
+        + "Any live cell with more than three live neighbors dies.\n"
+        + "Any dead cell with exactly three live neighbors becomes a live cell.\n"
+        + "\n"
+        + "Binds:\n"
+        + "zoom+\tctrl+MouseLeft | ctrl+ScrollUp\n"
+        + "zoom-\tctrl+MouseRight | ctrl+ScrollDown\n"
+        + "speed+\tshift+MouseLeft | shift+ScrollUp\n"
+        + "speed-\tshift+MouseRight | shift+ScrollDown\n"
+        + "play/pause\tspace | p\n"
+        + "population\tmouseClick\n"
+        + "\n"
+        + "Misc:\n"
+        + "nephest.com/projects/jhc-life\n"
+        + "GPL Version 3\n"
+        + "Copyright (C) 2018 Oleksandr Masniuk\n";
+
     private LifeView<?> viewMock;
     private ClassicLifeModel modelMock;
     private MainController controllerMock;
@@ -506,6 +529,15 @@ public class LifePresenterTest
         InOrder inOrder = inOrder(this.modelMock, this.controllerMock);
         inOrder.verify(this.modelMock).stop();
         inOrder.verify(this.controllerMock).setViewType(MainView.ViewType.MAIN_MENU);
+    }
+
+    @Test
+    public void testHelp()
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onHelp();
+        verifyRunInBackground(captor);
+        verify(this.viewMock).fireInfoAlert("Help", HELP_MSG);
     }
 
     @Test
