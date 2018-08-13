@@ -47,13 +47,15 @@ implements ViewBase<Parent>
     }
 
     @Override
-    public void fireInfoAlert(String text)
+    public void fireInfoAlert(String header, String text)
     {
         Platform.runLater
         (
             ()->
             {
                 this.stdAlert.setAlertType(Alert.AlertType.INFORMATION);
+                this.stdAlert.setTitle("Information");
+                this.stdAlert.setHeaderText(header);
                 this.stdAlert.setContentText(text);
                 this.stdAlert.showAndWait();
             }
@@ -61,13 +63,15 @@ implements ViewBase<Parent>
     }
 
     @Override
-    public void fireErrorAlert(String text)
+    public void fireErrorAlert(String header, String text)
     {
         Platform.runLater
         (
             ()->
             {
                 this.stdAlert.setAlertType(Alert.AlertType.ERROR);
+                this.stdAlert.setTitle("Error");
+                this.stdAlert.setHeaderText(header);
                 this.stdAlert.setContentText(text);
                 this.stdAlert.showAndWait();
             }

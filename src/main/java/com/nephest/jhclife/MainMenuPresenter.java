@@ -92,7 +92,11 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel>
         boolean result = true;
         if (getView().getWidth() < 1 || getView().getHeight() < 1)
         {
-            getView().fireErrorAlert("Width and Height must be more than 0");
+            getView().fireErrorAlert
+            (
+                "Invalid dimensions",
+                "Width and Height must be more than 0"
+            );
             result = false;
         }
         return result;
@@ -104,7 +108,11 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel>
         double probability = getView().getPopulationProbability();
         if (probability < 0 || probability > 100)
         {
-            getView().fireErrorAlert("Population density must be in 0-100 range");
+            getView().fireErrorAlert
+            (
+                "Invalid density",
+                "Population density must be in 0-100 range"
+            );
             result = false;
         }
         return result;

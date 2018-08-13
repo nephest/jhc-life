@@ -86,6 +86,7 @@ public class MainMenuPresenterTest
         testNewGameInvalidParam
         (
             -1, 2, 3, 50,
+            "Invalid dimensions",
             "Width and Height must be more than 0"
         );
     }
@@ -96,6 +97,7 @@ public class MainMenuPresenterTest
         testNewGameInvalidParam
         (
             1, -2, 3, 50,
+            "Invalid dimensions",
             "Width and Height must be more than 0"
         );
     }
@@ -106,6 +108,7 @@ public class MainMenuPresenterTest
         testNewGameInvalidParam
         (
             1, 2, 3, -1.0,
+            "Invalid density",
             "Population density must be in 0-100 range"
         );
     }
@@ -116,6 +119,7 @@ public class MainMenuPresenterTest
         testNewGameInvalidParam
         (
             1, 2, 3, 100.1,
+            "Invalid density",
             "Population density must be in 0-100 range"
         );
     }
@@ -126,6 +130,7 @@ public class MainMenuPresenterTest
         int height,
         long seed,
         double prob,
+        String header,
         String alert
     )
     {
@@ -137,7 +142,7 @@ public class MainMenuPresenterTest
 
         InOrder inOrder = inOrder(this.viewMock);
         inOrder.verify(this.viewMock).lock();
-        inOrder.verify(this.viewMock).fireErrorAlert(alert);
+        inOrder.verify(this.viewMock).fireErrorAlert(header, alert);
         inOrder.verify(this.viewMock).unlock();
 
         verifyZeroInteractions(this.modelMock);
