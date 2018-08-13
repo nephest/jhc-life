@@ -25,6 +25,8 @@ package com.nephest.jhclife;
 public interface ViewBase<N>
 {
 
+    public void fireInfoAlert(String text);
+
     public void fireErrorAlert(String text);
 
     public void lock();

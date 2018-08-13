@@ -35,7 +35,7 @@ public abstract class ViewBaseImplFX<Parent>
 implements ViewBase<Parent>
 {
 
-    private Alert errorWarningAlert;
+    private Alert stdAlert;
     private Alert confirmationAlert;
 
     private Node lockable;
@@ -47,15 +47,29 @@ implements ViewBase<Parent>
     }
 
     @Override
+    public void fireInfoAlert(String text)
+    {
+        Platform.runLater
+        (
+            ()->
+            {
+                this.stdAlert.setAlertType(Alert.AlertType.INFORMATION);
+                this.stdAlert.setContentText(text);
+                this.stdAlert.showAndWait();
+            }
+        );
+    }
+
+    @Override
     public void fireErrorAlert(String text)
     {
         Platform.runLater
         (
             ()->
             {
-                this.errorWarningAlert.setAlertType(Alert.AlertType.ERROR);
-                this.errorWarningAlert.setContentText(text);
-                this.errorWarningAlert.showAndWait();
+                this.stdAlert.setAlertType(Alert.AlertType.ERROR);
+                this.stdAlert.setContentText(text);
+                this.stdAlert.showAndWait();
             }
         );
     }
@@ -101,8 +115,8 @@ implements ViewBase<Parent>
 
     private void initAlerts()
     {
-        this.errorWarningAlert
-            = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+        this.stdAlert
+            = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
         this.confirmationAlert = new Alert
         (
             Alert.AlertType.CONFIRMATION,
@@ -110,7 +124,7 @@ implements ViewBase<Parent>
             ButtonType.YES, ButtonType.NO
         );
 
-        this.errorWarningAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        this.stdAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         this.confirmationAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
     }
 
