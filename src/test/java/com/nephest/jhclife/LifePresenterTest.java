@@ -22,6 +22,7 @@
 
 package com.nephest.jhclife;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 import javafx.event.*;
@@ -38,6 +39,9 @@ public class LifePresenterTest
 
     public static final String ZOOM_FORMAT="%06.2f";
     public static final String SPEED_FORMAT="%03d";
+
+    public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
+    public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
 
     private LifeView<?> viewMock;
     private ClassicLifeModel modelMock;
@@ -367,6 +371,54 @@ public class LifePresenterTest
                 //the generation handler must pass it to the container handler
                 verifyNoMoreInteractions(this.viewMock);
                 break;
+        }
+    }
+
+    @Test
+    public void testKeyTogglePlay()
+    {
+        Set<KeyCode> keys = new HashSet();
+        keys.add(PLAY_TOGGLE);
+        keys.add(PLAY_TOGGLE_ALT);
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            for (KeyCode code : keys)
+            {
+                init();
+                testKeyTogglePlay(code, true, zone);
+                init();
+                testKeyTogglePlay(code, false, zone);
+            }
+        }
+    }
+
+    private void testKeyTogglePlay(KeyCode code, boolean running, LifeView.Zone zone)
+    {
+        when(this.modelMock.isRunning()).thenReturn(running);
+
+        KeyEvent evt = new KeyEvent
+        (
+            KeyEvent.KEY_RELEASED, "", "", code, //type, char, text, code
+            false, false, false, false //shift, ctrl, alt, meta
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onKeyEvent(evt, zone);
+
+        assertFalse(evt.isConsumed());
+        verifyRunInBackground(captor);
+
+        if (zone != LifeView.Zone.GLOBAL)
+        {
+            verifyNoMoreInteractions(this.modelMock);
+        }
+        else if(running)
+        {
+            verify(this.modelMock).stop();
+        }
+        else
+        {
+            verify(this.modelMock).start();
         }
     }
 

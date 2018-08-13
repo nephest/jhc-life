@@ -40,6 +40,9 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     public static final int SPEED_INIT = 4;
     public static final String SPEED_FORMAT="%03d";
 
+    public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
+    public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
+
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -83,6 +86,12 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
             {
                 if (mustConsumeEvent(evt, zone)) evt.consume();
                 getExecutor().execute(()->scrollEvent(evt, zone));
+            }
+
+            @Override
+            public void onKeyEvent(KeyEvent evt, LifeView.Zone zone)
+            {
+                getExecutor().execute(()->keyEvent(evt, zone));
             }
 
             @Override
@@ -280,6 +289,41 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     {
         int delta = evt.getDeltaY() < 0 ? -SPEED_STEP : SPEED_STEP;
         changeSpeed(getSpeed() + delta);
+    }
+
+    private void keyEvent(KeyEvent evt, LifeView.Zone zone)
+    {
+        Objects.requireNonNull(evt);
+        Objects.requireNonNull(zone);
+
+        if (evt.getEventType() == KeyEvent.KEY_RELEASED)
+        {
+            keyReleased(evt, zone);
+        }
+    }
+
+    private void keyReleased(KeyEvent evt, LifeView.Zone zone)
+    {
+        if
+        (
+            (evt.getCode() == PLAY_TOGGLE || evt.getCode() == PLAY_TOGGLE_ALT)
+            && zone == LifeView.Zone.GLOBAL
+        )
+        {
+            toggleState();
+        }
+    }
+
+    private void toggleState()
+    {
+        if (getModel().isRunning())
+        {
+            getModel().stop();
+        }
+        else
+        {
+            getModel().start();
+        }
     }
 
     private void zoomUp()

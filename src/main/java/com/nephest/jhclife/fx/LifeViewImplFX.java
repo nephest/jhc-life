@@ -93,12 +93,24 @@ implements LifeView<Parent>
         LifeView.Zone canvasZone = LifeView.Zone.GENERATION;
         LifeView.Zone canvasPaneZone = LifeView.Zone.GENERATION_CONTAINER;
         LifeView.Zone topZone = LifeView.Zone.GLOBAL;
+
         this.canvas.setOnMouseClicked((e)->listener.onMouseEvent(e, canvasZone));
         this.canvas.setOnScroll((e)->listener.onScrollEvent(e, canvasZone));
+        this.canvas.setOnKeyPressed((e)->listener.onKeyEvent(e, canvasZone));
+        this.canvas.setOnKeyReleased((e)->listener.onKeyEvent(e, canvasZone));
+        this.canvas.setOnKeyTyped((e)->listener.onKeyEvent(e, canvasZone));
+
         this.canvasPane.setOnMouseClicked((e)->listener.onMouseEvent(e, canvasPaneZone));
         this.canvasPane.setOnScroll((e)->listener.onScrollEvent(e, canvasPaneZone));
+        this.canvasPane.setOnKeyPressed((e)->listener.onKeyEvent(e, canvasPaneZone));
+        this.canvasPane.setOnKeyReleased((e)->listener.onKeyEvent(e, canvasPaneZone));
+        this.canvasPane.setOnKeyTyped((e)->listener.onKeyEvent(e, canvasPaneZone));
+
         this.borderPane.setOnMouseClicked((e)->listener.onMouseEvent(e, topZone));
         this.borderPane.setOnScroll((e)->listener.onScrollEvent(e, topZone));
+        this.borderPane.setOnKeyPressed((e)->listener.onKeyEvent(e, topZone));
+        this.borderPane.setOnKeyReleased((e)->listener.onKeyEvent(e, topZone));
+        this.borderPane.setOnKeyTyped((e)->listener.onKeyEvent(e, topZone));
 
         this.zoomUpButton.setOnAction((e)->listener.onZoomUp());
         this.zoomDownButton.setOnAction((e)->listener.onZoomDown());
@@ -236,10 +248,21 @@ implements LifeView<Parent>
     {
         this.canvas.setOnMouseClicked(null);
         this.canvas.setOnScroll(null);
+        this.canvas.setOnKeyPressed(null);
+        this.canvas.setOnKeyReleased(null);
+        this.canvas.setOnKeyTyped(null);
+
         this.canvasPane.setOnMouseClicked(null);
         this.canvasPane.setOnScroll(null);
+        this.canvasPane.setOnKeyPressed(null);
+        this.canvasPane.setOnKeyReleased(null);
+        this.canvasPane.setOnKeyTyped(null);
+
         this.borderPane.setOnMouseClicked(null);
         this.borderPane.setOnScroll(null);
+        this.borderPane.setOnKeyPressed(null);
+        this.borderPane.setOnKeyReleased(null);
+        this.borderPane.setOnKeyTyped(null);
 
         this.zoomUpButton.setOnAction(null);
         this.zoomDownButton.setOnAction(null);

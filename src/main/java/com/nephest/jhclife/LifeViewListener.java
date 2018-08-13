@@ -31,6 +31,8 @@ public interface LifeViewListener
 
     public void onScrollEvent(ScrollEvent evt, LifeView.Zone zone);
 
+    public void onKeyEvent(KeyEvent evt, LifeView.Zone zone);
+
     public void onZoomUp();
 
     public void onZoomDown();
