@@ -152,6 +152,9 @@ implements ViewBase<Parent>
             ButtonType.YES, ButtonType.NO
         );
 
+        this.stdAlert.getDialogPane().setId("alert-standard");
+        this.confirmationAlert.getDialogPane().setId("alert-confirm");
+
         this.stdAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         this.confirmationAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
     }
