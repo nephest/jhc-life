@@ -31,7 +31,7 @@ public class LifePresenter
 extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
 {
 
-    public static final double ZOOM_FACTOR_UP = 1.5;
+    public static final double ZOOM_FACTOR_UP = 2;
     public static final double ZOOM_FACTOR_DOWN = 0.5;
     public static final double ZOOM_FACTOR_INIT = 0.0;
     public static final String ZOOM_FORMAT="%06.2f";
