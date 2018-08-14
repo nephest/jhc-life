@@ -54,6 +54,7 @@ implements LifeView<Parent>
     public static final String SEPARATOR_CLASS="separator";
     public static final String TEXT_LABEL_CLASS="text-label";
     public static final String TEXT_VALUE_CLASS="text-value";
+    public static final String SPACER_CLASS="spacer";
 
     private Generation lastGeneration;
 
@@ -373,6 +374,7 @@ implements LifeView<Parent>
             newSeparator(Orientation.VERTICAL),
 
             newButtonGroup(this.newGameButton, this.pauseButton, this.playButton),
+            newSpacer(),
 
             this.helpButton
         );
@@ -389,6 +391,14 @@ implements LifeView<Parent>
         VBox allCtrls = new VBox(ctrls, info);
         allCtrls.setId("box-all");
         this.borderPane.setTop(allCtrls);
+    }
+
+    private Region newSpacer()
+    {
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        spacer.getStyleClass().add(SPACER_CLASS);
+        return spacer;
     }
 
     private Separator newSeparator(Orientation orientation)
