@@ -59,3 +59,10 @@
 {
     -fx-pref-width: 10em;
 }
+
+/************************** EXTERNAL ********************************/
+
+#alert-standard
+{
+    -fx-pref-width: 35em;
+}
