@@ -30,10 +30,13 @@ import javafx.application.*;
 import javafx.scene.layout.Region;
 import javafx.scene.control.*;
 import javafx.scene.Node;
+import javafx.stage.Window;
 
 public abstract class ViewBaseImplFX<Parent>
 implements ViewBase<Parent>
 {
+
+    private final Window ownerWindow;
 
     private Alert stdAlert;
     private Alert confirmationAlert;
@@ -41,9 +44,16 @@ implements ViewBase<Parent>
     private Node lockable;
     private boolean locked = false;
 
-    public ViewBaseImplFX()
+    public ViewBaseImplFX(Window ownerWindow)
     {
         init();
+        this.ownerWindow = ownerWindow;
+        initOwnerWindow();
+    }
+
+    public ViewBaseImplFX()
+    {
+        this(null);
     }
 
     @Override
@@ -144,6 +154,20 @@ implements ViewBase<Parent>
 
         this.stdAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         this.confirmationAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+    }
+
+    public Window getOwnerWindow()
+    {
+        return this.ownerWindow;
+    }
+
+    private void initOwnerWindow()
+    {
+        if(getOwnerWindow() != null)
+        {
+            this.stdAlert.initOwner(getOwnerWindow());
+            this.confirmationAlert.initOwner(getOwnerWindow());
+        }
     }
 
 }
