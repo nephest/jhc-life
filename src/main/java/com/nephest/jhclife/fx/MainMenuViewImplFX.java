@@ -24,7 +24,7 @@ package com.nephest.jhclife.fx;
 
 import com.nephest.jhclife.*;
 
-import javafx.stage.Stage;
+import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
@@ -38,10 +38,15 @@ implements MainMenuView<GridPane>
     private Spinner<Double> probabilitySpinner;
     private Button newGameButton, cancelButton;
 
+    public MainMenuViewImplFX(Window owner)
+    {
+        super(owner);
+        init();
+    }
+
     public MainMenuViewImplFX()
     {
-        super();
-        init();
+        this(null);
     }
 
     @Override

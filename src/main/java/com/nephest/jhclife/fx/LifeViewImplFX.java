@@ -29,7 +29,7 @@ import java.util.*;
 import javafx.application.Platform;
 import javafx.animation.*;
 import javafx.beans.value.*;
-import javafx.stage.Stage;
+import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
@@ -71,10 +71,15 @@ implements LifeView<Parent>
     private Group canvasGroup;
     private Canvas canvas;
 
-    LifeViewImplFX()
+    public LifeViewImplFX(Window owner)
     {
-        super();
+        super(owner);
         init();
+    }
+
+    public LifeViewImplFX()
+    {
+        this(null);
     }
 
     @Override
