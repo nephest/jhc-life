@@ -37,7 +37,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     public static final String ZOOM_FORMAT="%06.2f";
 
     public static final int SPEED_STEP = 1;
-    public static final int SPEED_INIT = 4;
+    public static final int SPEED_INIT = 10;
     public static final String SPEED_FORMAT="%03d";
 
     public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
