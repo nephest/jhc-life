@@ -29,10 +29,10 @@ import java.util.Objects;
 import javafx.application.*;
 import javafx.scene.layout.Region;
 import javafx.scene.control.*;
-import javafx.scene.Node;
+import javafx.scene.*;
 import javafx.stage.Window;
 
-public abstract class ViewBaseImplFX<Parent>
+public abstract class ViewBaseImplFX
 implements ViewBase<Parent>
 {
 

@@ -32,8 +32,8 @@ import javafx.stage.Stage;
 import javafx.scene.*;
 
 public class MainViewImplFX
-extends ViewBaseImplFX<Scene>
-implements MainView<Scene>
+extends ViewBaseImplFX
+implements MainView<Parent>
 {
 
     private static final Logger LOG
@@ -61,9 +61,9 @@ implements MainView<Scene>
     }
 
     @Override
-    public Scene getRoot()
+    public Parent getRoot()
     {
-        return getMainScene();
+        return null;
     }
 
     @Override

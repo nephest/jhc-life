@@ -40,7 +40,7 @@ import javafx.scene.image.*;
 import javafx.geometry.*;
 
 public class LifeViewImplFX
-extends ViewBaseImplFX<Parent>
+extends ViewBaseImplFX
 implements LifeView<Parent>
 {
 

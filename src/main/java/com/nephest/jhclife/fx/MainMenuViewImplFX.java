@@ -30,8 +30,8 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 
 public class MainMenuViewImplFX
-extends ViewBaseImplFX<GridPane>
-implements MainMenuView<GridPane>
+extends ViewBaseImplFX
+implements MainMenuView<Parent>
 {
     private GridPane grid;
     private Spinner<Integer> widthSpinner, heightSpinner, seedSpinner;
@@ -50,7 +50,7 @@ implements MainMenuView<GridPane>
     }
 
     @Override
-    public GridPane getRoot()
+    public Parent getRoot()
     {
         return this.grid;
     }
