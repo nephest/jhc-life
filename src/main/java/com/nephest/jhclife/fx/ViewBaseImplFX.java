@@ -170,4 +170,20 @@ implements ViewBase<Parent>
         }
     }
 
+    public void addExternalElementsCss(String resource)
+    {
+        Objects.requireNonNull(resource);
+
+        this.stdAlert.getDialogPane().getStylesheets().add(resource);
+        this.confirmationAlert.getDialogPane().getStylesheets().add(resource);
+    }
+
+    public void removeExternalElementsCss(String resource)
+    {
+        Objects.requireNonNull(resource);
+
+        this.stdAlert.getDialogPane().getStylesheets().remove(resource);
+        this.confirmationAlert.getDialogPane().getStylesheets().remove(resource);
+    }
+
 }
