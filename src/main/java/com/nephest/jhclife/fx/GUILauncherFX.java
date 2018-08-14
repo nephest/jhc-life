@@ -36,6 +36,9 @@ public class GUILauncherFX
 extends Application
 {
 
+    public static final String MAIN_TITLE = "jhc-life";
+    public static final String MAIN_TITLE_PREFIX = MAIN_TITLE + " — ";
+
     public static final int DEFAULT_WIDTH = 800;
     public static final int DEFAULT_HEIGHT = 600;
 
@@ -60,6 +63,7 @@ extends Application
         );
         scene.getStylesheets().add(STYLESHEET_RESOURCE);
         stage.setScene(scene);
+        stage.setTitle(MAIN_TITLE);
 
         MainMenuViewImplFX mainMenuView = new MainMenuViewImplFX();
         LifeViewImplFX lifeView = new LifeViewImplFX();

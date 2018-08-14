@@ -78,7 +78,7 @@ implements ViewBase<Parent>
             ()->
             {
                 this.stdAlert.setAlertType(Alert.AlertType.INFORMATION);
-                this.stdAlert.setTitle("Information");
+                this.stdAlert.setTitle(GUILauncherFX.MAIN_TITLE_PREFIX + "Information");
                 this.stdAlert.setHeaderText(header);
                 this.stdAlert.setContentText(text);
                 this.stdAlert.showAndWait();
@@ -94,7 +94,7 @@ implements ViewBase<Parent>
             ()->
             {
                 this.stdAlert.setAlertType(Alert.AlertType.ERROR);
-                this.stdAlert.setTitle("Error");
+                this.stdAlert.setTitle(GUILauncherFX.MAIN_TITLE_PREFIX + "Error");
                 this.stdAlert.setHeaderText(header);
                 this.stdAlert.setContentText(text);
                 this.stdAlert.showAndWait();
