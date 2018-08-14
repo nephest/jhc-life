@@ -92,13 +92,25 @@ public class LifePresenterTest
 
         this.listener = getListener();
 
+        verifyInit();
+    }
+
+    private void verifyInit()
+    {
+        verify(this.viewMock).setGenerationZoom(LifePresenter.ZOOM_FACTOR_INIT);
         verify(this.viewMock).updateZoomInfo(ZOOM_FORMAT);
+
+        long period = 1_000_000_000 / LifePresenter.SPEED_INIT;
+        verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
         verify(this.viewMock)
-            .setSpeedInfo(String.format(SPEED_FORMAT, this.presenter.getSpeed()));
+            .setSpeedInfo(String.format(SPEED_FORMAT, LifePresenter.SPEED_INIT));
+
         //clear for easier zoom/speed testing
         //need to specify the exact invocation count or use ordering otherwise
         verifyNoMoreInteractions(this.viewMock);
         clearInvocations(this.viewMock);
+        verifyNoMoreInteractions(this.modelMock);
+        clearInvocations(this.modelMock);
     }
 
     @Test
