@@ -61,8 +61,10 @@ extends Application
         scene.getStylesheets().add(STYLESHEET_RESOURCE);
         stage.setScene(scene);
 
-        MainMenuView mainMenuView = new MainMenuViewImplFX();
-        LifeView lifeView = new LifeViewImplFX();
+        MainMenuViewImplFX mainMenuView = new MainMenuViewImplFX();
+        LifeViewImplFX lifeView = new LifeViewImplFX();
+        mainMenuView.addExternalElementsCss(STYLESHEET_RESOURCE);
+        lifeView.addExternalElementsCss(STYLESHEET_RESOURCE);
         Map<MainView.ViewType, ViewBase<Parent>> views
             = new EnumMap(MainView.ViewType.class);
         views.put(MainView.ViewType.MAIN_MENU, mainMenuView);
