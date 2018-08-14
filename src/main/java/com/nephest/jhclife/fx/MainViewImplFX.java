@@ -40,25 +40,22 @@ implements MainView<Scene>
         = Logger.getLogger(MainViewImplFX.class.getName());
     public static final MainView.ViewType DEFAULT_VIEW
         = MainView.ViewType.MAIN_MENU;
-    public static final String STYLESHEET_RESOURCE
-        = "com/nephest/jhclife/resources/style/fx/default.css";
 
-    private final Stage mainStage;
-    private Scene mainScene;
+    private final Scene mainScene;
     private final Map<MainView.ViewType, ViewBase<Parent>> views;
 
     private volatile MainView.ViewType currentViewType;
 
     public MainViewImplFX
     (
-        Stage mainStage,
+        Scene mainScene,
         Map<MainView.ViewType, ViewBase<Parent>> views
     )
     {
         super();
-        Objects.requireNonNull(mainStage);
+        Objects.requireNonNull(mainScene);
         Objects.requireNonNull(views);
-        this.mainStage = mainStage;
+        this.mainScene = mainScene;
         this.views = views;
         init();
     }
@@ -88,11 +85,6 @@ implements MainView<Scene>
         return this.currentViewType;
     }
 
-    private Stage getMainStage()
-    {
-        return this.mainStage;
-    }
-
     private Scene getMainScene()
     {
         return this.mainScene;
@@ -105,9 +97,7 @@ implements MainView<Scene>
 
     private void init()
     {
-        this.mainScene = new Scene( getViews().get(DEFAULT_VIEW).getRoot() );
-        this.mainScene.getStylesheets().add(STYLESHEET_RESOURCE);
-        getMainStage().setScene(getMainScene());
+        setViewType(DEFAULT_VIEW);
     }
 
 }

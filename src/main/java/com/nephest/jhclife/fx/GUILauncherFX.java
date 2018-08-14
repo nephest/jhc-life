@@ -28,8 +28,9 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import javafx.application.Application;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
+import javafx.stage.*;
+import javafx.scene.*;
+import javafx.geometry.Rectangle2D;
 
 public class GUILauncherFX
 extends Application
@@ -37,6 +38,9 @@ extends Application
 
     public static final int DEFAULT_WIDTH = 800;
     public static final int DEFAULT_HEIGHT = 600;
+
+    public static final String STYLESHEET_RESOURCE
+        = "com/nephest/jhclife/resources/style/fx/default.css";
 
     private ClassicLifeModel model;
     private ExecutorService executor;
@@ -47,13 +51,23 @@ extends Application
         this.model = new ClassicLifeModel(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.executor = Executors.newSingleThreadExecutor();
 
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        Scene scene = new Scene
+        (
+            new Group(),
+            screen.getWidth() / 2,
+            screen.getHeight() / 2
+        );
+        scene.getStylesheets().add(STYLESHEET_RESOURCE);
+        stage.setScene(scene);
+
         MainMenuView mainMenuView = new MainMenuViewImplFX();
         LifeView lifeView = new LifeViewImplFX();
         Map<MainView.ViewType, ViewBase<Parent>> views
             = new EnumMap(MainView.ViewType.class);
         views.put(MainView.ViewType.MAIN_MENU, mainMenuView);
         views.put(MainView.ViewType.LIFE, lifeView);
-        MainView mainView = new MainViewImplFX(stage, views);
+        MainView mainView = new MainViewImplFX(scene, views);
 
         MainController mainController = new MainController(mainView);
         MainMenuPresenter MainMenuPresenter = new MainMenuPresenter
