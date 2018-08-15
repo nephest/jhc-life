@@ -28,7 +28,7 @@
     <packaging>jar</packaging>
 
     <name>jhc-life</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <url>https://nephest.com/en/projects/jhc-life/</url>
 
     <organization>
