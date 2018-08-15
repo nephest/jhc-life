@@ -56,8 +56,8 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         + "Binds:\n"
         + "zoom+\t\tctrl+MouseLeft\t| ctrl+ScrollUp\n"
         + "zoom-\t\tctrl+MouseRight\t| ctrl+ScrollDown\n"
-        + "speed+\t\tshift+MouseLeft\t| shift+ScrollUp\n"
-        + "speed-\t\tshift+MouseRight\t| shift+ScrollDown\n"
+        + "speed+\t\talt+MouseLeft\t\t| alt+ScrollUp\n"
+        + "speed-\t\talt+MouseRight\t| alt+ScrollDown\n"
         + "play/pause\tspace\t| p\n"
         + "population\tmouseClick\n"
         + "\n"
@@ -203,7 +203,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         {
             changeZoom(evt, zone);
         }
-        else if (evt.isShiftDown())
+        else if (evt.isAltDown())
         {
             changeSpeed(evt, zone);
         }
@@ -269,13 +269,13 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     private boolean mustConsumeEvent(MouseEvent evt, LifeView.Zone zone)
     {
         return zone != LifeView.Zone.GENERATION
-            && (evt.isControlDown() || evt.isShiftDown());
+            && (evt.isControlDown() || evt.isAltDown());
     }
 
     private boolean mustConsumeEvent(ScrollEvent evt, LifeView.Zone zone)
     {
         return zone != LifeView.Zone.GENERATION
-            && (evt.isControlDown() || evt.isShiftDown());
+            && (evt.isControlDown() || evt.isAltDown());
     }
 
     private void scrollEvent(ScrollEvent evt, LifeView.Zone zone)
@@ -295,7 +295,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         {
             changeZoom(evt, zone);
         }
-        else if (evt.isShiftDown())
+        else if (evt.isAltDown())
         {
             changeSpeed(evt, zone);
         }

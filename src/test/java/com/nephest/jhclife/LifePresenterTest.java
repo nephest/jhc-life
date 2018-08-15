@@ -56,8 +56,8 @@ public class LifePresenterTest
         + "Binds:\n"
         + "zoom+\t\tctrl+MouseLeft\t| ctrl+ScrollUp\n"
         + "zoom-\t\tctrl+MouseRight\t| ctrl+ScrollDown\n"
-        + "speed+\t\tshift+MouseLeft\t| shift+ScrollUp\n"
-        + "speed-\t\tshift+MouseRight\t| shift+ScrollDown\n"
+        + "speed+\t\talt+MouseLeft\t\t| alt+ScrollUp\n"
+        + "speed-\t\talt+MouseRight\t| alt+ScrollDown\n"
         + "play/pause\tspace\t| p\n"
         + "population\tmouseClick\n"
         + "\n"
@@ -213,7 +213,7 @@ public class LifePresenterTest
         MouseEvent evt = new MouseEvent
         (
             MouseEvent.MOUSE_CLICKED, 0, 0, 0, 0, button, 1,
-            true, false, false, false, //shift, ctrl, alt, meta
+            false, false, true, false, //shift, ctrl, alt, meta
             false, false, false, //primary, mid, secondary
             false, false, false,
             null
@@ -330,7 +330,7 @@ public class LifePresenterTest
         ScrollEvent evt = new ScrollEvent
         (
             ScrollEvent.SCROLL, 0, 0, 0, 0, //type, x, y
-            true, false, false, false, //shift, ctrl, alt, meta
+            false, false, true, false, //shift, ctrl, alt, meta
             false, false,
             0, deltaY, 0, 0, //deltaX, deltaY
             null, 0, null, 0, 1, null
