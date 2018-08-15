@@ -210,6 +210,7 @@ public class LifePresenterTest
 
     private void testMouseEventSpeed(MouseButton button, int targetSpeed, LifeView.Zone zone)
     {
+        if (zone == LifeView.Zone.GENERATION) return;
         MouseEvent evt = new MouseEvent
         (
             MouseEvent.MOUSE_CLICKED, 0, 0, 0, 0, button, 1,
@@ -325,6 +326,7 @@ public class LifePresenterTest
 
     private void testScrollEventSpeed(boolean down, int targetSpeed, LifeView.Zone zone)
     {
+        if (zone == LifeView.Zone.GENERATION) return;
         //the sign is the ONLY thing that matters
         double deltaY = down ? -32.0 : 1.0;
         ScrollEvent evt = new ScrollEvent

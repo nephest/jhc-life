@@ -241,6 +241,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
 
     private void changeSpeed(MouseEvent evt, LifeView.Zone zone)
     {
+        if (zone == LifeView.Zone.GENERATION) return;
         int speed = getSpeed();
         switch(evt.getButton())
         {
@@ -317,6 +318,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
 
     private void changeSpeed(ScrollEvent evt, LifeView.Zone zone)
     {
+        if (zone == LifeView.Zone.GENERATION) return;
         int delta = evt.getDeltaY() < 0 ? -SPEED_STEP : SPEED_STEP;
         changeSpeed(getSpeed() + delta);
     }
