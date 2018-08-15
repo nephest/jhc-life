@@ -107,12 +107,24 @@
         </plugins>
         <resources>
             <resource>
-                <directory>${basedir}/target/generated-sources/license/</directory>
                 <filtering>false</filtering>
+                <directory>${basedir}/target/generated-sources/license/</directory>
             </resource>
             <resource>
-                <directory>${basedir}/src/main/resources/</directory>
                 <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                    <include>**/*.css</include>
+                </includes>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <targetPath>src/</targetPath>
+                <directory>${basedir}/src/</directory>
+                <includes>
+                    <include>**/*.java</include>
+                    <include>**/*.css</include>
+                </includes>
             </resource>
         </resources>
     </build>
