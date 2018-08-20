@@ -87,6 +87,41 @@ implements ViewBase<Parent>
     }
 
     @Override
+    public void fireConfirmationAlert
+    (
+        String header,
+        String text,
+        Runnable onYes,
+        Runnable onNo
+    )
+    {
+        Platform.runLater
+        (
+            ()->
+            {
+                this.confirmationAlert.setTitle(GUILauncherFX.MAIN_TITLE_PREFIX + "Confirmation");
+                this.confirmationAlert.setHeaderText(header);
+                this.confirmationAlert.setContentText(text);
+                this.confirmationAlert.showAndWait().ifPresent
+                (
+                    (buttonType)->
+                    {
+                        if (buttonType == ButtonType.YES && onYes != null)
+                        {
+                            onYes.run();
+                        }
+                        else if (buttonType == ButtonType.NO && onNo != null)
+                        {
+                            onNo.run();
+                        }
+                    }
+                );
+            }
+        );
+
+    }
+
+    @Override
     public void fireErrorAlert(String header, String text)
     {
         Platform.runLater

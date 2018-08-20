@@ -34,6 +34,14 @@ public interface ViewBase<N>
 
     public void fireInfoAlert(String header, String text);
 
+    public void fireConfirmationAlert
+    (
+        String header,
+        String text,
+        Runnable onYes,
+        Runnable onNo
+    );
+
     public void fireErrorAlert(String header, String text);
 
     public void lock();
