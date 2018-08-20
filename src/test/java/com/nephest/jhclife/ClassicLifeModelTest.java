@@ -333,6 +333,37 @@ public class ClassicLifeModelTest
     }
 
     @Test
+    public void testSetGeneration()
+    {
+        long lastId = this.model.getId();
+        int width = 142;
+        int height = 187;
+        long id = 80312;
+        long generationNumber = 6421890;
+
+        boolean[][] pop = new boolean[width][height];
+        pop[0][0] = true;
+        pop[width - 1][height - 1] = true;
+        pop[width / 2][height / 2] = true;
+
+        Generation gen = mock(Generation.class);
+        when(gen.getWidth()).thenReturn(width);
+        when(gen.getHeight()).thenReturn(height);
+        when(gen.getId()).thenReturn(id);
+        when(gen.getGenerationNumber()).thenReturn(generationNumber);
+        when(gen.copyPopulation()).thenReturn(pop);
+
+        this.model.setGeneration(gen);
+        assertEquals(width, this.model.getWidth());
+        assertEquals(height, this.model.getHeight());
+        assertNotEquals(lastId, this.model.getId());
+        assertEquals(generationNumber, this.model.getGenerationNumber());
+        assertTrue(Arrays.deepEquals(pop, this.model.getPopulation()));
+        assertTrue(Arrays.deepEquals(pop, this.model.getLastPopulation()));
+        assertTrue(Arrays.deepEquals(pop, this.model.getLastGeneration().copyPopulation()));
+    }
+
+    @Test
     public void testOverpopulaiton()
     {
         this.model.populate(rng.nextLong(), 0);

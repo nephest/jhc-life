@@ -102,14 +102,19 @@ implements java.io.Closeable
         if (height < 0) throw new IllegalArgumentException("height must be more than 0");
         boolean wasRunning = isRunning();
         if (wasRunning) stop();
-        this.width = width;
-        this.height = height;
-        this.population = new boolean[width][height];
-        this.lastPopulation = new boolean[width][height];
+        setPopulationDimensions(width, height);
         savePopulation();
         resetGenerationNumber();
         externalModification();
         if (wasRunning) start();
+    }
+
+    private void setPopulationDimensions(int width, int height)
+    {
+        this.width = width;
+        this.height = height;
+        this.population = new boolean[width][height];
+        this.lastPopulation = new boolean[width][height];
     }
 
     @Override
@@ -346,6 +351,20 @@ implements java.io.Closeable
         if (wasRunning) stop();
         getLastPopulation()[x][y] = pop;
         externalModification();
+        if (wasRunning) start();
+    }
+
+    public synchronized void setGeneration(Generation generation)
+    {
+        boolean wasRunning = isRunning();
+        if (wasRunning) stop();
+
+        setPopulationDimensions(generation.getWidth(), generation.getHeight());
+        this.population = generation.copyPopulation();
+        this.generation = generation.getGenerationNumber();
+        savePopulation();
+        externalModification();
+
         if (wasRunning) start();
     }
 
