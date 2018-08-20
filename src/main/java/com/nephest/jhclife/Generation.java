@@ -23,7 +23,7 @@
 package com.nephest.jhclife;
 
 import java.nio.ByteBuffer;
-import java.util.BitSet;
+import java.util.*;
 
 public class Generation
 {
@@ -140,6 +140,17 @@ public class Generation
         if (y < 0 || y > getHeight())
             throw new IllegalArgumentException("y out of bounds");
         return this.population[x][y];
+    }
+
+    public boolean[][] copyPopulation()
+    {
+        boolean[][] copy = new boolean[getWidth()][getHeight()];
+        for(int i = 0; i < this.population.length; i++)
+        {
+            copy[i]
+                = Arrays.copyOf(this.population[i], this.population[i].length);
+        }
+        return copy;
     }
 
     public long getId()
