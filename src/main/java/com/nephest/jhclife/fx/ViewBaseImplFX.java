@@ -24,13 +24,15 @@ package com.nephest.jhclife.fx;
 
 import com.nephest.jhclife.*;
 
-import java.util.Objects;
+import java.io.File;
+import java.util.*;
+import java.util.function.Consumer;
 
 import javafx.application.*;
 import javafx.scene.layout.Region;
 import javafx.scene.control.*;
 import javafx.scene.*;
-import javafx.stage.Window;
+import javafx.stage.*;
 
 public abstract class ViewBaseImplFX
 implements ViewBase<Parent>
@@ -40,6 +42,7 @@ implements ViewBase<Parent>
 
     private Alert stdAlert;
     private Alert confirmationAlert;
+    private final FileChooser fileChooser = new FileChooser();
 
     private Node lockable;
     private boolean locked = false;
@@ -138,6 +141,58 @@ implements ViewBase<Parent>
     }
 
     @Override
+    public void selectFile
+    (
+        ViewBase.FileSelectionMode mode,
+        String title,
+        String initialName,
+        Consumer<List<File>> onSelect
+    )
+    {
+        Objects.requireNonNull(mode);
+        Objects.requireNonNull(onSelect);
+        if (getTopWindow() == null)
+            throw new IllegalStateException("the root node is not attached to a window");
+        Platform.runLater(()->doSelectFile(mode, title, initialName, onSelect));
+    }
+
+    private void doSelectFile
+    (
+        ViewBase.FileSelectionMode mode,
+        String title,
+        String initialName,
+        Consumer<List<File>> onSelect
+    )
+    {
+        this.fileChooser.setTitle(title);
+        this.fileChooser.setInitialFileName(initialName);
+
+        List<File> files = new ArrayList();
+        switch(mode)
+        {
+            case SELECT_SINGLE:
+            {
+                File file = this.fileChooser.showOpenDialog(getTopWindow());
+                if (file != null) files.add(file);
+                break;
+            }
+            case SELECT_MULTIPLE:
+            {
+                List<File> filesSrc = this.fileChooser.showOpenMultipleDialog(getTopWindow());
+                if (filesSrc != null) files.addAll(filesSrc);
+                break;
+            }
+            case SAVE:
+            {
+                File file = this.fileChooser.showSaveDialog(getTopWindow());
+                if (file != null) files.add(file);
+                break;
+            }
+        }
+        onSelect.accept(files);
+    }
+
+    @Override
     public void lock()
     {
         if (isLocked() || getLockable() == null) return;
@@ -197,6 +252,13 @@ implements ViewBase<Parent>
     public Window getOwnerWindow()
     {
         return this.ownerWindow;
+    }
+
+    public Window getTopWindow()
+    {
+        return getRoot().getScene() != null
+            ? getRoot().getScene().getWindow()
+            : null;
     }
 
     private void initOwnerWindow()

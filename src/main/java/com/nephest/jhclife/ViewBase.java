@@ -22,12 +22,21 @@
 
 package com.nephest.jhclife;
 
+import java.io.File;
+import java.util.List;
+import java.util.function.Consumer;
+
 public interface ViewBase<N>
 {
 
     public static enum AlertType
     {
         INFO, ERROR;
+    }
+
+    public static enum FileSelectionMode
+    {
+        SELECT_SINGLE, SELECT_MULTIPLE, SAVE;
     }
 
     public void fireAlert(AlertType type, String header, String text);
@@ -43,6 +52,14 @@ public interface ViewBase<N>
     );
 
     public void fireErrorAlert(String header, String text);
+
+    public void selectFile
+    (
+        FileSelectionMode mode,
+        String title,
+        String initialName,
+        Consumer<List<File>> onSelect
+    );
 
     public void lock();
 
