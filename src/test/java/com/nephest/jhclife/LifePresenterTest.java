@@ -445,7 +445,7 @@ public class LifePresenterTest
 
         KeyEvent evt = new KeyEvent
         (
-            KeyEvent.KEY_RELEASED, "", "", code, //type, char, text, code
+            KeyEvent.KEY_PRESSED, "", "", code, //type, char, text, code
             false, false, false, false //shift, ctrl, alt, meta
         );
 

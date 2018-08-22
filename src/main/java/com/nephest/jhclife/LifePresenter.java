@@ -372,13 +372,13 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         Objects.requireNonNull(evt);
         Objects.requireNonNull(zone);
 
-        if (evt.getEventType() == KeyEvent.KEY_RELEASED)
+        if (evt.getEventType() == KeyEvent.KEY_PRESSED)
         {
-            keyReleased(evt, zone);
+            keyPressed(evt, zone);
         }
     }
 
-    private void keyReleased(KeyEvent evt, LifeView.Zone zone)
+    private void keyPressed(KeyEvent evt, LifeView.Zone zone)
     {
         if
         (
