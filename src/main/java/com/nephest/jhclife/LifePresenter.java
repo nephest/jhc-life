@@ -148,6 +148,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
             @Override
             public void onKeyEvent(KeyEvent evt, LifeView.Zone zone)
             {
+                if (mustConsumeEvent(evt, zone)) evt.consume();
                 getExecutor().execute(()->keyEvent(evt, zone));
             }
 
@@ -322,6 +323,16 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     {
         return zone != LifeView.Zone.GENERATION
             && (evt.isControlDown() || evt.isAltDown());
+    }
+
+    private boolean mustConsumeEvent(KeyEvent evt, LifeView.Zone zone)
+    {
+        return zone == LifeView.Zone.GLOBAL
+            &&
+            (
+                evt.getCode() == PLAY_TOGGLE
+                || evt.getCode() == PLAY_TOGGLE_ALT
+            );
     }
 
     private void scrollEvent(ScrollEvent evt, LifeView.Zone zone)

@@ -452,7 +452,15 @@ public class LifePresenterTest
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         this.listener.onKeyEvent(evt, zone);
 
-        assertFalse(evt.isConsumed());
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            assertTrue(evt.isConsumed());
+        }
+        else
+        {
+            assertFalse(evt.isConsumed());
+        }
+
         verifyRunInBackground(captor);
 
         if (zone != LifeView.Zone.GLOBAL)
