@@ -55,14 +55,16 @@ implements LifeView<Parent>
     public static final String TEXT_LABEL_CLASS="text-label";
     public static final String TEXT_VALUE_CLASS="text-value";
     public static final String SPACER_CLASS="spacer";
+    public static final String MENU_ITEM_CLASS="menu-item";
 
     private Generation lastGeneration;
 
     private BorderPane borderPane;
     private Button playButton, pauseButton, newGameButton,
         speedUpButton, speedDownButton, speedDefaultButton,
-        zoomUpButton, zoomDownButton, zoomDefaultButton, helpButton;
+        zoomUpButton, zoomDownButton, zoomDefaultButton;
     private Text generationNumberText, tipText, statusText, speedText, zoomText;
+    private MenuItem generationSaveItem, generationLoadItem, helpItem;
 
     private LifeViewListener listener;
     private AnimationTimer frameTimer;
@@ -129,7 +131,11 @@ implements LifeView<Parent>
         this.playButton.setOnAction((e)->listener.onPlay());
         this.pauseButton.setOnAction((e)->listener.onPause());
         this.newGameButton.setOnAction((e)->listener.onNewGame());
-        this.helpButton.setOnAction((e)->listener.onHelp());
+
+        this.generationSaveItem.setOnAction((e)->listener.onGenerationSave());
+        this.generationLoadItem.setOnAction((e)->listener.onGenerationLoad());
+        this.helpItem.setOnAction((e)->listener.onHelp());
+
         getFrameTimer().start();
     }
 
@@ -282,7 +288,11 @@ implements LifeView<Parent>
         this.playButton.setOnAction(null);
         this.pauseButton.setOnAction(null);
         this.newGameButton.setOnAction(null);
-        this.helpButton.setOnAction(null);
+
+        this.generationSaveItem.setOnAction(null);
+        this.generationLoadItem.setOnAction(null);
+        this.helpItem.setOnAction(null);
+
         getFrameTimer().stop();
     }
 
@@ -343,8 +353,12 @@ implements LifeView<Parent>
         this.newGameButton = new Button("New Game");
         this.newGameButton.setId("button-new-game");
 
-        this.helpButton = new Button("Help");
-        this.helpButton.setId("button-help");
+        this.generationSaveItem = new MenuItem("Save");
+        this.generationSaveItem.getStyleClass().add(MENU_ITEM_CLASS);
+        this.generationLoadItem = new MenuItem("Load");
+        this.generationLoadItem.getStyleClass().add(MENU_ITEM_CLASS);
+        this.helpItem = new MenuItem("Help");
+        this.helpItem.getStyleClass().add(MENU_ITEM_CLASS);
 
         this.generationNumberText = new Text();
         this.generationNumberText.setId("text-generation-number");
@@ -361,6 +375,13 @@ implements LifeView<Parent>
 
     private void layoutControls()
     {
+        MenuBar mainMenuBar = new MenuBar
+        (
+            newMenu("Generation", generationLoadItem, generationSaveItem),
+            newMenu("Help", helpItem)
+        );
+        mainMenuBar.setId("menu-main");
+
         HBox ctrls = new HBox
         (
             newLabelText("Speed"),
@@ -374,9 +395,7 @@ implements LifeView<Parent>
             newSeparator(Orientation.VERTICAL),
 
             newButtonGroup(this.newGameButton, this.pauseButton, this.playButton),
-            newSpacer(),
-
-            this.helpButton
+            newSpacer()
         );
         ctrls.setId("box-control");
         HBox info = new HBox
@@ -388,9 +407,16 @@ implements LifeView<Parent>
             this.tipText
         );
         info.setId("box-info");
-        VBox allCtrls = new VBox(ctrls, info);
+        VBox allCtrls = new VBox(mainMenuBar, ctrls, info);
         allCtrls.setId("box-all");
         this.borderPane.setTop(allCtrls);
+    }
+
+    private Menu newMenu(String name, MenuItem... items)
+    {
+        Menu menu = new Menu(name);
+        menu.getItems().addAll(items);
+        return menu;
     }
 
     private Region newSpacer()
