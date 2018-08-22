@@ -38,6 +38,11 @@
 
 /*********************** LIFE VIEW ********************************/
 
+#root-life #menu-main
+{
+    -fx-padding: 0;
+}
+
 #root-life #box-control,
 #root-life #box-info
 {
