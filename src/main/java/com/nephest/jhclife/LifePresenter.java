@@ -51,6 +51,9 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
     public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
 
+    public static final KeyCode GENERATION_SAVE = KeyCode.S;
+    public static final KeyCode GENERATION_LOAD = KeyCode.O;
+
     public static final String HELP_MSG =
         "Info:\n"
         + "This is a basic Conway's Game of Life implementation.\n"
@@ -332,6 +335,8 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
             (
                 evt.getCode() == PLAY_TOGGLE
                 || evt.getCode() == PLAY_TOGGLE_ALT
+                || evt.getCode() == GENERATION_SAVE
+                || evt.getCode() == GENERATION_LOAD
             );
     }
 
@@ -399,6 +404,24 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         )
         {
             toggleState();
+        }
+        else if
+        (
+            evt.getCode() == GENERATION_SAVE
+            && evt.isControlDown()
+            && zone == LifeView.Zone.GLOBAL
+        )
+        {
+            getListener().onGenerationSave();
+        }
+        else if
+        (
+            evt.getCode() == GENERATION_LOAD
+            && evt.isControlDown()
+            && zone == LifeView.Zone.GLOBAL
+        )
+        {
+            getListener().onGenerationLoad();
         }
     }
 

@@ -50,6 +50,9 @@ public class LifePresenterTest
     public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
     public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
 
+    public static final KeyCode GENERATION_SAVE = KeyCode.S;
+    public static final KeyCode GENERATION_LOAD = KeyCode.O;
+
     public static final String HELP_MSG =
         "Info:\n"
         + "This is a basic Conway's Game of Life implementation.\n"
@@ -474,6 +477,69 @@ public class LifePresenterTest
         else
         {
             verify(this.modelMock).start();
+        }
+    }
+
+    private LifeViewListener testKeyGeneration(KeyCode code, LifeView.Zone zone)
+    {
+        LifeViewListener spy = spy(this.listener);
+        this.presenter.setListener(spy);
+
+        KeyEvent evt = new KeyEvent
+        (
+            KeyEvent.KEY_PRESSED, "", "", code, //type, char, text, code
+            false, true, false, false //shift, ctrl, alt, meta
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        spy.onKeyEvent(evt, zone);
+
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            assertTrue(evt.isConsumed());
+        }
+        else
+        {
+            assertFalse(evt.isConsumed());
+        }
+        verifyRunInBackground(captor);
+
+        return spy;
+    }
+
+    @Test
+    public void testKeyGenerationSave()
+    {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            init();
+            LifeViewListener spy = testKeyGeneration(GENERATION_SAVE, zone);
+            if (zone != LifeView.Zone.GLOBAL)
+            {
+                verify(spy, never()).onGenerationSave();
+            }
+            else
+            {
+                verify(spy).onGenerationSave();
+            }
+        }
+    }
+
+    @Test
+    public void testKeyGenerationLoad()
+    {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            init();
+            LifeViewListener spy = testKeyGeneration(GENERATION_LOAD, zone);
+            if (zone != LifeView.Zone.GLOBAL)
+            {
+                verify(spy, never()).onGenerationLoad();
+            }
+            else
+            {
+                verify(spy).onGenerationLoad();
+            }
         }
     }
 
