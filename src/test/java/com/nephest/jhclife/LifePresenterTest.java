@@ -22,8 +22,15 @@
 
 package com.nephest.jhclife;
 
+import com.nephest.jhclife.io.FileIO;
+import com.nephest.jhclife.util.ObjectTranslator;
+
+import java.io.*;
+import java.nio.file.Path;
+
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 import javafx.event.*;
 import javafx.scene.input.*;
@@ -73,6 +80,8 @@ public class LifePresenterTest
     private LifeViewListener listener;
 
     private LifePresenter presenter;
+    private FileIO fileIOMock;
+    private ObjectTranslator<Generation> generationTranslatorMock;
 
     @Before
     public void init()
@@ -81,6 +90,8 @@ public class LifePresenterTest
         this.modelMock = mock(ClassicLifeModel.class);
         this.controllerMock = mock(MainController.class);
         this.executorMock = mock(Executor.class);
+        this.fileIOMock = mock(FileIO.class);
+        this.generationTranslatorMock = mock(ObjectTranslator.class);
 
         this.presenter = new LifePresenter
         (
@@ -89,6 +100,8 @@ public class LifePresenterTest
             this.controllerMock,
             this.executorMock
         );
+        this.presenter.setFileIO(this.fileIOMock);
+        this.presenter.setGenerationTranslator(this.generationTranslatorMock);
 
         this.listener = getListener();
 
@@ -543,6 +556,193 @@ public class LifePresenterTest
         InOrder inOrder = inOrder(this.modelMock, this.controllerMock);
         inOrder.verify(this.modelMock).stop();
         inOrder.verify(this.controllerMock).setViewType(MainView.ViewType.MAIN_MENU);
+    }
+
+    private void testGenerationSave
+    (
+        ArgumentCaptor<Runnable> captor,
+        File file,
+        byte[] translatedBytes
+    )
+    {
+        ArgumentCaptor<Consumer<List<File>>> consumerCaptor
+            = ArgumentCaptor.forClass(Consumer.class);
+
+        /*
+            the next generation might be rendered while the user is selecting
+            a save file destination. ignore it, save the generation that was
+            rendered when the user started the saving process.
+        */
+        Generation generation = mock(Generation.class);
+        Generation nextGeneration = mock(Generation.class);
+        when(modelMock.getLastGeneration()).thenReturn(generation).thenReturn(nextGeneration);
+        when(this.generationTranslatorMock.toByteArray(generation))
+            .thenReturn(translatedBytes);
+
+        Path filePath = mock(Path.class);
+        when(file.toPath()).thenReturn(filePath);
+
+        //render the generation so we have something to save
+        this.listener.readyForNextFrame();
+
+        //open a file selection dialog
+        this.listener.onGenerationSave();
+        verifyRunInBackground(captor);
+        verify(this.viewMock).selectFile
+        (
+            eq(ViewBase.FileSelectionMode.SAVE),
+            any(),
+            any(),
+            consumerCaptor.capture()
+        );
+
+        //save if a file was selected
+        List<File> selectedFiles = new ArrayList();
+        selectedFiles.add(file);
+        consumerCaptor.getValue().accept(selectedFiles);
+        verifyRunInBackground(captor, 2);
+    }
+
+    @Test
+    public void testGenerationSaveNewFile()
+    throws IOException
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        byte[] translatedBytes = new byte[]{1, 5, 7, 0, 2, 4, 2, 6, 1, 1};
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(false);
+
+        testGenerationSave(captor, file, translatedBytes);
+        verify(this.fileIOMock).write(file.toPath(), translatedBytes);
+    }
+
+    @Test
+    public void testGenerationSaveExistingFile()
+    throws IOException
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        byte[] translatedBytes = new byte[]{1, 5, 7, 0, 2, 4, 2, 6, 1, 1};
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(true);
+
+        testGenerationSave(captor, file, translatedBytes);
+
+        //ask for the confirmation
+        verify(this.viewMock).fireConfirmationAlert
+        (
+            any(),
+            any(),
+            captor.capture(),
+            any()
+        );
+
+        //save if confirmed by the user
+        captor.getValue().run();
+        verifyRunInBackground(captor, 3);
+        verify(this.fileIOMock).write(file.toPath(), translatedBytes);
+    }
+
+    @Test
+    public void testGenerationSaveError()
+    throws IOException
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        byte[] translatedBytes = new byte[]{1, 5, 7, 0, 2, 4, 2, 6, 1, 1};
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(false);
+        doThrow(new IOException()).when(this.fileIOMock).write(any(), any());
+
+        testGenerationSave(captor, file, translatedBytes);
+
+        verify(this.viewMock).fireErrorAlert(eq("Generation saving failed"), any());
+    }
+
+    @Test
+    public void testGenerationSaveNothingToSave()
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.listener.onGenerationSave();
+        verifyRunInBackground(captor);
+
+        verify(this.viewMock).fireErrorAlert(eq("No generation to save"), any());
+    }
+
+    private void testGenerationLoad
+    (
+        ArgumentCaptor<Runnable> captor,
+        File file,
+        Generation generation
+    )
+    throws IOException
+    {
+        ArgumentCaptor<Consumer<List<File>>> consumerCaptor
+            = ArgumentCaptor.forClass(Consumer.class);
+
+        when(this.generationTranslatorMock.fromByteArray(any()))
+            .thenReturn(generation);
+        Path filePath = mock(Path.class);
+        when(file.toPath()).thenReturn(filePath);
+
+        this.listener.onGenerationLoad();
+        verifyRunInBackground(captor);
+
+        //show the file selection dialog
+        verify(this.viewMock).selectFile
+        (
+            eq(ViewBase.FileSelectionMode.SELECT_SINGLE),
+            any(),
+            any(),
+            consumerCaptor.capture()
+        );
+
+        //load if a file was selected
+        List<File> files = new ArrayList();
+        files.add(file);
+        consumerCaptor.getValue().accept(files);
+        verifyRunInBackground(captor, 2);
+    }
+
+    @Test
+    public void testGenerationLoadExistingFile()
+    throws IOException
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        Generation generation = mock(Generation.class);
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(true);
+
+        testGenerationLoad(captor, file, generation);
+
+        verify(this.modelMock).setGeneration(generation);
+    }
+
+    @Test
+    public void testGenerationLoadNonExistingFile()
+    throws IOException
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        Generation generation = mock(Generation.class);
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(false);
+
+        testGenerationLoad(captor, file, generation);
+
+        verify(this.viewMock).fireErrorAlert(eq("Generation loading failed"), any());
+    }
+
+    @Test
+    public void testGenerationLoadError()
+    throws IOException
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        Generation generation = mock(Generation.class);
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(true);
+        doThrow(new IOException()).when(this.fileIOMock).readAllBytes(any());
+
+        testGenerationLoad(captor, file, generation);
+
+        verify(this.viewMock).fireErrorAlert(eq("Generation loading failed"), any());
     }
 
     @Test

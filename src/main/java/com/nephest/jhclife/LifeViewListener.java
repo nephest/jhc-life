@@ -22,6 +22,8 @@
 
 package com.nephest.jhclife;
 
+import java.io.File;
+
 import javafx.scene.input.*;
 
 public interface LifeViewListener
@@ -50,6 +52,10 @@ public interface LifeViewListener
     public void onPlay();
 
     public void onNewGame();
+
+    public void onGenerationSave();
+
+    public void onGenerationLoad();
 
     public void onHelp();
 

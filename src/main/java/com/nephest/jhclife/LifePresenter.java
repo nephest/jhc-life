@@ -22,14 +22,22 @@
 
 package com.nephest.jhclife;
 
+import com.nephest.jhclife.io.*;
+import com.nephest.jhclife.util.ObjectTranslator;
+
+import java.io.*;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.logging.*;
 
 import javafx.scene.input.*;
 
 public class LifePresenter
 extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
 {
+
+    private static final Logger LOG = Logger.getLogger(LifePresenter.class.getName());
 
     public static final double ZOOM_FACTOR_UP = 2;
     public static final double ZOOM_FACTOR_DOWN = 0.5;
@@ -67,6 +75,9 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         + "Copyright (C) 2018 Oleksandr Masniuk\n";
 
 
+    private FileIO fileIO = new StandardFileIO();
+    private ObjectTranslator<Generation> generationTranslator;
+
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -84,8 +95,29 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
 
     private void init()
     {
+        initTranslators();
         listen();
         initInfo();
+    }
+
+    private void initTranslators()
+    {
+        this.generationTranslator = new ObjectTranslator<Generation>()
+        {
+
+            @Override
+            public byte[] toByteArray(Generation generation)
+            {
+                return Generation.toByteArray(generation);
+            }
+
+            @Override
+            public Generation fromByteArray(byte[] bytes)
+            {
+                return Generation.fromByteArray(bytes);
+            }
+
+        };
     }
 
     private void initInfo()
@@ -170,6 +202,18 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
             public void onNewGame()
             {
                 getExecutor().execute(()->newGame());
+            }
+
+            @Override
+            public void onGenerationSave()
+            {
+                getExecutor().execute(()->generationSave());
+            }
+
+            @Override
+            public void onGenerationLoad()
+            {
+                getExecutor().execute(()->generationLoad());
             }
 
             @Override
@@ -404,6 +448,104 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         getMainController().setViewType(MainView.ViewType.MAIN_MENU);
     }
 
+    private void generationSave()
+    {
+        if (getLastGeneration() == null)
+        {
+            getView().fireErrorAlert("No generation to save", "");
+            return;
+        }
+        Generation toSave = getLastGeneration();
+        getView().selectFile
+        (
+            ViewBase.FileSelectionMode.SAVE,
+            "Choose a save filename",
+            "life-generation-"
+                + toSave.getId() + "-"
+                + toSave.getGenerationNumber(),
+            (files)->
+            {
+                if (files.size() > 0)
+                    getExecutor().execute( ()->generationSaveSelected(files.get(0), toSave) );
+            }
+        );
+    }
+
+    private void generationSaveSelected(File file, Generation generation)
+    {
+        if (file.exists())
+        {
+            getView().fireConfirmationAlert
+            (
+                "File already exists",
+                "Do you want to overwrite the existing file?",
+                ()->{ getExecutor().execute(()->doSaveGeneration(file, generation)); },
+                null
+            );
+        }
+        else
+        {
+            doSaveGeneration(file, generation);
+        }
+    }
+
+    private void doSaveGeneration(File file, Generation generation)
+    {
+        try
+        {
+            getFileIO().write
+            (
+                file.toPath(),
+                getGenerationTranslator().toByteArray(generation)
+            );
+        }
+        catch (IOException ex)
+        {
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
+            getView().fireErrorAlert("Generation saving failed", ex.getMessage());
+        }
+    }
+
+    private void generationLoad()
+    {
+        getView().selectFile
+        (
+            ViewBase.FileSelectionMode.SELECT_SINGLE,
+            "Choose a generation save to load",
+            "",
+            (files)->
+            {
+                if (files.size() > 0)
+                    getExecutor().execute( ()->generationLoadSelected(files.get(0)) );
+            }
+        );
+    }
+
+    private void generationLoadSelected(File file)
+    {
+        if (!file.exists())
+        {
+            getView().fireErrorAlert("Generation loading failed", "No such file");
+            return;
+        }
+        try
+        {
+            byte[] bytes = getFileIO().readAllBytes(file.toPath());
+            Generation gen = getGenerationTranslator().fromByteArray(bytes);
+            getModel().setGeneration(gen);
+        }
+        catch (IOException ex)
+        {
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
+            getView().fireErrorAlert("Generation loading failed", ex.getMessage());
+        }
+        catch (IllegalArgumentException ex)
+        {
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
+            getView().fireErrorAlert("Generation loading failed", "Invalid save file");
+        }
+    }
+
     private void help()
     {
         getView().fireInfoAlert("Help", HELP_MSG);
@@ -423,6 +565,26 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
             getView().render(cur);
             this.lastGeneration = cur;
         }
+    }
+
+    public void setFileIO(FileIO io)
+    {
+        this.fileIO = io;
+    }
+
+    public FileIO getFileIO()
+    {
+        return this.fileIO;
+    }
+
+    public void setGenerationTranslator(ObjectTranslator<Generation> translator)
+    {
+        this.generationTranslator = translator;
+    }
+
+    public ObjectTranslator<Generation> getGenerationTranslator()
+    {
+        return this.generationTranslator;
     }
 
     private Generation getLastGeneration()
