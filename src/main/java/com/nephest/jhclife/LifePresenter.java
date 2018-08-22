@@ -78,6 +78,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     private FileIO fileIO = new StandardFileIO();
     private ObjectTranslator<Generation> generationTranslator;
 
+    private LifeViewListener listener;
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -228,7 +229,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
                 nextFrame(); //directly in render thread to avoid skipped frames
             }
         };
-        getView().setListener(listener);
+        setListener(listener);
     }
 
     private void mouseEvent(MouseEvent evt, LifeView.Zone zone)
@@ -585,6 +586,17 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     public ObjectTranslator<Generation> getGenerationTranslator()
     {
         return this.generationTranslator;
+    }
+
+    protected void setListener(LifeViewListener listener)
+    {
+        this.listener = listener;
+        getView().setListener(listener);
+    }
+
+    public LifeViewListener getListener()
+    {
+        return this.listener;
     }
 
     private Generation getLastGeneration()
