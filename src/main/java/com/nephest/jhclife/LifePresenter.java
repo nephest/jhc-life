@@ -58,6 +58,9 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public static final String PLAYING_STATUS = "PLAYING";
     public static final String PAUSED_STATUS = "PAUSED";
 
+    public static final String WELCOME_TIP = "Press the play button to begin. "
+        + "See the help section for the rules and key bindings info.";
+
     public static final String HELP_MSG =
         "Info:\n"
         + "This is a basic Conway's Game of Life implementation.\n"
@@ -132,6 +135,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         changeSpeed(SPEED_INIT);
         changeZoom(ZOOM_FACTOR_INIT);
         getView().setStatus(PAUSED_STATUS);
+        getView().setTip(WELCOME_TIP);
     }
 
     private void listen()
@@ -484,12 +488,14 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     {
         getModel().stop();
         getView().setStatus(PAUSED_STATUS);
+        getView().setTip(WELCOME_TIP);
     }
 
     private void play()
     {
         getModel().start();
         getView().setStatus(PLAYING_STATUS);
+        getView().setTip("You can edit the population even while simulation is running");
     }
 
     private void newGame()
@@ -646,6 +652,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     {
         getView().setGenerationZoom(factor, x, y);
         getView().updateZoomInfo(ZOOM_FORMAT);
+        getView().setTip("Hover over the play field to zoom a specific area");
     }
 
     private void changeZoom(double factor)

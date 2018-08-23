@@ -122,6 +122,7 @@ public class LifePresenterTest
         verify(this.viewMock)
             .setSpeedInfo(String.format(SPEED_FORMAT, LifePresenter.SPEED_INIT));
         verify(this.viewMock).setStatus(LifePresenter.PAUSED_STATUS);
+        verify(this.viewMock).setTip(LifePresenter.WELCOME_TIP);
 
         //clear for easier zoom/speed testing
         //need to specify the exact invocation count or use ordering otherwise
