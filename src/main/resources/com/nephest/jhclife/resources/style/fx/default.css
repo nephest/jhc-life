@@ -65,6 +65,11 @@
     -fx-pref-width: 10em;
 }
 
+#root-life #label-tip
+{
+    -fx-wrap-text: true;
+}
+
 /************************** EXTERNAL ********************************/
 
 #alert-standard
