@@ -52,8 +52,8 @@ implements LifeView<Parent>
     public static final String BUTTON_DEFAULT_CLASS="button-default";
     public static final String GROUP_BUTTON_CLASS="group-button";
     public static final String SEPARATOR_CLASS="separator";
-    public static final String TEXT_LABEL_CLASS="text-label";
-    public static final String TEXT_VALUE_CLASS="text-value";
+    public static final String LABEL_LABEL_CLASS="label-label";
+    public static final String LABEL_VALUE_CLASS="label-value";
     public static final String SPACER_CLASS="spacer";
     public static final String MENU_ITEM_CLASS="menu-item";
 
@@ -63,7 +63,7 @@ implements LifeView<Parent>
     private Button playButton, pauseButton,
         speedUpButton, speedDownButton, speedDefaultButton,
         zoomUpButton, zoomDownButton, zoomDefaultButton;
-    private Text generationNumberText, tipText, statusText, speedText, zoomText;
+    private Label generationNumberLabel, tipLabel, statusLabel, speedLabel, zoomLabel;
     private MenuItem newGameItem, generationSaveItem, generationLoadItem, helpItem;
 
     private LifeViewListener listener;
@@ -153,7 +153,7 @@ implements LifeView<Parent>
         {
             renderGenerationDelta(getLastGeneration(), generation);
         }
-        this.generationNumberText
+        this.generationNumberLabel
             .setText(String.valueOf(generation.getGenerationNumber()));
         this.lastGeneration = generation;
     }
@@ -208,7 +208,7 @@ implements LifeView<Parent>
     {
         GraphicsContext context = this.canvas.getGraphicsContext2D();
         context.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
-        this.generationNumberText.setText("0");
+        this.generationNumberLabel.setText("0");
     }
 
     @Override
@@ -247,26 +247,26 @@ implements LifeView<Parent>
     {
         Platform.runLater
         (
-            ()->this.zoomText.setText(String.format(format, getFinalGenerationZoom()))
+            ()->this.zoomLabel.setText(String.format(format, getFinalGenerationZoom()))
         );
     }
 
     @Override
     public void setSpeedInfo(String speed)
     {
-        Platform.runLater( ()->this.speedText.setText(speed) );
+        Platform.runLater( ()->this.speedLabel.setText(speed) );
     }
 
     @Override
     public void setStatus(String status)
     {
-        Platform.runLater( ()->this.statusText.setText(status) );
+        Platform.runLater( ()->this.statusLabel.setText(status) );
     }
 
     @Override
     public void setTip(String tip)
     {
-        Platform.runLater( ()->this.tipText.setText(tip) );
+        Platform.runLater( ()->this.tipLabel.setText(tip) );
     }
 
     private void unsetListener()
@@ -334,9 +334,9 @@ implements LifeView<Parent>
     private void initControls()
     {
 
-        this.speedText = new Text();
-        this.speedText.setId("text-speed");
-        this.speedText.getStyleClass().add(TEXT_VALUE_CLASS);
+        this.speedLabel = new Label();
+        this.speedLabel.setId("label-speed");
+        this.speedLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
         this.speedUpButton = new Button("+");
         this.speedUpButton.getStyleClass().add(BUTTON_PLUS_CLASS);
@@ -345,9 +345,9 @@ implements LifeView<Parent>
         this.speedDefaultButton = new Button("default");
         this.speedDefaultButton.getStyleClass().add(BUTTON_DEFAULT_CLASS);
 
-        this.zoomText = new Text();
-        this.zoomText.setId("text-zoom");
-        this.zoomText.getStyleClass().add(TEXT_VALUE_CLASS);
+        this.zoomLabel = new Label();
+        this.zoomLabel.setId("label-zoom");
+        this.zoomLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
         this.zoomUpButton = new Button("+");
         this.zoomUpButton.getStyleClass().add(BUTTON_PLUS_CLASS);
@@ -372,17 +372,17 @@ implements LifeView<Parent>
         this.helpItem = new MenuItem("Help");
         this.helpItem.getStyleClass().add(MENU_ITEM_CLASS);
 
-        this.generationNumberText = new Text();
-        this.generationNumberText.setId("text-generation-number");
-        this.generationNumberText.getStyleClass().add(TEXT_VALUE_CLASS);
+        this.generationNumberLabel = new Label();
+        this.generationNumberLabel.setId("label-generation-number");
+        this.generationNumberLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
-        this.tipText = new Text();
-        this.tipText.setId("text-tip");
-        this.tipText.getStyleClass().add(TEXT_VALUE_CLASS);
+        this.tipLabel = new Label();
+        this.tipLabel.setId("label-tip");
+        this.tipLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
-        this.statusText = new Text();
-        this.statusText.setId("text-status");
-        this.statusText.getStyleClass().add(TEXT_VALUE_CLASS);
+        this.statusLabel = new Label();
+        this.statusLabel.setId("label-status");
+        this.statusLabel.getStyleClass().add(LABEL_VALUE_CLASS);
     }
 
     private void layoutControls()
@@ -396,13 +396,13 @@ implements LifeView<Parent>
 
         HBox ctrls = new HBox
         (
-            newLabelText("Speed"),
-            this.speedDownButton, this.speedText,
+            newLabel("Speed"),
+            this.speedDownButton, this.speedLabel,
             newButtonGroup(this.speedUpButton, this.speedDefaultButton),
             newSeparator(Orientation.VERTICAL),
 
-            newLabelText("Zoom"),
-            this.zoomDownButton, this.zoomText,
+            newLabel("Zoom"),
+            this.zoomDownButton, this.zoomLabel,
             newButtonGroup(this.zoomUpButton, this.zoomDefaultButton),
             newSeparator(Orientation.VERTICAL),
 
@@ -412,11 +412,11 @@ implements LifeView<Parent>
         ctrls.setId("box-control");
         HBox info = new HBox
         (
-            newLabelText("Generation:"), this.generationNumberText,
+            newLabel("Generation:"), this.generationNumberLabel,
             newSeparator(Orientation.VERTICAL),
-            newLabelText("Status:"), this.statusText,
+            newLabel("Status:"), this.statusLabel,
             newSeparator(Orientation.VERTICAL),
-            newLabelText("Tip:"), this.tipText
+            newLabel("Tip:"), this.tipLabel
         );
         info.setId("box-info");
         VBox allCtrls = new VBox(mainMenuBar, ctrls, info);
@@ -446,10 +446,10 @@ implements LifeView<Parent>
         return result;
     }
 
-    private Text newLabelText(String content)
+    private Label newLabel(String content)
     {
-        Text result = new Text(content);
-        result.getStyleClass().add(TEXT_LABEL_CLASS);
+        Label result = new Label(content);
+        result.getStyleClass().add(LABEL_LABEL_CLASS);
         return result;
     }
 
