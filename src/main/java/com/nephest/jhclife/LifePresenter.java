@@ -34,7 +34,7 @@ import java.util.logging.*;
 import javafx.scene.input.*;
 
 public class LifePresenter
-extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
+extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 {
 
     private static final Logger LOG = Logger.getLogger(LifePresenter.class.getName());
@@ -82,7 +82,6 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     private FileIO fileIO = new StandardFileIO();
     private ObjectTranslator<Generation> generationTranslator;
 
-    private LifeViewListener listener;
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -630,17 +629,6 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     public ObjectTranslator<Generation> getGenerationTranslator()
     {
         return this.generationTranslator;
-    }
-
-    protected void setListener(LifeViewListener listener)
-    {
-        this.listener = listener;
-        getView().setListener(listener);
-    }
-
-    public LifeViewListener getListener()
-    {
-        return this.listener;
     }
 
     private Generation getLastGeneration()

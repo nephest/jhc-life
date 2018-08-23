@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 
 public class MainMenuPresenter
-extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel>
+extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListener>
 {
 
     public MainMenuPresenter
@@ -62,7 +62,7 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel>
                 getExecutor().execute(()->cancel());
             }
         };
-        getView().setListener(listener);
+        setListener(listener);
     }
 
     private void newGame()

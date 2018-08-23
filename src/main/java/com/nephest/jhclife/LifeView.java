@@ -23,15 +23,13 @@
 package com.nephest.jhclife;
 
 public interface LifeView<N>
-extends ViewBase<N>
+extends ReactiveViewBase<N, LifeViewListener>
 {
 
     public static enum Zone
     {
         GLOBAL, GENERATION_CONTAINER, GENERATION
     }
-
-    public void setListener(LifeViewListener listener);
 
     public void render(Generation generation);
 

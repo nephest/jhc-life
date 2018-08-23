@@ -25,12 +25,13 @@ package com.nephest.jhclife;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
-public class ReactivePresenter<V extends ViewBase, M>
+public class ReactivePresenter<V extends ReactiveViewBase<?, L>, M, L>
 extends PresenterBase<V, M>
 {
 
     private final MainController mainController;
     private final Executor executor;
+    private L listener;
 
     public ReactivePresenter
     (
@@ -55,6 +56,17 @@ extends PresenterBase<V, M>
     protected Executor getExecutor()
     {
         return this.executor;
+    }
+
+    protected void setListener(L listener)
+    {
+        this.listener = listener;
+        getView().setListener(listener);
+    }
+
+    public L getListener()
+    {
+        return this.listener;
     }
 
 }

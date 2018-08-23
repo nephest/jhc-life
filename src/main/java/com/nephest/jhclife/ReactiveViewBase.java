@@ -22,16 +22,10 @@
 
 package com.nephest.jhclife;
 
-public interface MainMenuView<N>
-extends ReactiveViewBase<N, MainMenuViewListener>
+public interface ReactiveViewBase<N, L>
+extends ViewBase<N>
 {
 
-    public int getWidth();
-
-    public int getHeight();
-
-    public long getSeed();
-
-    public double getPopulationProbability();
+    public void setListener(L listener);
 
 }
