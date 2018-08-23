@@ -121,6 +121,7 @@ public class LifePresenterTest
         verify(this.modelMock).setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
         verify(this.viewMock)
             .setSpeedInfo(String.format(SPEED_FORMAT, LifePresenter.SPEED_INIT));
+        verify(this.viewMock).setStatus(LifePresenter.PAUSED_STATUS);
 
         //clear for easier zoom/speed testing
         //need to specify the exact invocation count or use ordering otherwise
@@ -659,6 +660,7 @@ public class LifePresenterTest
         this.listener.onPause();
         verifyRunInBackground(captor);
         verify(this.modelMock).stop();
+        verify(this.viewMock).setStatus(LifePresenter.PAUSED_STATUS);
     }
 
     @Test
@@ -668,6 +670,7 @@ public class LifePresenterTest
         this.listener.onPlay();
         verifyRunInBackground(captor);
         verify(this.modelMock).start();
+        verify(this.viewMock).setStatus(LifePresenter.PLAYING_STATUS);
     }
 
     @Test

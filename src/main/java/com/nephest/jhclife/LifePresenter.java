@@ -55,6 +55,9 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public static final KeyCode GENERATION_SAVE = KeyCode.S;
     public static final KeyCode GENERATION_LOAD = KeyCode.O;
 
+    public static final String PLAYING_STATUS = "PLAYING";
+    public static final String PAUSED_STATUS = "PAUSED";
+
     public static final String HELP_MSG =
         "Info:\n"
         + "This is a basic Conway's Game of Life implementation.\n"
@@ -128,6 +131,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     {
         changeSpeed(SPEED_INIT);
         changeZoom(ZOOM_FACTOR_INIT);
+        getView().setStatus(PAUSED_STATUS);
     }
 
     private void listen()
@@ -479,16 +483,18 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     private void pause()
     {
         getModel().stop();
+        getView().setStatus(PAUSED_STATUS);
     }
 
     private void play()
     {
         getModel().start();
+        getView().setStatus(PLAYING_STATUS);
     }
 
     private void newGame()
     {
-        getModel().stop();
+        pause();
         getMainController().setViewType(MainView.ViewType.MAIN_MENU);
     }
 
