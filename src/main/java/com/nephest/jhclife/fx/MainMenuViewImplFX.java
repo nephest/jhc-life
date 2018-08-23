@@ -63,6 +63,13 @@ implements MainMenuView<Parent>
             unsetListener();
             return;
         }
+
+        MainMenuView.Zone topZone = MainMenuView.Zone.GLOBAL;
+
+        this.grid.setOnKeyPressed((e)->listener.onKeyEvent(e, topZone));
+        this.grid.setOnKeyReleased((e)->listener.onKeyEvent(e, topZone));
+        this.grid.setOnKeyTyped((e)->listener.onKeyEvent(e, topZone));
+
         this.newGameButton.setOnAction((e)->listener.onNewGame());
         this.cancelButton.setOnAction((e)->listener.onCancel());
     }
@@ -93,6 +100,10 @@ implements MainMenuView<Parent>
 
     private void unsetListener()
     {
+        this.grid.setOnKeyPressed(null);
+        this.grid.setOnKeyReleased(null);
+        this.grid.setOnKeyTyped(null);
+
         this.newGameButton.setOnAction(null);
         this.cancelButton.setOnAction(null);
     }
