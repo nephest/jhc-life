@@ -25,9 +25,13 @@ package com.nephest.jhclife;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
+import javafx.scene.input.*;
+
 public class MainMenuPresenter
 extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListener>
 {
+
+    public static final KeyCode CANCEL = LifePresenter.NEW_GAME;
 
     public MainMenuPresenter
     (
@@ -50,6 +54,14 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
     {
         MainMenuViewListener listener = new MainMenuViewListener()
         {
+
+            @Override
+            public void onKeyEvent(KeyEvent evt, MainMenuView.Zone zone)
+            {
+                if (mustConsumeEvent(evt, zone)) evt.consume();
+                getExecutor().execute(()->keyEvent(evt, zone));
+            }
+
             @Override
             public void onNewGame()
             {
@@ -63,6 +75,38 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
             }
         };
         setListener(listener);
+    }
+
+    private boolean mustConsumeEvent(KeyEvent evt, MainMenuView.Zone zone)
+    {
+        return zone == MainMenuView.Zone.GLOBAL
+            &&
+            (
+                evt.getCode() == CANCEL
+            );
+    }
+
+    private void keyEvent(KeyEvent evt, MainMenuView.Zone zone)
+    {
+        Objects.requireNonNull(evt);
+        Objects.requireNonNull(zone);
+
+        if (evt.getEventType() == KeyEvent.KEY_PRESSED)
+        {
+            keyPressed(evt, zone);
+        }
+    }
+
+    private void keyPressed(KeyEvent evt, MainMenuView.Zone zone)
+    {
+        if
+        (
+            evt.getCode() == CANCEL
+            && zone == MainMenuView.Zone.GLOBAL
+        )
+        {
+            getListener().onCancel();
+        }
     }
 
     private void newGame()

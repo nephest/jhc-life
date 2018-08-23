@@ -22,8 +22,12 @@
 
 package com.nephest.jhclife;
 
+import javafx.scene.input.*;
+
 public interface MainMenuViewListener
 {
+
+    public void onKeyEvent(KeyEvent evt, MainMenuView.Zone zone);
 
     public void onNewGame();
 

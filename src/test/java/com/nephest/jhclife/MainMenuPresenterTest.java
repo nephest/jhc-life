@@ -24,6 +24,9 @@ package com.nephest.jhclife;
 
 import java.util.concurrent.Executor;
 
+import javafx.event.*;
+import javafx.scene.input.*;
+
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -33,10 +36,13 @@ import static org.mockito.Mockito.*;
 public class MainMenuPresenterTest
 {
 
+    public static final KeyCode CANCEL = LifePresenterTest.NEW_GAME;
+
     private MainMenuView<?> viewMock;
     private ClassicLifeModel modelMock;
     private MainController controllerMock;
     private Executor executorMock;
+    private MainMenuViewListener listener;
 
     private MainMenuPresenter presenter;
 
@@ -55,6 +61,53 @@ public class MainMenuPresenterTest
             this.controllerMock,
             this.executorMock
         );
+
+        this.listener = getListener();
+    }
+
+    private void testKeyCancel(KeyCode code, MainMenuView.Zone zone)
+    {
+        MainMenuViewListener spy = spy(this.listener);
+        this.presenter.setListener(spy);
+
+        KeyEvent evt = new KeyEvent
+        (
+            KeyEvent.KEY_PRESSED, "", "", code, //type, char, text, code
+            false, false, false, false //shift, ctrl, alt, meta
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        spy.onKeyEvent(evt, zone);
+
+        //consume before handling
+        if (zone == MainMenuView.Zone.GLOBAL)
+        {
+            assertTrue(evt.isConsumed());
+        }
+        else
+        {
+            assertFalse(evt.isConsumed());
+        }
+        verifyRunInBackground(captor);
+
+        if (zone == MainMenuView.Zone.GLOBAL)
+        {
+            verify(spy).onCancel();
+        }
+        else
+        {
+            verify(spy, never()).onCancel();
+        }
+    }
+
+    @Test
+    public void testKeyCancel()
+    {
+        for (MainMenuView.Zone zone : MainMenuView.Zone.values())
+        {
+            init();
+            testKeyCancel(CANCEL, zone);
+        }
     }
 
     @Test

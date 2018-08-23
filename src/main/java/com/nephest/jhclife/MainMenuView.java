@@ -26,6 +26,11 @@ public interface MainMenuView<N>
 extends ReactiveViewBase<N, MainMenuViewListener>
 {
 
+    public static enum Zone
+    {
+        GLOBAL;
+    }
+
     public int getWidth();
 
     public int getHeight();
