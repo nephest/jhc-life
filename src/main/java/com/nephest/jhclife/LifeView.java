@@ -47,4 +47,6 @@ extends ReactiveViewBase<N, LifeViewListener>
 
     public void setStatus(String status);
 
+    public void setTip(String tip);
+
 }

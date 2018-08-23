@@ -263,6 +263,12 @@ implements LifeView<Parent>
         Platform.runLater( ()->this.statusText.setText(status) );
     }
 
+    @Override
+    public void setTip(String tip)
+    {
+        Platform.runLater( ()->this.tipText.setText(tip) );
+    }
+
     private void unsetListener()
     {
         this.canvas.setOnMouseClicked(null);
@@ -410,7 +416,7 @@ implements LifeView<Parent>
             newSeparator(Orientation.VERTICAL),
             newLabelText("Status:"), this.statusText,
             newSeparator(Orientation.VERTICAL),
-            this.tipText
+            newLabelText("Tip:"), this.tipText
         );
         info.setId("box-info");
         VBox allCtrls = new VBox(mainMenuBar, ctrls, info);
