@@ -6,6 +6,7 @@ A John Horton Conway's Game of Life implementation
 
 # Features
 * Seed based generation
+* Save/Load game
 * Unlimited play field
 * Zoom/speed correction
 * Manual cell editing
