@@ -60,11 +60,11 @@ implements LifeView<Parent>
     private Generation lastGeneration;
 
     private BorderPane borderPane;
-    private Button playButton, pauseButton, newGameButton,
+    private Button playButton, pauseButton,
         speedUpButton, speedDownButton, speedDefaultButton,
         zoomUpButton, zoomDownButton, zoomDefaultButton;
     private Text generationNumberText, tipText, statusText, speedText, zoomText;
-    private MenuItem generationSaveItem, generationLoadItem, helpItem;
+    private MenuItem newGameItem, generationSaveItem, generationLoadItem, helpItem;
 
     private LifeViewListener listener;
     private AnimationTimer frameTimer;
@@ -130,8 +130,8 @@ implements LifeView<Parent>
 
         this.playButton.setOnAction((e)->listener.onPlay());
         this.pauseButton.setOnAction((e)->listener.onPause());
-        this.newGameButton.setOnAction((e)->listener.onNewGame());
 
+        this.newGameItem.setOnAction((e)->listener.onNewGame());
         this.generationSaveItem.setOnAction((e)->listener.onGenerationSave());
         this.generationLoadItem.setOnAction((e)->listener.onGenerationLoad());
         this.helpItem.setOnAction((e)->listener.onHelp());
@@ -287,8 +287,8 @@ implements LifeView<Parent>
 
         this.playButton.setOnAction(null);
         this.pauseButton.setOnAction(null);
-        this.newGameButton.setOnAction(null);
 
+        this.newGameItem.setOnAction(null);
         this.generationSaveItem.setOnAction(null);
         this.generationLoadItem.setOnAction(null);
         this.helpItem.setOnAction(null);
@@ -350,8 +350,8 @@ implements LifeView<Parent>
         this.pauseButton = new Button("Pause");
         this.pauseButton.setId("button-pause");
 
-        this.newGameButton = new Button("New Game");
-        this.newGameButton.setId("button-new-game");
+        this.newGameItem = new MenuItem("New");
+        this.newGameItem.getStyleClass().add(MENU_ITEM_CLASS);
 
         this.generationSaveItem = new MenuItem("Save");
         this.generationSaveItem.getStyleClass().add(MENU_ITEM_CLASS);
@@ -377,7 +377,7 @@ implements LifeView<Parent>
     {
         MenuBar mainMenuBar = new MenuBar
         (
-            newMenu("Generation", generationLoadItem, generationSaveItem),
+            newMenu("Game", newGameItem, generationLoadItem, generationSaveItem),
             newMenu("Help", helpItem)
         );
         mainMenuBar.setId("menu-main");
@@ -394,7 +394,7 @@ implements LifeView<Parent>
             newButtonGroup(this.zoomUpButton, this.zoomDefaultButton),
             newSeparator(Orientation.VERTICAL),
 
-            newButtonGroup(this.newGameButton, this.pauseButton, this.playButton),
+            newButtonGroup(this.pauseButton, this.playButton),
             newSpacer()
         );
         ctrls.setId("box-control");
