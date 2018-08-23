@@ -334,9 +334,8 @@ implements LifeView<Parent>
     private void initControls()
     {
 
-        this.speedLabel = new Label();
+        this.speedLabel = newValueLabel(false);
         this.speedLabel.setId("label-speed");
-        this.speedLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
         this.speedUpButton = new Button("+");
         this.speedUpButton.getStyleClass().add(BUTTON_PLUS_CLASS);
@@ -345,9 +344,8 @@ implements LifeView<Parent>
         this.speedDefaultButton = new Button("default");
         this.speedDefaultButton.getStyleClass().add(BUTTON_DEFAULT_CLASS);
 
-        this.zoomLabel = new Label();
+        this.zoomLabel = newValueLabel(false);
         this.zoomLabel.setId("label-zoom");
-        this.zoomLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
         this.zoomUpButton = new Button("+");
         this.zoomUpButton.getStyleClass().add(BUTTON_PLUS_CLASS);
@@ -372,17 +370,14 @@ implements LifeView<Parent>
         this.helpItem = new MenuItem("Help");
         this.helpItem.getStyleClass().add(MENU_ITEM_CLASS);
 
-        this.generationNumberLabel = new Label();
+        this.generationNumberLabel = newValueLabel(false);
         this.generationNumberLabel.setId("label-generation-number");
-        this.generationNumberLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
-        this.tipLabel = new Label();
+        this.tipLabel = newValueLabel(true);
         this.tipLabel.setId("label-tip");
-        this.tipLabel.getStyleClass().add(LABEL_VALUE_CLASS);
 
-        this.statusLabel = new Label();
+        this.statusLabel = newValueLabel(false);
         this.statusLabel.setId("label-status");
-        this.statusLabel.getStyleClass().add(LABEL_VALUE_CLASS);
     }
 
     private void layoutControls()
@@ -450,6 +445,14 @@ implements LifeView<Parent>
     {
         Label result = new Label(content);
         result.getStyleClass().add(LABEL_LABEL_CLASS);
+        return result;
+    }
+
+    private Label newValueLabel(boolean ellipsis)
+    {
+        Label result = new Label();
+        result.getStyleClass().add(LABEL_VALUE_CLASS);
+        if (!ellipsis) result.setMinWidth(Label.USE_PREF_SIZE);
         return result;
     }
 
