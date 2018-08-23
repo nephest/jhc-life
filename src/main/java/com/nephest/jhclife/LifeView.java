@@ -45,4 +45,6 @@ extends ReactiveViewBase<N, LifeViewListener>
 
     public void setSpeedInfo(String speed);
 
+    public void setStatus(String status);
+
 }

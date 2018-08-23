@@ -257,6 +257,12 @@ implements LifeView<Parent>
         Platform.runLater( ()->this.speedText.setText(speed) );
     }
 
+    @Override
+    public void setStatus(String status)
+    {
+        Platform.runLater( ()->this.statusText.setText(status) );
+    }
+
     private void unsetListener()
     {
         this.canvas.setOnMouseClicked(null);
