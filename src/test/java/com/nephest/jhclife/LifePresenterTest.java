@@ -445,6 +445,8 @@ public class LifePresenterTest
 
     private void testKeyTogglePlay(KeyCode code, boolean running, LifeView.Zone zone)
     {
+        LifeViewListener spy = spy(this.listener);
+        this.presenter.setListener(spy);
         when(this.modelMock.isRunning()).thenReturn(running);
 
         KeyEvent evt = new KeyEvent
@@ -454,7 +456,7 @@ public class LifePresenterTest
         );
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onKeyEvent(evt, zone);
+        spy.onKeyEvent(evt, zone);
 
         if (zone == LifeView.Zone.GLOBAL)
         {
@@ -469,15 +471,16 @@ public class LifePresenterTest
 
         if (zone != LifeView.Zone.GLOBAL)
         {
-            verifyNoMoreInteractions(this.modelMock);
+            verify(spy, never()).onPause();
+            verify(spy, never()).onPlay();
         }
         else if(running)
         {
-            verify(this.modelMock).stop();
+            verify(spy).onPause();
         }
         else
         {
-            verify(this.modelMock).start();
+            verify(spy).onPlay();
         }
     }
 

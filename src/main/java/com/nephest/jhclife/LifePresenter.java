@@ -438,11 +438,11 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     {
         if (getModel().isRunning())
         {
-            getModel().stop();
+            getListener().onPause();
         }
         else
         {
-            getModel().start();
+            getListener().onPlay();
         }
     }
 
