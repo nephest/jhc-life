@@ -51,6 +51,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
     public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
     public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
 
+    public static final KeyCode NEW_GAME = KeyCode.ESCAPE;
     public static final KeyCode GENERATION_SAVE = KeyCode.S;
     public static final KeyCode GENERATION_LOAD = KeyCode.O;
 
@@ -335,6 +336,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
             (
                 evt.getCode() == PLAY_TOGGLE
                 || evt.getCode() == PLAY_TOGGLE_ALT
+                || evt.getCode() == NEW_GAME
                 || evt.getCode() == GENERATION_SAVE
                 || evt.getCode() == GENERATION_LOAD
             );
@@ -404,6 +406,14 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel>
         )
         {
             toggleState();
+        }
+        else if
+        (
+            evt.getCode() == NEW_GAME
+            && zone == LifeView.Zone.GLOBAL
+        )
+        {
+            getListener().onNewGame();
         }
         else if
         (

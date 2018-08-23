@@ -50,6 +50,7 @@ public class LifePresenterTest
     public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
     public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
 
+    public static final KeyCode NEW_GAME = KeyCode.ESCAPE;
     public static final KeyCode GENERATION_SAVE = KeyCode.S;
     public static final KeyCode GENERATION_LOAD = KeyCode.O;
 
@@ -477,6 +478,51 @@ public class LifePresenterTest
         else
         {
             verify(this.modelMock).start();
+        }
+    }
+
+    private void testKeyNewGame(KeyCode code, LifeView.Zone zone)
+    {
+        LifeViewListener spy = spy(this.listener);
+        this.presenter.setListener(spy);
+
+        KeyEvent evt = new KeyEvent
+        (
+            KeyEvent.KEY_PRESSED, "", "", code, //type, char, text, code
+            false, false, false, false //shift, ctrl, alt, meta
+        );
+
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        spy.onKeyEvent(evt, zone);
+
+        //consume before handling
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            assertTrue(evt.isConsumed());
+        }
+        else
+        {
+            assertFalse(evt.isConsumed());
+        }
+        verifyRunInBackground(captor);
+
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            verify(spy).onNewGame();
+        }
+        else
+        {
+            verify(spy, never()).onNewGame();
+        }
+    }
+
+    @Test
+    public void testKeyNewGame()
+    {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            init();
+            testKeyNewGame(NEW_GAME, zone);
         }
     }
 
