@@ -99,7 +99,8 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     private FileIO fileIO = new StandardFileIO();
     private ObjectTranslator<Generation> generationTranslator;
 
-    private final KeyControl<KeyControlType> keyControl = new KeyControl(KeyControlType.class);
+    private final ControlBindings<KeyControlType, KeyCombination> keyControl
+        = new ControlBindings(KeyControlType.class);
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -682,7 +683,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         return this.generationTranslator;
     }
 
-    public KeyControl<KeyControlType> getKeyControl()
+    public ControlBindings<KeyControlType, KeyCombination> getKeyControl()
     {
         return this.keyControl;
     }

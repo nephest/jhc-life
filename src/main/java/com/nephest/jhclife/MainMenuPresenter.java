@@ -22,6 +22,8 @@
 
 package com.nephest.jhclife;
 
+import com.nephest.jhclife.io.ControlBindings;
+
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
@@ -39,8 +41,8 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
     public static final KeyCombination DEFAULT_CANCEL_COMBINATION
         = LifePresenter.DEFAULT_NEW_GAME_COMBINATION;
 
-    private final KeyControl<KeyControlType> keyControl
-        = new KeyControl(KeyControlType.class);
+    private final ControlBindings<KeyControlType, KeyCombination> keyControl
+        = new ControlBindings(KeyControlType.class);
 
     public MainMenuPresenter
     (
@@ -191,7 +193,7 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
         getMainController().setViewType(MainView.ViewType.LIFE);
     }
 
-    public KeyControl<KeyControlType> getKeyControl()
+    public ControlBindings<KeyControlType, KeyCombination> getKeyControl()
     {
         return this.keyControl;
     }

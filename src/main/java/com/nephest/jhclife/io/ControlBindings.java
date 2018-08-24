@@ -20,22 +20,21 @@
  * =========================LICENSE_END=========================
  */
 
-package com.nephest.jhclife;
+package com.nephest.jhclife.io;
 
 import java.util.*;
-import javafx.scene.input.KeyCombination;
 
-public class KeyControl<T extends Enum<T>>
+public class ControlBindings<T extends Enum<T>, B>
 {
 
-    private final Map<T, KeyCombination> binds;
+    private final Map<T, B> binds;
 
-    public KeyControl(Class<T> type)
+    public ControlBindings(Class<T> type)
     {
         this.binds = new EnumMap(type);
     }
 
-    public void setBinding(T ctrl, KeyCombination bind)
+    public void setBinding(T ctrl, B bind)
     {
         if (bind == null)
         {
@@ -47,9 +46,10 @@ public class KeyControl<T extends Enum<T>>
         }
     }
 
-    public KeyCombination getBinding(T ctrl)
+    public B getBinding(T ctrl)
     {
         return this.binds.get(ctrl);
     }
 
 }
+
