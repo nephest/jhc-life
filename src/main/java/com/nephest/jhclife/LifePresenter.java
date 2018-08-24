@@ -58,6 +58,14 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         POPULAITON_TOGGLE;
     }
 
+    public static enum ScrollControlType
+    {
+        ZOOM_UP,
+        ZOOM_DOWN,
+        SPEED_UP,
+        SPEED_DOWN;
+    }
+
     public static final double ZOOM_FACTOR_UP = 2;
     public static final double ZOOM_FACTOR_DOWN = 0.5;
     public static final double ZOOM_FACTOR_INIT = 0.0;
@@ -83,6 +91,32 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     public static final MouseKeyCombination DEFAULT_MOUSE_POPULATION_TOGGLE_COMBINATION
         = new MouseKeyCombination(MouseButton.PRIMARY);
+
+    public static final ScrollDirectionCombination DEFAULT_SCROLL_SPEED_UP_COMBINATION
+        = new ScrollDirectionCombination
+        (
+            ScrollDirectionCombination.Direction.UP,
+            KeyCodeCombination.ALT_DOWN
+        );
+    public static final ScrollDirectionCombination DEFAULT_SCROLL_SPEED_DOWN_COMBINATION
+        = new ScrollDirectionCombination
+        (
+            ScrollDirectionCombination.Direction.DOWN,
+            KeyCodeCombination.ALT_DOWN
+        );
+
+    public static final ScrollDirectionCombination DEFAULT_SCROLL_ZOOM_UP_COMBINATION
+        = new ScrollDirectionCombination
+        (
+            ScrollDirectionCombination.Direction.UP,
+            KeyCodeCombination.SHORTCUT_DOWN
+        );
+    public static final ScrollDirectionCombination DEFAULT_SCROLL_ZOOM_DOWN_COMBINATION
+        = new ScrollDirectionCombination
+        (
+            ScrollDirectionCombination.Direction.DOWN,
+            KeyCodeCombination.SHORTCUT_DOWN
+        );
 
     public static final KeyCombination DEFAULT_STATE_TOGGLE_COMBINATION
         = new KeyCodeCombination(KeyCode.P);
@@ -131,6 +165,8 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         = new ControlBindings(KeyControlType.class);
     private final ControlBindings<MouseControlType, MouseKeyCombination> mouseControl
         = new ControlBindings(MouseControlType.class);
+    private final ControlBindings<ScrollControlType, ScrollDirectionCombination> scrollControl
+        = new ControlBindings(ScrollControlType.class);
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -177,6 +213,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     private void initControls()
     {
         initMouseControl();
+        initScrollControl();
         initKeyControl();
     }
 
@@ -222,6 +259,33 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         (
             MouseControlType.POPULAITON_TOGGLE,
             DEFAULT_MOUSE_POPULATION_TOGGLE_COMBINATION
+        );
+    }
+
+    private void initScrollControl()
+    {
+        getScrollControl().setBinding
+        (
+            ScrollControlType.SPEED_UP,
+            DEFAULT_SCROLL_SPEED_UP_COMBINATION
+        );
+
+        getScrollControl().setBinding
+        (
+            ScrollControlType.SPEED_DOWN,
+            DEFAULT_SCROLL_SPEED_DOWN_COMBINATION
+        );
+
+        getScrollControl().setBinding
+        (
+            ScrollControlType.ZOOM_UP,
+            DEFAULT_SCROLL_ZOOM_UP_COMBINATION
+        );
+
+        getScrollControl().setBinding
+        (
+            ScrollControlType.ZOOM_DOWN,
+            DEFAULT_SCROLL_ZOOM_DOWN_COMBINATION
         );
     }
 
@@ -450,8 +514,16 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private boolean mustConsumeEvent(ScrollEvent evt, LifeView.Zone zone)
     {
-        return zone != LifeView.Zone.GENERATION
-            && (evt.isControlDown() || evt.isAltDown());
+        boolean match = false;
+        for (ScrollControlType type : ScrollControlType.values())
+        {
+            if (getScrollControl().getBinding(type).match(evt))
+            {
+                match = true;
+                break;
+            }
+        }
+        return zone != LifeView.Zone.GENERATION && match;
     }
 
     private boolean mustConsumeEvent(KeyEvent evt, LifeView.Zone zone)
@@ -483,19 +555,26 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private void scrollScroll(ScrollEvent evt, LifeView.Zone zone)
     {
-        if (evt.isControlDown())
+        if (getScrollControl().getBinding(ScrollControlType.ZOOM_UP).match(evt))
         {
-            changeZoom(evt, zone);
+            changeZoom(evt, zone, ZOOM_FACTOR_UP);
         }
-        else if (evt.isAltDown())
+        else if (getScrollControl().getBinding(ScrollControlType.ZOOM_DOWN).match(evt))
         {
-            changeSpeed(evt, zone);
+            changeZoom(evt, zone, ZOOM_FACTOR_DOWN);
+        }
+        else if (getScrollControl().getBinding(ScrollControlType.SPEED_UP).match(evt))
+        {
+            changeSpeed(evt, zone, getSpeed() + SPEED_STEP);
+        }
+        else if (getScrollControl().getBinding(ScrollControlType.SPEED_DOWN).match(evt))
+        {
+            changeSpeed(evt, zone, getSpeed() - SPEED_STEP);
         }
     }
 
-    private void changeZoom(ScrollEvent evt, LifeView.Zone zone)
+    private void changeZoom(ScrollEvent evt, LifeView.Zone zone, double factor)
     {
-        double factor = evt.getDeltaY() < 0 ? ZOOM_FACTOR_DOWN : ZOOM_FACTOR_UP;
         if (zone == LifeView.Zone.GLOBAL)
         {
             changeZoom(factor);
@@ -507,11 +586,10 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         //generation zoom event is not consumed and is passed to its container
     }
 
-    private void changeSpeed(ScrollEvent evt, LifeView.Zone zone)
+    private void changeSpeed(ScrollEvent evt, LifeView.Zone zone, int speed)
     {
         if (zone == LifeView.Zone.GENERATION) return;
-        int delta = evt.getDeltaY() < 0 ? -SPEED_STEP : SPEED_STEP;
-        changeSpeed(getSpeed() + delta);
+        changeSpeed(speed);
     }
 
     private void keyEvent(KeyEvent evt, LifeView.Zone zone)
@@ -770,6 +848,11 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public ControlBindings<MouseControlType, MouseKeyCombination> getMouseControl()
     {
         return this.mouseControl;
+    }
+
+    public ControlBindings<ScrollControlType, ScrollDirectionCombination> getScrollControl()
+    {
+        return this.scrollControl;
     }
 
     private Generation getLastGeneration()
