@@ -31,7 +31,16 @@ public class MainMenuPresenter
 extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListener>
 {
 
-    public static final KeyCode CANCEL = LifePresenter.NEW_GAME;
+    public static enum KeyControlType
+    {
+        CANCEL;
+    }
+
+    public static final KeyCombination DEFAULT_CANCEL_COMBINATION
+        = LifePresenter.DEFAULT_NEW_GAME_COMBINATION;
+
+    private final KeyControl<KeyControlType> keyControl
+        = new KeyControl(KeyControlType.class);
 
     public MainMenuPresenter
     (
@@ -47,7 +56,17 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
 
     private void init()
     {
+        initKeyControl();
         listen();
+    }
+
+    private void initKeyControl()
+    {
+        getKeyControl().setBinding
+        (
+            KeyControlType.CANCEL,
+            DEFAULT_CANCEL_COMBINATION
+        );
     }
 
     private void listen()
@@ -79,11 +98,18 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
 
     private boolean mustConsumeEvent(KeyEvent evt, MainMenuView.Zone zone)
     {
-        return zone == MainMenuView.Zone.GLOBAL
-            &&
-            (
-                evt.getCode() == CANCEL
-            );
+        if (zone != MainMenuView.Zone.GLOBAL) return false;
+
+        boolean match = false;
+        for (KeyControlType type : KeyControlType.values())
+        {
+            if (getKeyControl().getBinding(type).match(evt))
+            {
+                match = true;
+                break;
+            }
+        }
+        return match;
     }
 
     private void keyEvent(KeyEvent evt, MainMenuView.Zone zone)
@@ -99,11 +125,9 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
 
     private void keyPressed(KeyEvent evt, MainMenuView.Zone zone)
     {
-        if
-        (
-            evt.getCode() == CANCEL
-            && zone == MainMenuView.Zone.GLOBAL
-        )
+        if (zone != MainMenuView.Zone.GLOBAL) return;
+
+        if (getKeyControl().getBinding(KeyControlType.CANCEL).match(evt))
         {
             getListener().onCancel();
         }
@@ -165,6 +189,11 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
     private void cancel()
     {
         getMainController().setViewType(MainView.ViewType.LIFE);
+    }
+
+    public KeyControl<KeyControlType> getKeyControl()
+    {
+        return this.keyControl;
     }
 
 }

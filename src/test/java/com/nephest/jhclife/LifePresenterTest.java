@@ -47,8 +47,7 @@ public class LifePresenterTest
     public static final String ZOOM_FORMAT="%06.2f";
     public static final String SPEED_FORMAT="%03d";
 
-    public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
-    public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
+    public static final KeyCode PLAY_TOGGLE = KeyCode.P;
 
     public static final KeyCode NEW_GAME = KeyCode.ESCAPE;
     public static final KeyCode GENERATION_SAVE = KeyCode.S;
@@ -65,15 +64,15 @@ public class LifePresenterTest
         + "Any dead cell with exactly three live neighbors becomes a live cell.\n"
         + "\n"
         + "Binds:\n"
-        + "zoom+\t\tctrl+MouseLeft\t| ctrl+ScrollUp\n"
-        + "zoom-\t\tctrl+MouseRight\t| ctrl+ScrollDown\n"
-        + "speed+\t\talt+MouseLeft\t\t| alt+ScrollUp\n"
-        + "speed-\t\talt+MouseRight\t| alt+ScrollDown\n"
-        + "play/pause\tspace\t| p\n"
-        + "population\tmouseClick\n"
-        + "new game\tesc\n"
-        + "load game\tctrl+O\n"
-        + "save game\tctrl+S\n"
+        + "Zoom+\t\tCtrl+MouseLeft\t| Ctrl+ScrollUp\n"
+        + "Zoom-\t\tCtrl+MouseRight\t| Ctrl+ScrollDown\n"
+        + "Speed+\t\tAlt+MouseLeft\t\t| Alt+ScrollUp\n"
+        + "Speed-\t\tAlt+MouseRight\t| Alt+ScrollDown\n"
+        + "Population\tMouseClick\n"
+        + "Play/Pause\tP\n"
+        + "New game\tEscape\n"
+        + "Load game\tCtrl+O\n"
+        + "Save game\tCtrl+S\n"
         + "\n"
         + "Misc:\n"
         + "nephest.com/projects/jhc-life\n"
@@ -433,18 +432,10 @@ public class LifePresenterTest
     @Test
     public void testKeyTogglePlay()
     {
-        Set<KeyCode> keys = new HashSet();
-        keys.add(PLAY_TOGGLE);
-        keys.add(PLAY_TOGGLE_ALT);
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
-            for (KeyCode code : keys)
-            {
-                init();
-                testKeyTogglePlay(code, true, zone);
-                init();
-                testKeyTogglePlay(code, false, zone);
-            }
+            init();
+            testKeyTogglePlay(PLAY_TOGGLE, true, zone);
         }
     }
 

@@ -39,6 +39,14 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private static final Logger LOG = Logger.getLogger(LifePresenter.class.getName());
 
+    public static enum KeyControlType
+    {
+        NEW_GAME,
+        GENERATION_LOAD,
+        GENERATION_SAVE,
+        STATE_TOGGLE;
+    }
+
     public static final double ZOOM_FACTOR_UP = 2;
     public static final double ZOOM_FACTOR_DOWN = 0.5;
     public static final double ZOOM_FACTOR_INIT = 0.0;
@@ -48,12 +56,15 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public static final int SPEED_INIT = 10;
     public static final String SPEED_FORMAT="%03d";
 
-    public static final KeyCode PLAY_TOGGLE = KeyCode.SPACE;
-    public static final KeyCode PLAY_TOGGLE_ALT = KeyCode.P;
+    public static final KeyCombination DEFAULT_STATE_TOGGLE_COMBINATION
+        = new KeyCodeCombination(KeyCode.P);
 
-    public static final KeyCode NEW_GAME = KeyCode.ESCAPE;
-    public static final KeyCode GENERATION_SAVE = KeyCode.S;
-    public static final KeyCode GENERATION_LOAD = KeyCode.O;
+    public static final KeyCombination DEFAULT_NEW_GAME_COMBINATION
+        = new KeyCodeCombination(KeyCode.ESCAPE);
+    public static final KeyCombination DEFAULT_GENERATION_SAVE_COMBINATION
+        = new KeyCodeCombination(KeyCode.S, KeyCodeCombination.SHORTCUT_DOWN);
+    public static final KeyCombination DEFAULT_GENERATION_LOAD_COMBINATION
+        = new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN);
 
     public static final String PLAYING_STATUS = "PLAYING";
     public static final String PAUSED_STATUS = "PAUSED";
@@ -61,7 +72,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public static final String WELCOME_TIP = "Press the play button to begin. "
         + "See the help section for the rules and key bindings info.";
 
-    public static final String HELP_MSG =
+    public static final String HELP_MSG_HEADER =
         "Info:\n"
         + "This is a basic Conway's Game of Life implementation.\n"
         + "\n"
@@ -72,16 +83,13 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         + "Any dead cell with exactly three live neighbors becomes a live cell.\n"
         + "\n"
         + "Binds:\n"
-        + "zoom+\t\tctrl+MouseLeft\t| ctrl+ScrollUp\n"
-        + "zoom-\t\tctrl+MouseRight\t| ctrl+ScrollDown\n"
-        + "speed+\t\talt+MouseLeft\t\t| alt+ScrollUp\n"
-        + "speed-\t\talt+MouseRight\t| alt+ScrollDown\n"
-        + "play/pause\tspace\t| p\n"
-        + "population\tmouseClick\n"
-        + "new game\tesc\n"
-        + "load game\tctrl+O\n"
-        + "save game\tctrl+S\n"
-        + "\n"
+        + "Zoom+\t\tCtrl+MouseLeft\t| Ctrl+ScrollUp\n"
+        + "Zoom-\t\tCtrl+MouseRight\t| Ctrl+ScrollDown\n"
+        + "Speed+\t\tAlt+MouseLeft\t\t| Alt+ScrollUp\n"
+        + "Speed-\t\tAlt+MouseRight\t| Alt+ScrollDown\n"
+        + "Population\tMouseClick\n";
+    public static final String HELP_MSG_FOOTER =
+        "\n"
         + "Misc:\n"
         + "nephest.com/projects/jhc-life\n"
         + "GPL Version 3\n"
@@ -91,6 +99,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     private FileIO fileIO = new StandardFileIO();
     private ObjectTranslator<Generation> generationTranslator;
 
+    private final KeyControl<KeyControlType> keyControl = new KeyControl(KeyControlType.class);
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -109,6 +118,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     private void init()
     {
         initTranslators();
+        initKeyControl();
         listen();
         initInfo();
     }
@@ -131,6 +141,31 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
             }
 
         };
+    }
+
+    private void initKeyControl()
+    {
+        getKeyControl().setBinding
+        (
+            KeyControlType.NEW_GAME,
+            DEFAULT_NEW_GAME_COMBINATION
+        );
+
+        getKeyControl().setBinding
+        (
+            KeyControlType.GENERATION_LOAD,
+            DEFAULT_GENERATION_LOAD_COMBINATION
+        );
+        getKeyControl().setBinding
+        (
+            KeyControlType.GENERATION_SAVE,
+            DEFAULT_GENERATION_SAVE_COMBINATION
+        );
+        getKeyControl().setBinding
+        (
+            KeyControlType.STATE_TOGGLE,
+            DEFAULT_STATE_TOGGLE_COMBINATION
+        );
     }
 
     private void initInfo()
@@ -341,15 +376,18 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private boolean mustConsumeEvent(KeyEvent evt, LifeView.Zone zone)
     {
-        return zone == LifeView.Zone.GLOBAL
-            &&
-            (
-                evt.getCode() == PLAY_TOGGLE
-                || evt.getCode() == PLAY_TOGGLE_ALT
-                || evt.getCode() == NEW_GAME
-                || evt.getCode() == GENERATION_SAVE
-                || evt.getCode() == GENERATION_LOAD
-            );
+        if (zone != LifeView.Zone.GLOBAL) return false;
+
+        boolean match = false;
+        for (KeyControlType type : KeyControlType.values())
+        {
+            if (getKeyControl().getBinding(type).match(evt))
+            {
+                match = true;
+                break;
+            }
+        }
+        return match;
     }
 
     private void scrollEvent(ScrollEvent evt, LifeView.Zone zone)
@@ -409,37 +447,21 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private void keyPressed(KeyEvent evt, LifeView.Zone zone)
     {
-        if
-        (
-            (evt.getCode() == PLAY_TOGGLE || evt.getCode() == PLAY_TOGGLE_ALT)
-            && zone == LifeView.Zone.GLOBAL
-        )
+        if (zone != LifeView.Zone.GLOBAL) return;
+
+        if (getKeyControl().getBinding(KeyControlType.STATE_TOGGLE).match(evt))
         {
             toggleState();
         }
-        else if
-        (
-            evt.getCode() == NEW_GAME
-            && zone == LifeView.Zone.GLOBAL
-        )
+        else if (getKeyControl().getBinding(KeyControlType.NEW_GAME).match(evt))
         {
             getListener().onNewGame();
         }
-        else if
-        (
-            evt.getCode() == GENERATION_SAVE
-            && evt.isControlDown()
-            && zone == LifeView.Zone.GLOBAL
-        )
+        else if (getKeyControl().getBinding(KeyControlType.GENERATION_SAVE).match(evt))
         {
             getListener().onGenerationSave();
         }
-        else if
-        (
-            evt.getCode() == GENERATION_LOAD
-            && evt.isControlDown()
-            && zone == LifeView.Zone.GLOBAL
-        )
+        else if (getKeyControl().getBinding(KeyControlType.GENERATION_LOAD).match(evt))
         {
             getListener().onGenerationLoad();
         }
@@ -607,7 +629,21 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private void help()
     {
-        getView().fireInfoAlert("Help", HELP_MSG);
+        StringBuilder sb = new StringBuilder(HELP_MSG_HEADER);
+        sb.append("Play/Pause\t")
+        .append(getKeyControl().getBinding(KeyControlType.STATE_TOGGLE).getDisplayText())
+        .append("\n")
+        .append("New game\t")
+        .append(getKeyControl().getBinding(KeyControlType.NEW_GAME).getDisplayText())
+        .append("\n")
+        .append("Load game\t")
+        .append(getKeyControl().getBinding(KeyControlType.GENERATION_LOAD).getDisplayText())
+        .append("\n")
+        .append("Save game\t")
+        .append(getKeyControl().getBinding(KeyControlType.GENERATION_SAVE).getDisplayText())
+        .append("\n")
+        .append(HELP_MSG_FOOTER);
+        getView().fireInfoAlert("Help", sb.toString());
     }
 
     private void nextFrame()
@@ -644,6 +680,11 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public ObjectTranslator<Generation> getGenerationTranslator()
     {
         return this.generationTranslator;
+    }
+
+    public KeyControl<KeyControlType> getKeyControl()
+    {
+        return this.keyControl;
     }
 
     private Generation getLastGeneration()
