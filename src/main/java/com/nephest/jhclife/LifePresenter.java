@@ -47,6 +47,17 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         STATE_TOGGLE;
     }
 
+    public static enum MouseControlType
+    {
+        ZOOM_UP,
+        ZOOM_DOWN,
+        ZOOM_DEFAULT,
+        SPEED_UP,
+        SPEED_DOWN,
+        SPEED_DEFAULT,
+        POPULAITON_TOGGLE;
+    }
+
     public static final double ZOOM_FACTOR_UP = 2;
     public static final double ZOOM_FACTOR_DOWN = 0.5;
     public static final double ZOOM_FACTOR_INIT = 0.0;
@@ -55,6 +66,23 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public static final int SPEED_STEP = 1;
     public static final int SPEED_INIT = 10;
     public static final String SPEED_FORMAT="%03d";
+
+    public static final MouseKeyCombination DEFAULT_MOUSE_SPEED_UP_COMBINATION
+        = new MouseKeyCombination(MouseButton.PRIMARY, KeyCodeCombination.ALT_DOWN);
+    public static final MouseKeyCombination DEFAULT_MOUSE_SPEED_DOWN_COMBINATION
+        = new MouseKeyCombination(MouseButton.SECONDARY, KeyCodeCombination.ALT_DOWN);
+    public static final MouseKeyCombination DEFAULT_MOUSE_SPEED_DEFAULT_COMBINATION
+        = new MouseKeyCombination(MouseButton.MIDDLE, KeyCodeCombination.ALT_DOWN);
+
+    public static final MouseKeyCombination DEFAULT_MOUSE_ZOOM_UP_COMBINATION
+        = new MouseKeyCombination(MouseButton.PRIMARY, KeyCodeCombination.SHORTCUT_DOWN);
+    public static final MouseKeyCombination DEFAULT_MOUSE_ZOOM_DOWN_COMBINATION
+        = new MouseKeyCombination(MouseButton.SECONDARY, KeyCodeCombination.SHORTCUT_DOWN);
+    public static final MouseKeyCombination DEFAULT_MOUSE_ZOOM_DEFAULT_COMBINATION
+        = new MouseKeyCombination(MouseButton.MIDDLE, KeyCodeCombination.SHORTCUT_DOWN);
+
+    public static final MouseKeyCombination DEFAULT_MOUSE_POPULATION_TOGGLE_COMBINATION
+        = new MouseKeyCombination(MouseButton.PRIMARY);
 
     public static final KeyCombination DEFAULT_STATE_TOGGLE_COMBINATION
         = new KeyCodeCombination(KeyCode.P);
@@ -101,6 +129,8 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private final ControlBindings<KeyControlType, KeyCombination> keyControl
         = new ControlBindings(KeyControlType.class);
+    private final ControlBindings<MouseControlType, MouseKeyCombination> mouseControl
+        = new ControlBindings(MouseControlType.class);
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -119,7 +149,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     private void init()
     {
         initTranslators();
-        initKeyControl();
+        initControls();
         listen();
         initInfo();
     }
@@ -142,6 +172,57 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
             }
 
         };
+    }
+
+    private void initControls()
+    {
+        initMouseControl();
+        initKeyControl();
+    }
+
+    private void initMouseControl()
+    {
+        getMouseControl().setBinding
+        (
+            MouseControlType.SPEED_UP,
+            DEFAULT_MOUSE_SPEED_UP_COMBINATION
+        );
+
+        getMouseControl().setBinding
+        (
+            MouseControlType.SPEED_DOWN,
+            DEFAULT_MOUSE_SPEED_DOWN_COMBINATION
+        );
+
+        getMouseControl().setBinding
+        (
+            MouseControlType.SPEED_DEFAULT,
+            DEFAULT_MOUSE_SPEED_DEFAULT_COMBINATION
+        );
+
+        getMouseControl().setBinding
+        (
+            MouseControlType.ZOOM_UP,
+            DEFAULT_MOUSE_ZOOM_UP_COMBINATION
+        );
+
+        getMouseControl().setBinding
+        (
+            MouseControlType.ZOOM_DOWN,
+            DEFAULT_MOUSE_ZOOM_DOWN_COMBINATION
+        );
+
+        getMouseControl().setBinding
+        (
+            MouseControlType.ZOOM_DEFAULT,
+            DEFAULT_MOUSE_ZOOM_DEFAULT_COMBINATION
+        );
+
+        getMouseControl().setBinding
+        (
+            MouseControlType.POPULAITON_TOGGLE,
+            DEFAULT_MOUSE_POPULATION_TOGGLE_COMBINATION
+        );
     }
 
     private void initKeyControl()
@@ -295,35 +376,38 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private void mouseClick(MouseEvent evt, LifeView.Zone zone)
     {
-        if (evt.isControlDown())
+        if (getMouseControl().getBinding(MouseControlType.ZOOM_UP).match(evt))
         {
-            changeZoom(evt, zone);
+            changeZoom(evt, zone, ZOOM_FACTOR_UP);
         }
-        else if (evt.isAltDown())
+        else if (getMouseControl().getBinding(MouseControlType.ZOOM_DOWN).match(evt))
         {
-            changeSpeed(evt, zone);
+            changeZoom(evt, zone, ZOOM_FACTOR_DOWN);
         }
-        else
+        else if (getMouseControl().getBinding(MouseControlType.ZOOM_DEFAULT).match(evt))
+        {
+            changeZoom(evt, zone, ZOOM_FACTOR_INIT);
+        }
+        else if (getMouseControl().getBinding(MouseControlType.SPEED_UP).match(evt))
+        {
+            changeSpeed(evt, zone, getSpeed() + SPEED_STEP);
+        }
+        else if (getMouseControl().getBinding(MouseControlType.SPEED_DOWN).match(evt))
+        {
+            changeSpeed(evt, zone, getSpeed() - SPEED_STEP);
+        }
+        else if (getMouseControl().getBinding(MouseControlType.SPEED_DEFAULT).match(evt))
+        {
+            changeSpeed(evt, zone, SPEED_INIT);
+        }
+        else if (getMouseControl().getBinding(MouseControlType.POPULAITON_TOGGLE).match(evt))
         {
             togglePopulation(evt, zone);
         }
     }
 
-    private void changeZoom(MouseEvent evt, LifeView.Zone zone)
+    private void changeZoom(MouseEvent evt, LifeView.Zone zone, double factor)
     {
-        double factor = ZOOM_FACTOR_INIT;
-        switch(evt.getButton())
-        {
-            case PRIMARY:
-                factor = ZOOM_FACTOR_UP;
-                break;
-            case SECONDARY:
-                factor = ZOOM_FACTOR_DOWN;
-                break;
-            case MIDDLE:
-                factor = ZOOM_FACTOR_INIT;
-                break;
-        }
         if (zone == LifeView.Zone.GLOBAL)
         {
             changeZoom(factor);
@@ -335,22 +419,9 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         //generation zoom event is not consumed is and passed to its container
     }
 
-    private void changeSpeed(MouseEvent evt, LifeView.Zone zone)
+    private void changeSpeed(MouseEvent evt, LifeView.Zone zone, int speed)
     {
         if (zone == LifeView.Zone.GENERATION) return;
-        int speed = getSpeed();
-        switch(evt.getButton())
-        {
-            case PRIMARY:
-                speed += SPEED_STEP;
-                break;
-            case SECONDARY:
-                speed -= SPEED_STEP;
-                break;
-            case MIDDLE:
-                speed = SPEED_INIT;
-                break;
-        }
         changeSpeed(speed);
     }
 
@@ -365,8 +436,16 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private boolean mustConsumeEvent(MouseEvent evt, LifeView.Zone zone)
     {
-        return zone != LifeView.Zone.GENERATION
-            && (evt.isControlDown() || evt.isAltDown());
+        boolean match = false;
+        for (MouseControlType type : MouseControlType.values())
+        {
+            if (getMouseControl().getBinding(type).match(evt))
+            {
+                match = true;
+                break;
+            }
+        }
+        return zone != LifeView.Zone.GENERATION && match;
     }
 
     private boolean mustConsumeEvent(ScrollEvent evt, LifeView.Zone zone)
@@ -686,6 +765,11 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     public ControlBindings<KeyControlType, KeyCombination> getKeyControl()
     {
         return this.keyControl;
+    }
+
+    public ControlBindings<MouseControlType, MouseKeyCombination> getMouseControl()
+    {
+        return this.mouseControl;
     }
 
     private Generation getLastGeneration()
