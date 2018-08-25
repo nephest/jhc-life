@@ -44,6 +44,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         NEW_GAME,
         GENERATION_LOAD,
         GENERATION_SAVE,
+        HELP,
         STATE_TOGGLE;
     }
 
@@ -127,6 +128,8 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         = new KeyCodeCombination(KeyCode.S, KeyCodeCombination.SHORTCUT_DOWN);
     public static final KeyCombination DEFAULT_GENERATION_LOAD_COMBINATION
         = new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN);
+    public static final KeyCombination DEFAULT_HELP_COMBINATION
+        = new KeyCodeCombination(KeyCode.F1);
 
     public static final String PLAYING_STATUS = "PLAYING";
     public static final String PAUSED_STATUS = "PAUSED";
@@ -296,11 +299,19 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
             KeyControlType.GENERATION_LOAD,
             DEFAULT_GENERATION_LOAD_COMBINATION
         );
+
         getKeyControl().setBinding
         (
             KeyControlType.GENERATION_SAVE,
             DEFAULT_GENERATION_SAVE_COMBINATION
         );
+
+        getKeyControl().setBinding
+        (
+            KeyControlType.HELP,
+            DEFAULT_HELP_COMBINATION
+        );
+
         getKeyControl().setBinding
         (
             KeyControlType.STATE_TOGGLE,
@@ -616,6 +627,10 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         else if (getKeyControl().getBinding(KeyControlType.GENERATION_LOAD).match(evt))
         {
             getListener().onGenerationLoad();
+        }
+        else if (getKeyControl().getBinding(KeyControlType.HELP).match(evt))
+        {
+            getListener().onHelp();
         }
     }
 

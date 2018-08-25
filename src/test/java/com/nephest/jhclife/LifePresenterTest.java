@@ -53,6 +53,7 @@ public class LifePresenterTest
     public static final KeyCode NEW_GAME = KeyCode.ESCAPE;
     public static final KeyCode GENERATION_SAVE = KeyCode.S;
     public static final KeyCode GENERATION_LOAD = KeyCode.O;
+    public static final KeyCode HELP = KeyCode.F1;
 
     public static final String HELP_MSG_HEADER =
         "Info:\n"
@@ -577,6 +578,61 @@ public class LifePresenterTest
             {
                 verify(spy).onGenerationLoad();
             }
+        }
+    }
+
+    private void testGlobalKeyEvent
+    (
+        KeyEvent evt,
+        LifeView.Zone zone,
+        Runnable onGlobal,
+        Runnable onOther
+    )
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        this.presenter.getListener().onKeyEvent(evt, zone);
+
+        //consume before handling
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            assertTrue(evt.isConsumed());
+        }
+        else
+        {
+            assertFalse(evt.isConsumed());
+        }
+        verifyRunInBackground(captor);
+
+        if (zone == LifeView.Zone.GLOBAL)
+        {
+            onGlobal.run();
+        }
+        else
+        {
+            onOther.run();
+        }
+    }
+
+    @Test
+    public void testKeyHelp()
+    {
+        for (LifeView.Zone zone : LifeView.Zone.values())
+        {
+            KeyEvent evt = new KeyEvent
+            (
+                KeyEvent.KEY_PRESSED, "", "", HELP, //type, char, text, code
+                false, false, false, false //shift, ctrl, alt, meta
+            );
+            init();
+            LifeViewListener spy = spy(this.listener);
+            this.presenter.setListener(spy);
+            testGlobalKeyEvent
+            (
+                evt,
+                zone,
+                ()->{verify(spy).onHelp();},
+                ()->{verify(spy, never()).onHelp();}
+            );
         }
     }
 
