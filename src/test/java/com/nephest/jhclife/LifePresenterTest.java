@@ -428,11 +428,13 @@ public class LifePresenterTest
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
             init();
-            testKeyTogglePlay(PLAY_TOGGLE, true, zone);
+            testKeyTogglePlay(PLAY_TOGGLE, zone, true);
+            init();
+            testKeyTogglePlay(PLAY_TOGGLE, zone, false);
         }
     }
 
-    private void testKeyTogglePlay(KeyCode code, boolean running, LifeView.Zone zone)
+    private void testKeyTogglePlay(KeyCode code, LifeView.Zone zone,  boolean running)
     {
         LifeViewListener spy = spy(this.listener);
         this.presenter.setListener(spy);
@@ -444,68 +446,29 @@ public class LifePresenterTest
             false, false, false, false //shift, ctrl, alt, meta
         );
 
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        spy.onKeyEvent(evt, zone);
-
-        if (zone == LifeView.Zone.GLOBAL)
-        {
-            assertTrue(evt.isConsumed());
-        }
-        else
-        {
-            assertFalse(evt.isConsumed());
-        }
-
-        verifyRunInBackground(captor);
-
-        if (zone != LifeView.Zone.GLOBAL)
-        {
-            verify(spy, never()).onPause();
-            verify(spy, never()).onPlay();
-        }
-        else if(running)
-        {
-            verify(spy).onPause();
-        }
-        else
-        {
-            verify(spy).onPlay();
-        }
-    }
-
-    private void testKeyNewGame(KeyCode code, LifeView.Zone zone)
-    {
-        LifeViewListener spy = spy(this.listener);
-        this.presenter.setListener(spy);
-
-        KeyEvent evt = new KeyEvent
+        testGlobalKeyEvent
         (
-            KeyEvent.KEY_PRESSED, "", "", code, //type, char, text, code
-            false, false, false, false //shift, ctrl, alt, meta
+            evt,
+            zone,
+            ()->
+            {
+                if (running)
+                {
+                    verify(spy, never()).onPlay();
+                    verify(spy).onPause();
+                }
+                else
+                {
+                    verify(spy).onPlay();
+                    verify(spy, never()).onPause();
+                }
+            },
+            ()->
+            {
+                verify(spy, never()).onPause();
+                verify(spy, never()).onPlay();
+            }
         );
-
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        spy.onKeyEvent(evt, zone);
-
-        //consume before handling
-        if (zone == LifeView.Zone.GLOBAL)
-        {
-            assertTrue(evt.isConsumed());
-        }
-        else
-        {
-            assertFalse(evt.isConsumed());
-        }
-        verifyRunInBackground(captor);
-
-        if (zone == LifeView.Zone.GLOBAL)
-        {
-            verify(spy).onNewGame();
-        }
-        else
-        {
-            verify(spy, never()).onNewGame();
-        }
     }
 
     @Test
@@ -513,36 +476,22 @@ public class LifePresenterTest
     {
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
+            KeyEvent evt = new KeyEvent
+            (
+                KeyEvent.KEY_PRESSED, "", "", NEW_GAME, //type, char, text, code
+                false, false, false, false //shift, ctrl, alt, meta
+            );
             init();
-            testKeyNewGame(NEW_GAME, zone);
+            LifeViewListener spy = spy(this.listener);
+            this.presenter.setListener(spy);
+            testGlobalKeyEvent
+            (
+                evt,
+                zone,
+                ()->{verify(spy).onNewGame();},
+                ()->{verify(spy, never()).onNewGame();}
+            );
         }
-    }
-
-    private LifeViewListener testKeyGeneration(KeyCode code, LifeView.Zone zone)
-    {
-        LifeViewListener spy = spy(this.listener);
-        this.presenter.setListener(spy);
-
-        KeyEvent evt = new KeyEvent
-        (
-            KeyEvent.KEY_PRESSED, "", "", code, //type, char, text, code
-            false, true, false, false //shift, ctrl, alt, meta
-        );
-
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        spy.onKeyEvent(evt, zone);
-
-        if (zone == LifeView.Zone.GLOBAL)
-        {
-            assertTrue(evt.isConsumed());
-        }
-        else
-        {
-            assertFalse(evt.isConsumed());
-        }
-        verifyRunInBackground(captor);
-
-        return spy;
     }
 
     @Test
@@ -550,16 +499,21 @@ public class LifePresenterTest
     {
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
+            KeyEvent evt = new KeyEvent
+            (
+                KeyEvent.KEY_PRESSED, "", "", GENERATION_SAVE, //type, char, text, code
+                false, true, false, false //shift, ctrl, alt, meta
+            );
             init();
-            LifeViewListener spy = testKeyGeneration(GENERATION_SAVE, zone);
-            if (zone != LifeView.Zone.GLOBAL)
-            {
-                verify(spy, never()).onGenerationSave();
-            }
-            else
-            {
-                verify(spy).onGenerationSave();
-            }
+            LifeViewListener spy = spy(this.listener);
+            this.presenter.setListener(spy);
+            testGlobalKeyEvent
+            (
+                evt,
+                zone,
+                ()->{verify(spy).onGenerationSave();},
+                ()->{verify(spy, never()).onGenerationSave();}
+            );
         }
     }
 
@@ -568,16 +522,21 @@ public class LifePresenterTest
     {
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
+            KeyEvent evt = new KeyEvent
+            (
+                KeyEvent.KEY_PRESSED, "", "", GENERATION_LOAD, //type, char, text, code
+                false, true, false, false //shift, ctrl, alt, meta
+            );
             init();
-            LifeViewListener spy = testKeyGeneration(GENERATION_LOAD, zone);
-            if (zone != LifeView.Zone.GLOBAL)
-            {
-                verify(spy, never()).onGenerationLoad();
-            }
-            else
-            {
-                verify(spy).onGenerationLoad();
-            }
+            LifeViewListener spy = spy(this.listener);
+            this.presenter.setListener(spy);
+            testGlobalKeyEvent
+            (
+                evt,
+                zone,
+                ()->{verify(spy).onGenerationLoad();},
+                ()->{verify(spy, never()).onGenerationLoad();}
+            );
         }
     }
 
