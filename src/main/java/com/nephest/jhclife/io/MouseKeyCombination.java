@@ -25,49 +25,19 @@ package com.nephest.jhclife.io;
 import javafx.scene.input.*;
 
 public class MouseKeyCombination
+extends InputCombination<MouseButton>
 {
-
-    private final MouseButton button;
-    private final KeyCombination.Modifier[] modifiers;
-
-    private String displayText;
 
     public MouseKeyCombination(MouseButton button, KeyCombination.Modifier... modifiers)
     {
-        this.button = button;
-        this.modifiers = modifiers;
-    }
-
-    private MouseButton getButton()
-    {
-        return this.button;
-    }
-
-    private KeyCombination.Modifier[] getModifiers()
-    {
-        return this.modifiers;
-    }
-
-    public String getDisplayText()
-    {
-        if (this.displayText == null)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (KeyCombination.Modifier mod : getModifiers())
-            {
-                sb.append(mod.toString()).append("+");
-            }
-            sb.append(getButton().toString());
-            this.displayText = sb.toString();
-        }
-        return this.displayText;
+        super(button, "Mouse", modifiers);
     }
 
     public boolean match(MouseEvent evt)
     {
         if
         (
-            evt.getButton() != getButton()
+            evt.getButton() != getTrigger()
             || evt.getEventType() != MouseEvent.MOUSE_CLICKED
         )
         return false;

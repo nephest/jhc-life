@@ -25,6 +25,7 @@ package com.nephest.jhclife.io;
 import javafx.scene.input.*;
 
 public class ScrollDirectionCombination
+extends InputCombination<ScrollDirectionCombination.Direction>
 {
 
     public enum Direction
@@ -32,47 +33,16 @@ public class ScrollDirectionCombination
         UP, DOWN, NONE;
     }
 
-    private final Direction direction;
-    private final KeyCombination.Modifier[] modifiers;
-
-    private String displayText;
-
     public ScrollDirectionCombination(Direction direction, KeyCombination.Modifier... modifiers)
     {
-        this.direction = direction;
-        this.modifiers = modifiers;
-    }
-
-    private Direction getDirection()
-    {
-        return this.direction;
-    }
-
-    private KeyCombination.Modifier[] getModifiers()
-    {
-        return this.modifiers;
-    }
-
-    public String getDisplayText()
-    {
-        if (this.displayText == null)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (KeyCombination.Modifier mod : getModifiers())
-            {
-                sb.append(mod.toString()).append("+");
-            }
-            sb.append(getDirection().toString());
-            this.displayText = sb.toString();
-        }
-        return this.displayText;
+        super(direction, "Scroll", modifiers);
     }
 
     public boolean match(ScrollEvent evt)
     {
         if
         (
-            getDirection(evt) != getDirection()
+            getDirection(evt) != getTrigger()
             || evt.getEventType() != ScrollEvent.SCROLL
         )
         return false;
