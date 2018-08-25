@@ -40,6 +40,7 @@ import static org.junit.Assert.*;
 
 import org.mockito.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.AdditionalMatchers.*;
 
 public class LifePresenterTest
 {
@@ -53,7 +54,7 @@ public class LifePresenterTest
     public static final KeyCode GENERATION_SAVE = KeyCode.S;
     public static final KeyCode GENERATION_LOAD = KeyCode.O;
 
-    public static final String HELP_MSG =
+    public static final String HELP_MSG_HEADER =
         "Info:\n"
         + "This is a basic Conway's Game of Life implementation.\n"
         + "\n"
@@ -62,18 +63,9 @@ public class LifePresenterTest
         + "Any live cell with two or three live neighbors lives on.\n"
         + "Any live cell with more than three live neighbors dies.\n"
         + "Any dead cell with exactly three live neighbors becomes a live cell.\n"
-        + "\n"
-        + "Binds:\n"
-        + "Zoom+\t\tCtrl+MouseLeft\t| Ctrl+ScrollUp\n"
-        + "Zoom-\t\tCtrl+MouseRight\t| Ctrl+ScrollDown\n"
-        + "Speed+\t\tAlt+MouseLeft\t\t| Alt+ScrollUp\n"
-        + "Speed-\t\tAlt+MouseRight\t| Alt+ScrollDown\n"
-        + "Population\tMouseClick\n"
-        + "Play/Pause\tP\n"
-        + "New game\tEscape\n"
-        + "Load game\tCtrl+O\n"
-        + "Save game\tCtrl+S\n"
-        + "\n"
+        + "\n";
+    public static final String HELP_MSG_FOOTER =
+        "\n"
         + "Misc:\n"
         + "nephest.com/projects/jhc-life\n"
         + "GPL Version 3\n"
@@ -872,7 +864,11 @@ public class LifePresenterTest
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         this.listener.onHelp();
         verifyRunInBackground(captor);
-        verify(this.viewMock).fireInfoAlert("Help", HELP_MSG);
+        verify(this.viewMock).fireInfoAlert
+        (
+            eq("Help"),
+            and( startsWith(HELP_MSG_HEADER), endsWith(HELP_MSG_FOOTER) )
+        );
     }
 
     @Test

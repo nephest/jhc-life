@@ -143,13 +143,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
         + "Any live cell with two or three live neighbors lives on.\n"
         + "Any live cell with more than three live neighbors dies.\n"
         + "Any dead cell with exactly three live neighbors becomes a live cell.\n"
-        + "\n"
-        + "Binds:\n"
-        + "Zoom+\t\tCtrl+MouseLeft\t| Ctrl+ScrollUp\n"
-        + "Zoom-\t\tCtrl+MouseRight\t| Ctrl+ScrollDown\n"
-        + "Speed+\t\tAlt+MouseLeft\t\t| Alt+ScrollUp\n"
-        + "Speed-\t\tAlt+MouseRight\t| Alt+ScrollDown\n"
-        + "Population\tMouseClick\n";
+        + "\n";
     public static final String HELP_MSG_FOOTER =
         "\n"
         + "Misc:\n"
@@ -788,18 +782,62 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     private void help()
     {
         StringBuilder sb = new StringBuilder(HELP_MSG_HEADER);
-        sb.append("Play/Pause\t")
+        sb.append("Binds:\n")
+
+        .append("Zoom+\t\t")
+        .append(getMouseControl().getBinding(MouseControlType.ZOOM_UP).getDisplayText())
+        .append(" | ")
+        .append(getScrollControl().getBinding(ScrollControlType.ZOOM_UP).getDisplayText())
+        .append("\n")
+
+        .append("Zoom-\t\t")
+        .append(getMouseControl().getBinding(MouseControlType.ZOOM_DOWN).getDisplayText())
+        .append(" | ")
+        .append(getScrollControl().getBinding(ScrollControlType.ZOOM_DOWN).getDisplayText())
+        .append("\n")
+
+        .append("Zoom default\t")
+        .append(getMouseControl().getBinding(MouseControlType.ZOOM_DEFAULT).getDisplayText())
+        .append("\n")
+        .append("\n")
+
+        .append("Speed+\t\t")
+        .append(getMouseControl().getBinding(MouseControlType.SPEED_UP).getDisplayText())
+        .append(" | ")
+        .append(getScrollControl().getBinding(ScrollControlType.SPEED_UP).getDisplayText())
+        .append("\n")
+
+        .append("Speed-\t\t")
+        .append(getMouseControl().getBinding(MouseControlType.SPEED_DOWN).getDisplayText())
+        .append(" | ")
+        .append(getScrollControl().getBinding(ScrollControlType.SPEED_DOWN).getDisplayText())
+        .append("\n")
+
+        .append("Speed default\t")
+        .append(getMouseControl().getBinding(MouseControlType.SPEED_DEFAULT).getDisplayText())
+        .append("\n")
+        .append("\n")
+
+        .append("Population\t")
+        .append(getMouseControl().getBinding(MouseControlType.POPULAITON_TOGGLE).getDisplayText())
+        .append("\n")
+
+        .append("Play/Pause\t")
         .append(getKeyControl().getBinding(KeyControlType.STATE_TOGGLE).getDisplayText())
         .append("\n")
+
         .append("New game\t")
         .append(getKeyControl().getBinding(KeyControlType.NEW_GAME).getDisplayText())
         .append("\n")
+
         .append("Load game\t")
         .append(getKeyControl().getBinding(KeyControlType.GENERATION_LOAD).getDisplayText())
         .append("\n")
+
         .append("Save game\t")
         .append(getKeyControl().getBinding(KeyControlType.GENERATION_SAVE).getDisplayText())
         .append("\n")
+
         .append(HELP_MSG_FOOTER);
         getView().fireInfoAlert("Help", sb.toString());
     }
