@@ -60,7 +60,7 @@ implements LifeView<Parent>
     private Generation lastGeneration;
 
     private BorderPane borderPane;
-    private Button playButton, pauseButton,
+    private Button stateToggleButton,
         speedUpButton, speedDownButton, speedDefaultButton,
         zoomUpButton, zoomDownButton, zoomDefaultButton;
     private Label generationNumberLabel, tipLabel, statusLabel, speedLabel, zoomLabel;
@@ -128,8 +128,7 @@ implements LifeView<Parent>
         this.speedDownButton.setOnAction((e)->listener.onSpeedDown());
         this.speedDefaultButton.setOnAction((e)->listener.onSpeedDefault());
 
-        this.playButton.setOnAction((e)->listener.onPlay());
-        this.pauseButton.setOnAction((e)->listener.onPause());
+        this.stateToggleButton.setOnAction((e)->listener.onStateToggle());
 
         this.newGameItem.setOnAction((e)->listener.onNewGame());
         this.generationSaveItem.setOnAction((e)->listener.onGenerationSave());
@@ -297,8 +296,7 @@ implements LifeView<Parent>
         this.speedDownButton.setOnAction(null);
         this.speedDefaultButton.setOnAction(null);
 
-        this.playButton.setOnAction(null);
-        this.pauseButton.setOnAction(null);
+        this.stateToggleButton.setOnAction(null);
 
         this.newGameItem.setOnAction(null);
         this.generationSaveItem.setOnAction(null);
@@ -354,11 +352,8 @@ implements LifeView<Parent>
         this.zoomDefaultButton = new Button("default");
         this.zoomDefaultButton.getStyleClass().add(BUTTON_DEFAULT_CLASS);
 
-        this.playButton = new Button("Play");
-        this.playButton.setId("button-play");
-
-        this.pauseButton = new Button("Pause");
-        this.pauseButton.setId("button-pause");
+        this.stateToggleButton = new Button("Play/Pause");
+        this.stateToggleButton.setId("button-state-toggle");
 
         this.newGameItem = new MenuItem("New");
         this.newGameItem.getStyleClass().add(MENU_ITEM_CLASS);
@@ -401,7 +396,7 @@ implements LifeView<Parent>
             newButtonGroup(this.zoomUpButton, this.zoomDefaultButton),
             newSeparator(Orientation.VERTICAL),
 
-            newButtonGroup(this.pauseButton, this.playButton),
+            newButtonGroup(this.stateToggleButton),
             newSpacer()
         );
         ctrls.setId("box-control");

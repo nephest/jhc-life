@@ -47,9 +47,7 @@ public interface LifeViewListener
 
     public void onSpeedDefault();
 
-    public void onPause();
-
-    public void onPlay();
+    public void onStateToggle();
 
     public void onNewGame();
 

@@ -389,15 +389,9 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
             }
 
             @Override
-            public void onPause()
+            public void onStateToggle()
             {
-                getExecutor().execute(()->pause());
-            }
-
-            @Override
-            public void onPlay()
-            {
-                getExecutor().execute(()->play());
+                getExecutor().execute(()->toggleState());
             }
 
             @Override
@@ -614,7 +608,7 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
         if (getKeyControl().getBinding(KeyControlType.STATE_TOGGLE).match(evt))
         {
-            toggleState();
+            getListener().onStateToggle();
         }
         else if (getKeyControl().getBinding(KeyControlType.NEW_GAME).match(evt))
         {
@@ -638,11 +632,11 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
     {
         if (getModel().isRunning())
         {
-            getListener().onPause();
+            pause();
         }
         else
         {
-            getListener().onPlay();
+            play();
         }
     }
 

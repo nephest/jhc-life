@@ -428,17 +428,16 @@ public class LifePresenterTest
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
             init();
-            testKeyTogglePlay(PLAY_TOGGLE, zone, true);
+            testKeyTogglePlay(PLAY_TOGGLE, zone);
             init();
-            testKeyTogglePlay(PLAY_TOGGLE, zone, false);
+            testKeyTogglePlay(PLAY_TOGGLE, zone);
         }
     }
 
-    private void testKeyTogglePlay(KeyCode code, LifeView.Zone zone,  boolean running)
+    private void testKeyTogglePlay(KeyCode code, LifeView.Zone zone)
     {
         LifeViewListener spy = spy(this.listener);
         this.presenter.setListener(spy);
-        when(this.modelMock.isRunning()).thenReturn(running);
 
         KeyEvent evt = new KeyEvent
         (
@@ -450,24 +449,8 @@ public class LifePresenterTest
         (
             evt,
             zone,
-            ()->
-            {
-                if (running)
-                {
-                    verify(spy, never()).onPlay();
-                    verify(spy).onPause();
-                }
-                else
-                {
-                    verify(spy).onPlay();
-                    verify(spy, never()).onPause();
-                }
-            },
-            ()->
-            {
-                verify(spy, never()).onPause();
-                verify(spy, never()).onPlay();
-            }
+            ()->{verify(spy).onStateToggle();},
+            ()->{verify(spy, never()).onStateToggle();}
         );
     }
 
@@ -656,20 +639,24 @@ public class LifePresenterTest
     }
 
     @Test
-    public void testPause()
+    public void testToggleStatePause()
     {
+        when(this.modelMock.isRunning()).thenReturn(true);
+
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onPause();
+        this.listener.onStateToggle();
         verifyRunInBackground(captor);
         verify(this.modelMock).stop();
         verify(this.viewMock).setStatus(LifePresenter.PAUSED_STATUS);
     }
 
     @Test
-    public void testPlay()
+    public void testToggleStatePlay()
     {
+        when(this.modelMock.isRunning()).thenReturn(false);
+
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onPlay();
+        this.listener.onStateToggle();
         verifyRunInBackground(captor);
         verify(this.modelMock).start();
         verify(this.viewMock).setStatus(LifePresenter.PLAYING_STATUS);
