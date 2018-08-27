@@ -28,9 +28,31 @@ public class MouseKeyCombination
 extends InputCombination<MouseButton>
 {
 
-    public MouseKeyCombination(MouseButton button, KeyCombination.Modifier... modifiers)
+    private final boolean precise;
+
+    public MouseKeyCombination
+    (
+        MouseButton button,
+        boolean precise,
+        KeyCombination.Modifier... modifiers
+    )
     {
         super(button, "Mouse", modifiers);
+        this.precise = precise;
+    }
+
+    public MouseKeyCombination
+    (
+        MouseButton button,
+        KeyCombination.Modifier... modifiers
+    )
+    {
+        this(button, false, modifiers);
+    }
+
+    public boolean isPrecise()
+    {
+        return this.precise;
     }
 
     public boolean match(MouseEvent evt)
@@ -39,6 +61,7 @@ extends InputCombination<MouseButton>
         (
             evt.getButton() != getTrigger()
             || evt.getEventType() != MouseEvent.MOUSE_CLICKED
+            || (isPrecise() && !evt.isStillSincePress())
         )
         return false;
 
