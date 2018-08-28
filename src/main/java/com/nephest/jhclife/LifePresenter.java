@@ -58,7 +58,7 @@ extends ReactivePresenter
         SPEED_UP,
         SPEED_DOWN,
         SPEED_DEFAULT,
-        POPULAITON_TOGGLE;
+        POPULATION_TOGGLE;
     }
 
     private final Map<ControlType, EventConsumer<LifeView.Zone>> controlActions
@@ -291,7 +291,7 @@ extends ReactivePresenter
 
         getControlActions().put
         (
-            ControlType.POPULAITON_TOGGLE,
+            ControlType.POPULATION_TOGGLE,
             (x, y, zone)->{ togglePopulation((int)x, (int)y, zone); }
         );
     }
@@ -336,7 +336,7 @@ extends ReactivePresenter
 
         getMouseControl().setBinding
         (
-            ControlType.POPULAITON_TOGGLE,
+            ControlType.POPULATION_TOGGLE,
             DEFAULT_MOUSE_POPULATION_TOGGLE_COMBINATION
         );
     }
@@ -887,7 +887,7 @@ extends ReactivePresenter
         .append("\n")
 
         .append("Population\t")
-        .append(getControlBindingsString(ControlType.POPULAITON_TOGGLE))
+        .append(getControlBindingsString(ControlType.POPULATION_TOGGLE))
         .append("\n")
 
         .append("Play/Pause\t")
