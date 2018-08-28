@@ -25,6 +25,7 @@ package com.nephest.jhclife.io;
 import javafx.scene.input.*;
 
 public class InputCombination<T>
+implements Displayable
 {
 
     private final T trigger;
@@ -83,6 +84,7 @@ public class InputCombination<T>
         }
     }
 
+    @Override
     public String getDisplayText()
     {
         if (this.displayText == null)
