@@ -27,11 +27,18 @@ import java.util.*;
 public class ControlBindings<T extends Enum<T>, B>
 {
 
+    private final Class<T> type;
     private final Map<T, B> binds;
 
     public ControlBindings(Class<T> type)
     {
+        this.type = type;
         this.binds = new EnumMap(type);
+    }
+
+    public Class<T> getType()
+    {
+        return this.type;
     }
 
     public void setBinding(T ctrl, B bind)
