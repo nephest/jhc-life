@@ -65,53 +65,30 @@ public class MainMenuPresenterTest
         this.listener = getListener();
     }
 
-    private void testKeyCancel(KeyCode code, MainMenuView.Zone zone)
-    {
-        MainMenuViewListener spy = spy(this.listener);
-        this.presenter.setListener(spy);
-
-        KeyEvent evt = new KeyEvent
-        (
-            KeyEvent.KEY_PRESSED, "", "", code, //type, char, text, code
-            false, false, false, false //shift, ctrl, alt, meta
-        );
-
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        spy.onKeyEvent(evt, zone);
-
-        //consume before handling
-        if (zone == MainMenuView.Zone.GLOBAL)
-        {
-            assertTrue(evt.isConsumed());
-        }
-        else
-        {
-            assertFalse(evt.isConsumed());
-        }
-        verifyRunInBackground(captor);
-
-        if (zone == MainMenuView.Zone.GLOBAL)
-        {
-            verify(spy).onCancel();
-        }
-        else
-        {
-            verify(spy, never()).onCancel();
-        }
-    }
-
     @Test
     public void testKeyCancel()
     {
         for (MainMenuView.Zone zone : MainMenuView.Zone.values())
         {
             init();
-            testKeyCancel(CANCEL, zone);
+            KeyEvent evt = new KeyEvent
+            (
+                KeyEvent.KEY_PRESSED, "", "", CANCEL, //type, char, text, code
+                false, false, false, false //shift, ctrl, alt, meta
+            );
+            Runnable trigger = ()->this.listener.onKeyEvent(evt, zone);
+            if (zone == MainMenuView.Zone.GLOBAL)
+            {
+                testCancel(trigger, 1);
+            }
+            else
+            {
+                testCancel(trigger, 0);
+            }
         }
     }
 
-    @Test
-    public void testNewGame()
+    private void testNewGame(Runnable trigger, int times)
     {
         int width = 1;
         int height = 2;
@@ -120,57 +97,56 @@ public class MainMenuPresenterTest
         stubView(width, height, seed, prob);
 
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        MainMenuViewListener listener = getListener();
-        listener.onNewGame();
+        trigger.run();
         verifyRunInBackground(captor);
 
         InOrder inOrder = inOrder(this.viewMock, this.modelMock, this.controllerMock);
-        inOrder.verify(this.viewMock).lock();
-        inOrder.verify(this.modelMock).stop();
-        inOrder.verify(this.modelMock).createNewPopulation(width, height);
-        inOrder.verify(this.modelMock).populate(seed, prob / 100.0);
-        inOrder.verify(this.controllerMock).setViewType(MainView.ViewType.LIFE);
-        inOrder.verify(this.viewMock).unlock();
+        inOrder.verify(this.viewMock, times(times)).lock();
+        inOrder.verify(this.modelMock, times(times)).stop();
+        inOrder.verify(this.modelMock, times(times)).createNewPopulation(width, height);
+        inOrder.verify(this.modelMock, times(times)).populate(seed, prob / 100.0);
+        inOrder.verify(this.controllerMock, times(times)).setViewType(MainView.ViewType.LIFE);
+        inOrder.verify(this.viewMock, times(times)).unlock();
     }
 
-    @Test
-    public void testNewGameInvalidWidth()
+    private void testNewGameInvalidWidth(Runnable trigger, int times)
     {
         testNewGameInvalidParam
         (
+            trigger, times,
             -1, 2, 3, 50,
             "Invalid dimensions",
             "Width and Height must be more than 0"
         );
     }
 
-    @Test
-    public void testNewGameInvalidHeight()
+    private void testNewGameInvalidHeight(Runnable trigger, int times)
     {
         testNewGameInvalidParam
         (
+            trigger, times,
             1, -2, 3, 50,
             "Invalid dimensions",
             "Width and Height must be more than 0"
         );
     }
 
-    @Test
-    public void testNewGameInvalidProbabilityLow()
+    private void testNewGameInvalidProbabilityLow(Runnable trigger, int times)
     {
         testNewGameInvalidParam
         (
+            trigger, times,
             1, 2, 3, -1.0,
             "Invalid density",
             "Population density must be in 0-100 range"
         );
     }
 
-    @Test
-    public void testNewGameInvalidProbabilityHigh()
+    private void testNewGameInvalidProbabilityHigh(Runnable trigger, int times)
     {
         testNewGameInvalidParam
         (
+            trigger, times,
             1, 2, 3, 100.1,
             "Invalid density",
             "Population density must be in 0-100 range"
@@ -179,6 +155,8 @@ public class MainMenuPresenterTest
 
     private void testNewGameInvalidParam
     (
+        Runnable trigger,
+        int times,
         int width,
         int height,
         long seed,
@@ -189,14 +167,13 @@ public class MainMenuPresenterTest
     {
         stubView(width, height, seed, prob);
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        MainMenuViewListener listener = getListener();
-        listener.onNewGame();
+        trigger.run();
         verifyRunInBackground(captor);
 
         InOrder inOrder = inOrder(this.viewMock);
-        inOrder.verify(this.viewMock).lock();
-        inOrder.verify(this.viewMock).fireErrorAlert(header, alert);
-        inOrder.verify(this.viewMock).unlock();
+        inOrder.verify(this.viewMock, times(times)).lock();
+        inOrder.verify(this.viewMock, times(times)).fireErrorAlert(header, alert);
+        inOrder.verify(this.viewMock, times(times)).unlock();
 
         verifyZeroInteractions(this.modelMock);
     }
@@ -209,14 +186,37 @@ public class MainMenuPresenterTest
         when(this.viewMock.getPopulationProbability()).thenReturn(prob);
     }
 
+    private void testNewGameFull(Runnable trigger, int times)
+    {
+        testNewGame(trigger, times);
+        init();
+        testNewGameInvalidWidth(trigger, times);
+        init();
+        testNewGameInvalidHeight(trigger, times);
+        init();
+        testNewGameInvalidProbabilityLow(trigger, times);
+        init();
+        testNewGameInvalidProbabilityHigh(trigger, times);
+    }
+
     @Test
-    public void testCancel()
+    public void testListenerNewGame()
+    {
+        testNewGameFull( ()->this.listener.onNewGame(), 1 );
+    }
+
+    private void testCancel(Runnable trigger, int times)
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        MainMenuViewListener listener = getListener();
-        listener.onCancel();
+        trigger.run();
         verifyRunInBackground(captor);
-        verify(this.controllerMock).setViewType(MainView.ViewType.LIFE);
+        verify(this.controllerMock, times(times)).setViewType(MainView.ViewType.LIFE);
+    }
+
+    @Test
+    public void testListenerCancel()
+    {
+        testCancel( ()->this.listener.onCancel(), 1 );
     }
 
     private MainMenuViewListener getListener()

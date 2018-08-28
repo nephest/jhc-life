@@ -22,9 +22,9 @@
 
 package com.nephest.jhclife;
 
-import com.nephest.jhclife.io.ControlBindings;
+import com.nephest.jhclife.io.*;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 import javafx.scene.input.*;
@@ -33,16 +33,19 @@ public class MainMenuPresenter
 extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListener>
 {
 
-    public static enum KeyControlType
+    public static enum ControlType
     {
-        CANCEL;
+        NEW_GAME, CANCEL;
     }
+
+    private final Map<ControlType, EventConsumer<MainMenuView.Zone>> controlActions
+        = new EnumMap(ControlType.class);
 
     public static final KeyCombination DEFAULT_CANCEL_COMBINATION
         = LifePresenter.DEFAULT_NEW_GAME_COMBINATION;
 
-    private final ControlBindings<KeyControlType, KeyCombination> keyControl
-        = new ControlBindings(KeyControlType.class);
+    private final ControlBindings<ControlType, KeyCombination> keyControl
+        = new ControlBindings(ControlType.class);
 
     public MainMenuPresenter
     (
@@ -58,15 +61,31 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
 
     private void init()
     {
+        initActions();
         initKeyControl();
         listen();
+    }
+
+    private void initActions()
+    {
+        getControlActions().put
+        (
+            ControlType.NEW_GAME,
+            (x, y, zone)->{ newGame(x, y, zone); }
+        );
+
+        getControlActions().put
+        (
+            ControlType.CANCEL,
+            (x, y, zone)->{ cancel(x, y, zone); }
+        );
     }
 
     private void initKeyControl()
     {
         getKeyControl().setBinding
         (
-            KeyControlType.CANCEL,
+            ControlType.CANCEL,
             DEFAULT_CANCEL_COMBINATION
         );
     }
@@ -86,13 +105,27 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
             @Override
             public void onNewGame()
             {
-                getExecutor().execute(()->newGame());
+                getExecutor().execute
+                (
+                    ()->
+                    {
+                        getControlActions().get(ControlType.NEW_GAME)
+                        .consume(Double.NaN, Double.NaN, MainMenuView.Zone.GLOBAL);
+                    }
+                );
             }
 
             @Override
             public void onCancel()
             {
-                getExecutor().execute(()->cancel());
+                getExecutor().execute
+                (
+                    ()->
+                    {
+                        getControlActions().get(ControlType.CANCEL)
+                        .consume(Double.NaN, Double.NaN, MainMenuView.Zone.GLOBAL);
+                    }
+                );
             }
         };
         setListener(listener);
@@ -103,9 +136,10 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
         if (zone != MainMenuView.Zone.GLOBAL) return false;
 
         boolean match = false;
-        for (KeyControlType type : KeyControlType.values())
+        for (ControlType type : ControlType.values())
         {
-            if (getKeyControl().getBinding(type).match(evt))
+            KeyCombination bind = getKeyControl().getBinding(type);
+            if (bind != null && bind.match(evt))
             {
                 match = true;
                 break;
@@ -127,16 +161,22 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
 
     private void keyPressed(KeyEvent evt, MainMenuView.Zone zone)
     {
-        if (zone != MainMenuView.Zone.GLOBAL) return;
-
-        if (getKeyControl().getBinding(KeyControlType.CANCEL).match(evt))
+        for (ControlType type : ControlType.values())
         {
-            getListener().onCancel();
+            KeyCombination bind = getKeyControl().getBinding(type);
+            if (bind != null && bind.match(evt))
+            {
+                getControlActions().get(type)
+                    .consume(Double.NaN, Double.NaN, zone);
+                break;
+            }
         }
     }
 
-    private void newGame()
+    private void newGame(double x, double y, MainMenuView.Zone zone)
     {
+        if (zone != MainMenuView.Zone.GLOBAL) return;
+
         getView().lock();
         if ( !checkNewGameParameters() )
         {
@@ -188,12 +228,18 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
         return result;
     }
 
-    private void cancel()
+    private void cancel(double x, double y, MainMenuView.Zone zone)
     {
+        if (zone != MainMenuView.Zone.GLOBAL) return;
         getMainController().setViewType(MainView.ViewType.LIFE);
     }
 
-    public ControlBindings<KeyControlType, KeyCombination> getKeyControl()
+    private Map<ControlType, EventConsumer<MainMenuView.Zone>> getControlActions()
+    {
+        return this.controlActions;
+    }
+
+    public ControlBindings<ControlType, KeyCombination> getKeyControl()
     {
         return this.keyControl;
     }

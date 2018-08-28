@@ -423,21 +423,20 @@ public class LifePresenterTest
     }
 
     @Test
-    public void testKeyTogglePlay()
+    public void testKeyToggle()
     {
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
             init();
-            testKeyTogglePlay(PLAY_TOGGLE, zone);
+            testKeyToggle(PLAY_TOGGLE, zone, true);
             init();
-            testKeyTogglePlay(PLAY_TOGGLE, zone);
+            testKeyToggle(PLAY_TOGGLE, zone, false);
         }
     }
 
-    private void testKeyTogglePlay(KeyCode code, LifeView.Zone zone)
+    private void testKeyToggle(KeyCode code, LifeView.Zone zone, boolean running)
     {
-        LifeViewListener spy = spy(this.listener);
-        this.presenter.setListener(spy);
+        when(this.modelMock.isRunning()).thenReturn(running);
 
         KeyEvent evt = new KeyEvent
         (
@@ -445,13 +444,18 @@ public class LifePresenterTest
             false, false, false, false //shift, ctrl, alt, meta
         );
 
-        testGlobalKeyEvent
-        (
-            evt,
-            zone,
-            ()->{verify(spy).onStateToggle();},
-            ()->{verify(spy, never()).onStateToggle();}
-        );
+        Runnable trigger = ()->this.listener.onKeyEvent(evt, zone);
+        if(zone == LifeView.Zone.GLOBAL)
+        {
+            if (running)
+            {
+                testToggleStatePauseAction(trigger, 1);
+            }
+            else
+            {
+                testToggleStatePlayAction(trigger, 1);
+            }
+        }
     }
 
     @Test
@@ -464,21 +468,22 @@ public class LifePresenterTest
                 KeyEvent.KEY_PRESSED, "", "", NEW_GAME, //type, char, text, code
                 false, false, false, false //shift, ctrl, alt, meta
             );
+            Runnable trigger = ()->this.listener.onKeyEvent(evt, zone);
             init();
-            LifeViewListener spy = spy(this.listener);
-            this.presenter.setListener(spy);
-            testGlobalKeyEvent
-            (
-                evt,
-                zone,
-                ()->{verify(spy).onNewGame();},
-                ()->{verify(spy, never()).onNewGame();}
-            );
+            if(zone == LifeView.Zone.GLOBAL)
+            {
+                testNewGame(trigger, 1);
+            }
+            else
+            {
+                testNewGame(trigger, 0);
+            }
         }
     }
 
     @Test
     public void testKeyGenerationSave()
+    throws IOException
     {
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
@@ -487,21 +492,22 @@ public class LifePresenterTest
                 KeyEvent.KEY_PRESSED, "", "", GENERATION_SAVE, //type, char, text, code
                 false, true, false, false //shift, ctrl, alt, meta
             );
+            Runnable trigger = ()->this.listener.onKeyEvent(evt, zone);
             init();
-            LifeViewListener spy = spy(this.listener);
-            this.presenter.setListener(spy);
-            testGlobalKeyEvent
-            (
-                evt,
-                zone,
-                ()->{verify(spy).onGenerationSave();},
-                ()->{verify(spy, never()).onGenerationSave();}
-            );
+            if(zone == LifeView.Zone.GLOBAL)
+            {
+                testGenerationSave(trigger, 1);
+            }
+            else
+            {
+                testGenerationSave(trigger, 0);
+            }
         }
     }
 
     @Test
     public void testKeyGenerationLoad()
+    throws IOException
     {
         for (LifeView.Zone zone : LifeView.Zone.values())
         {
@@ -510,48 +516,16 @@ public class LifePresenterTest
                 KeyEvent.KEY_PRESSED, "", "", GENERATION_LOAD, //type, char, text, code
                 false, true, false, false //shift, ctrl, alt, meta
             );
+            Runnable trigger = ()->this.listener.onKeyEvent(evt, zone);
             init();
-            LifeViewListener spy = spy(this.listener);
-            this.presenter.setListener(spy);
-            testGlobalKeyEvent
-            (
-                evt,
-                zone,
-                ()->{verify(spy).onGenerationLoad();},
-                ()->{verify(spy, never()).onGenerationLoad();}
-            );
-        }
-    }
-
-    private void testGlobalKeyEvent
-    (
-        KeyEvent evt,
-        LifeView.Zone zone,
-        Runnable onGlobal,
-        Runnable onOther
-    )
-    {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.presenter.getListener().onKeyEvent(evt, zone);
-
-        //consume before handling
-        if (zone == LifeView.Zone.GLOBAL)
-        {
-            assertTrue(evt.isConsumed());
-        }
-        else
-        {
-            assertFalse(evt.isConsumed());
-        }
-        verifyRunInBackground(captor);
-
-        if (zone == LifeView.Zone.GLOBAL)
-        {
-            onGlobal.run();
-        }
-        else
-        {
-            onOther.run();
+            if(zone == LifeView.Zone.GLOBAL)
+            {
+                testGenerationLoad(trigger, 1);
+            }
+            else
+            {
+                testGenerationLoad(trigger, 0);
+            }
         }
     }
 
@@ -565,16 +539,16 @@ public class LifePresenterTest
                 KeyEvent.KEY_PRESSED, "", "", HELP, //type, char, text, code
                 false, false, false, false //shift, ctrl, alt, meta
             );
+            Runnable trigger = ()->this.listener.onKeyEvent(evt, zone);
             init();
-            LifeViewListener spy = spy(this.listener);
-            this.presenter.setListener(spy);
-            testGlobalKeyEvent
-            (
-                evt,
-                zone,
-                ()->{verify(spy).onHelp();},
-                ()->{verify(spy, never()).onHelp();}
-            );
+            if(zone == LifeView.Zone.GLOBAL)
+            {
+                testHelp(trigger, 1);
+            }
+            else
+            {
+                testHelp(trigger, 0);
+            }
         }
     }
 
@@ -638,44 +612,59 @@ public class LifePresenterTest
         verify(this.viewMock).setSpeedInfo(String.format(SPEED_FORMAT, targetSpeed));
     }
 
-    @Test
-    public void testToggleStatePause()
-    {
-        when(this.modelMock.isRunning()).thenReturn(true);
-
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onStateToggle();
-        verifyRunInBackground(captor);
-        verify(this.modelMock).stop();
-        verify(this.viewMock).setStatus(LifePresenter.PAUSED_STATUS);
-    }
-
-    @Test
-    public void testToggleStatePlay()
+    private void testToggleStatePlayAction(Runnable trigger, int times)
     {
         when(this.modelMock.isRunning()).thenReturn(false);
-
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onStateToggle();
+        trigger.run();
         verifyRunInBackground(captor);
-        verify(this.modelMock).start();
-        verify(this.viewMock).setStatus(LifePresenter.PLAYING_STATUS);
+        verify(this.modelMock, times(times)).start();
+        verify(this.viewMock, times(times)).setStatus(LifePresenter.PLAYING_STATUS);
+    }
+
+    private void testToggleStatePauseAction(Runnable trigger, int times)
+    {
+        when(this.modelMock.isRunning()).thenReturn(true);
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        trigger.run();
+        verifyRunInBackground(captor);
+        verify(this.modelMock, times(times)).stop();
+        verify(this.viewMock, times(times)).setStatus(LifePresenter.PAUSED_STATUS);
     }
 
     @Test
-    public void testNewGame()
+    public void testListenerToggleStatePlay()
+    {
+        testToggleStatePlayAction( ()->this.listener.onStateToggle(), 1 );
+    }
+
+    @Test
+    public void testListenerToggleStatePause()
+    {
+        testToggleStatePauseAction( ()->this.listener.onStateToggle(), 1 );
+    }
+
+    private void testNewGame(Runnable trigger, int times)
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onNewGame();
+        trigger.run();
         verifyRunInBackground(captor);
         InOrder inOrder = inOrder(this.modelMock, this.controllerMock);
-        inOrder.verify(this.modelMock).stop();
-        inOrder.verify(this.controllerMock).setViewType(MainView.ViewType.MAIN_MENU);
+        inOrder.verify(this.modelMock, times(times)).stop();
+        inOrder.verify(this.controllerMock, times(times)).setViewType(MainView.ViewType.MAIN_MENU);
+    }
+
+    @Test
+    public void testListenerNewGame()
+    {
+        testNewGame( ()->this.listener.onNewGame(), 1 );
     }
 
     private void testGenerationSave
     (
         ArgumentCaptor<Runnable> captor,
+        Runnable trigger,
+        int times,
         File file,
         byte[] translatedBytes
     )
@@ -701,15 +690,16 @@ public class LifePresenterTest
         this.listener.readyForNextFrame();
 
         //open a file selection dialog
-        this.listener.onGenerationSave();
+        trigger.run();
         verifyRunInBackground(captor);
-        verify(this.viewMock).selectFile
+        verify(this.viewMock, times(times)).selectFile
         (
             eq(ViewBase.FileSelectionMode.SAVE),
             any(),
             any(),
             consumerCaptor.capture()
         );
+        if (times == 0) return;
 
         //save if a file was selected
         List<File> selectedFiles = new ArrayList();
@@ -718,8 +708,7 @@ public class LifePresenterTest
         verifyRunInBackground(captor, 2);
     }
 
-    @Test
-    public void testGenerationSaveNewFile()
+    private void testGenerationSaveNewFile(Runnable trigger, int times)
     throws IOException
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -727,12 +716,11 @@ public class LifePresenterTest
         File file = mock(File.class);
         when(file.exists()).thenReturn(false);
 
-        testGenerationSave(captor, file, translatedBytes);
-        verify(this.fileIOMock).write(file.toPath(), translatedBytes);
+        testGenerationSave(captor, trigger, times, file, translatedBytes);
+        verify(this.fileIOMock, times(times)).write(file.toPath(), translatedBytes);
     }
 
-    @Test
-    public void testGenerationSaveExistingFile()
+    private void testGenerationSaveExistingFile(Runnable trigger, int times)
     throws IOException
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -740,10 +728,10 @@ public class LifePresenterTest
         File file = mock(File.class);
         when(file.exists()).thenReturn(true);
 
-        testGenerationSave(captor, file, translatedBytes);
+        testGenerationSave(captor, trigger, times, file, translatedBytes);
 
         //ask for the confirmation
-        verify(this.viewMock).fireConfirmationAlert
+        verify(this.viewMock, times(times)).fireConfirmationAlert
         (
             any(),
             any(),
@@ -753,12 +741,11 @@ public class LifePresenterTest
 
         //save if confirmed by the user
         captor.getValue().run();
-        verifyRunInBackground(captor, 3);
-        verify(this.fileIOMock).write(file.toPath(), translatedBytes);
+        verifyRunInBackground(captor, times == 0 ? 1 : 3);
+        verify(this.fileIOMock, times(times)).write(file.toPath(), translatedBytes);
     }
 
-    @Test
-    public void testGenerationSaveError()
+    private void testGenerationSaveError(Runnable trigger, int times)
     throws IOException
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -767,24 +754,44 @@ public class LifePresenterTest
         when(file.exists()).thenReturn(false);
         doThrow(new IOException()).when(this.fileIOMock).write(any(), any());
 
-        testGenerationSave(captor, file, translatedBytes);
+        testGenerationSave(captor, trigger, times, file, translatedBytes);
 
-        verify(this.viewMock).fireErrorAlert(eq("Generation saving failed"), any());
+        verify(this.viewMock, times(times)).fireErrorAlert(eq("Generation saving failed"), any());
+    }
+
+    private void testGenerationSaveNothingToSave(Runnable trigger, int times)
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        trigger.run();
+        verifyRunInBackground(captor);
+
+        verify(this.viewMock, times(times)).fireErrorAlert(eq("No generation to save"), any());
+    }
+
+    private void testGenerationSave(Runnable trigger, int times)
+    throws IOException
+    {
+        testGenerationSaveNewFile(trigger, times);
+        init();
+        testGenerationSaveExistingFile(trigger, times);
+        init();
+        testGenerationSaveError(trigger, times);
+        init();
+        testGenerationSaveNothingToSave(trigger, times);
     }
 
     @Test
-    public void testGenerationSaveNothingToSave()
+    public void testListenerGenerationSave()
+    throws IOException
     {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onGenerationSave();
-        verifyRunInBackground(captor);
-
-        verify(this.viewMock).fireErrorAlert(eq("No generation to save"), any());
+        testGenerationSave(()->this.listener.onGenerationSave(), 1);
     }
 
     private void testGenerationLoad
     (
         ArgumentCaptor<Runnable> captor,
+        Runnable trigger,
+        int times,
         File file,
         Generation generation
     )
@@ -798,17 +805,18 @@ public class LifePresenterTest
         Path filePath = mock(Path.class);
         when(file.toPath()).thenReturn(filePath);
 
-        this.listener.onGenerationLoad();
+        trigger.run();
         verifyRunInBackground(captor);
 
         //show the file selection dialog
-        verify(this.viewMock).selectFile
+        verify(this.viewMock, times(times)).selectFile
         (
             eq(ViewBase.FileSelectionMode.SELECT_SINGLE),
             any(),
             any(),
             consumerCaptor.capture()
         );
+        if (times == 0) return;
 
         //load if a file was selected
         List<File> files = new ArrayList();
@@ -817,8 +825,7 @@ public class LifePresenterTest
         verifyRunInBackground(captor, 2);
     }
 
-    @Test
-    public void testGenerationLoadExistingFile()
+    private void testGenerationLoadExistingFile(Runnable trigger, int times)
     throws IOException
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -826,13 +833,12 @@ public class LifePresenterTest
         File file = mock(File.class);
         when(file.exists()).thenReturn(true);
 
-        testGenerationLoad(captor, file, generation);
+        testGenerationLoad(captor, trigger, times, file, generation);
 
-        verify(this.modelMock).setGeneration(generation);
+        verify(this.modelMock, times(times)).setGeneration(generation);
     }
 
-    @Test
-    public void testGenerationLoadNonExistingFile()
+    private void testGenerationLoadNonExistingFile(Runnable trigger, int times)
     throws IOException
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -840,13 +846,12 @@ public class LifePresenterTest
         File file = mock(File.class);
         when(file.exists()).thenReturn(false);
 
-        testGenerationLoad(captor, file, generation);
+        testGenerationLoad(captor, trigger, times, file, generation);
 
-        verify(this.viewMock).fireErrorAlert(eq("Generation loading failed"), any());
+        verify(this.viewMock, times(times)).fireErrorAlert(eq("Generation loading failed"), any());
     }
 
-    @Test
-    public void testGenerationLoadError()
+    private void testGenerationLoadError(Runnable trigger, int times)
     throws IOException
     {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -855,22 +860,45 @@ public class LifePresenterTest
         when(file.exists()).thenReturn(true);
         doThrow(new IOException()).when(this.fileIOMock).readAllBytes(any());
 
-        testGenerationLoad(captor, file, generation);
+        testGenerationLoad(captor, trigger, times, file, generation);
 
-        verify(this.viewMock).fireErrorAlert(eq("Generation loading failed"), any());
+        verify(this.viewMock, times(times)).fireErrorAlert(eq("Generation loading failed"), any());
+    }
+
+    private void testGenerationLoad(Runnable trigger, int times)
+    throws IOException
+    {
+        testGenerationLoadExistingFile(trigger, times);
+        init();
+        testGenerationLoadNonExistingFile(trigger, times);
+        init();
+        testGenerationLoadError(trigger, times);
+    }
+
+
+    @Test
+    public void testListenerGenerationLoad()
+    throws IOException
+    {
+        testGenerationLoad( ()->this.listener.onGenerationLoad(), 1);
+    }
+
+    private void testHelp(Runnable trigger, int times)
+    {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        trigger.run();
+        verifyRunInBackground(captor);
+        verify(this.viewMock, times(times)).fireInfoAlert
+        (
+            eq("Help"),
+            and( startsWith(HELP_MSG_HEADER), endsWith(HELP_MSG_FOOTER) )
+        );
     }
 
     @Test
     public void testHelp()
     {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        this.listener.onHelp();
-        verifyRunInBackground(captor);
-        verify(this.viewMock).fireInfoAlert
-        (
-            eq("Help"),
-            and( startsWith(HELP_MSG_HEADER), endsWith(HELP_MSG_FOOTER) )
-        );
+        testHelp(()->this.listener.onHelp(), 1);
     }
 
     @Test
