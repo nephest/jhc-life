@@ -31,7 +31,7 @@ import javafx.scene.control.*;
 public final class FX
 {
 
-    public static final Logger LOG = Logger.getLogger(FX.class.getName());
+    private static final Logger LOG = Logger.getLogger(FX.class.getName());
 
     public static final String CONTROL_NAME_SPLITTER = " ";
     public static final String CONTROL_PREFIX = "[";
