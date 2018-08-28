@@ -861,49 +861,41 @@ extends ReactivePresenter
         sb.append("Binds:\n")
 
         .append("Zoom+\t\t")
-        .append(getMouseControl().getBinding(ControlType.ZOOM_UP).getDisplayText())
-        .append(" | ")
-        .append(getScrollControl().getBinding(ControlType.ZOOM_UP).getDisplayText())
+        .append(getControlBindingsString(ControlType.ZOOM_UP))
         .append("\n")
 
         .append("Zoom-\t\t")
-        .append(getMouseControl().getBinding(ControlType.ZOOM_DOWN).getDisplayText())
-        .append(" | ")
-        .append(getScrollControl().getBinding(ControlType.ZOOM_DOWN).getDisplayText())
+        .append(getControlBindingsString(ControlType.ZOOM_DOWN))
         .append("\n")
 
         .append("Zoom default\t")
-        .append(getMouseControl().getBinding(ControlType.ZOOM_DEFAULT).getDisplayText())
+        .append(getControlBindingsString(ControlType.ZOOM_DEFAULT))
         .append("\n")
         .append("\n")
 
         .append("Speed+\t\t")
-        .append(getMouseControl().getBinding(ControlType.SPEED_UP).getDisplayText())
-        .append(" | ")
-        .append(getScrollControl().getBinding(ControlType.SPEED_UP).getDisplayText())
+        .append(getControlBindingsString(ControlType.SPEED_UP))
         .append("\n")
 
         .append("Speed-\t\t")
-        .append(getMouseControl().getBinding(ControlType.SPEED_DOWN).getDisplayText())
-        .append(" | ")
-        .append(getScrollControl().getBinding(ControlType.SPEED_DOWN).getDisplayText())
+        .append(getControlBindingsString(ControlType.SPEED_DOWN))
         .append("\n")
 
         .append("Speed default\t")
-        .append(getMouseControl().getBinding(ControlType.SPEED_DEFAULT).getDisplayText())
+        .append(getControlBindingsString(ControlType.SPEED_DEFAULT))
         .append("\n")
         .append("\n")
 
         .append("Population\t")
-        .append(getMouseControl().getBinding(ControlType.POPULAITON_TOGGLE).getDisplayText())
+        .append(getControlBindingsString(ControlType.POPULAITON_TOGGLE))
         .append("\n")
 
         .append("Play/Pause\t")
-        .append(getKeyControl().getBinding(ControlType.STATE_TOGGLE).getDisplayText())
+        .append(getControlBindingsString(ControlType.STATE_TOGGLE))
         .append("\n")
 
         .append("New game\t")
-        .append(getKeyControl().getBinding(ControlType.NEW_GAME).getDisplayText())
+        .append(getControlBindingsString(ControlType.NEW_GAME))
         .append("\n")
 
         .append("Load game\t")
@@ -1026,6 +1018,18 @@ extends ReactivePresenter
         if (zone != LifeView.Zone.GENERATION) return;
         boolean pop = getLastGeneration().isPopulationAlive(x, y);
         getModel().setPopulation(x, y, !pop);
+    }
+
+    private String getControlBindingsString(ControlType ctrl)
+    {
+        return ControlBindings.calculateBindingsString
+        (
+            " | ",
+            ctrl,
+            DisplayableKeyCombination.toDisplayable(getKeyControl()),
+            getMouseControl(),
+            getScrollControl()
+        );
     }
 
     public int getSpeed()
