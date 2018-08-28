@@ -23,6 +23,7 @@
 package com.nephest.jhclife.fx;
 
 import com.nephest.jhclife.*;
+import com.nephest.jhclife.io.*;
 
 import javafx.stage.*;
 import javafx.scene.*;
@@ -33,6 +34,10 @@ public class MainMenuViewImplFX
 extends ViewBaseImplFX
 implements MainMenuView<Parent>
 {
+
+    public static final String NEW_GAME_STRING = "New Game";
+    public static final String CANCEL_STRING = "Cancel";
+
     private GridPane grid;
     private Spinner<Integer> widthSpinner, heightSpinner, seedSpinner;
     private Spinner<Double> probabilitySpinner;
@@ -53,6 +58,41 @@ implements MainMenuView<Parent>
     public Parent getRoot()
     {
         return this.grid;
+    }
+
+    // do not set the control accelerators directly, only show info about bindings
+    @Override
+    public void setControlBindingsInfo
+    (ControlBindings<MainMenuPresenter.ControlType, ? extends Displayable>... binds)
+    {
+        setButtonBindingInfo
+        (
+            NEW_GAME_STRING, this.newGameButton, MainMenuPresenter.ControlType.NEW_GAME,
+            binds
+        );
+
+        setButtonBindingInfo
+        (
+            CANCEL_STRING, this.cancelButton, MainMenuPresenter.ControlType.CANCEL,
+            binds
+        );
+    }
+
+    private void setButtonBindingInfo
+    (
+        String name,
+        Button button,
+        MainMenuPresenter.ControlType ctrl,
+        ControlBindings<MainMenuPresenter.ControlType, ? extends Displayable>... binds
+    )
+    {
+        String bindStr = ControlBindings.calculateControlName
+        (
+            name, FX.CONTROL_NAME_SPLITTER,
+            FX.CONTROL_PREFIX, FX.CONTROL_SPLITTER, FX.CONTROL_SUFFIX,
+            ctrl, binds
+        );
+        button.setText(bindStr);
     }
 
     @Override
@@ -141,10 +181,10 @@ implements MainMenuView<Parent>
         FX.standardSpinner(this.probabilitySpinner, 50.0, 0.0);
         this.probabilitySpinner.setTooltip(new Tooltip("Population density percentage"));
 
-        this.newGameButton = new Button("New Game");
+        this.newGameButton = new Button(NEW_GAME_STRING);
         this.newGameButton.setId("button-new-game");
 
-        this.cancelButton = new Button("Cancel");
+        this.cancelButton = new Button(CANCEL_STRING);
         this.cancelButton.setId("button-cancel");
     }
 

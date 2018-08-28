@@ -34,7 +34,13 @@ import java.util.logging.*;
 import javafx.scene.input.*;
 
 public class LifePresenter
-extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
+extends ReactivePresenter
+<
+    LifeView<?>,
+    ClassicLifeModel,
+    LifeViewListener,
+    LifePresenter.ControlType
+>
 {
 
     private static final Logger LOG = Logger.getLogger(LifePresenter.class.getName());
@@ -397,10 +403,21 @@ extends ReactivePresenter<LifeView<?>, ClassicLifeModel, LifeViewListener>
 
     private void initInfo()
     {
+        initControlBindingsInfo();
         changeSpeed(SPEED_INIT);
         changeZoom(ZOOM_FACTOR_INIT);
         getView().setStatus(PAUSED_STATUS);
         getView().setTip(WELCOME_TIP);
+    }
+
+    private void initControlBindingsInfo()
+    {
+        getView().setControlBindingsInfo
+        (
+            DisplayableKeyCombination.toDisplayable(getKeyControl()),
+            getMouseControl(),
+            getScrollControl()
+        );
     }
 
     private void listen()

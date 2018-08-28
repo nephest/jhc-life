@@ -23,7 +23,7 @@
 package com.nephest.jhclife;
 
 public interface LifeView<N>
-extends ReactiveViewBase<N, LifeViewListener>
+extends ReactiveViewBase<N, LifeViewListener, LifePresenter.ControlType>
 {
 
     public static enum Zone

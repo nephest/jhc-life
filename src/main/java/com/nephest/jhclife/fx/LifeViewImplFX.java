@@ -23,6 +23,7 @@
 package com.nephest.jhclife.fx;
 
 import com.nephest.jhclife.*;
+import com.nephest.jhclife.io.*;
 
 import java.util.*;
 
@@ -57,6 +58,12 @@ implements LifeView<Parent>
     public static final String SPACER_CLASS="spacer";
     public static final String MENU_ITEM_CLASS="menu-item";
 
+    public static final String NEW_GAME_STRING = "New";
+    public static final String GENERATION_SAVE_STRING = "Save";
+    public static final String GENERATION_LOAD_STRING = "Load";
+    public static final String HELP_STRING = "Help";
+    public static final String STATE_TOGGLE_STRING = "Play/Pause";
+
     private Generation lastGeneration;
 
     private BorderPane borderPane;
@@ -89,6 +96,78 @@ implements LifeView<Parent>
     public Parent getRoot()
     {
         return this.borderPane;
+    }
+
+    // do not set the control accelerators directly, only show info about bindings
+    @Override
+    public void setControlBindingsInfo
+    (ControlBindings<LifePresenter.ControlType, ? extends Displayable>... binds)
+    {
+        String menuNameSplitter = "\t\t";
+
+        setMenuItemBindingInfo
+        (
+            NEW_GAME_STRING, menuNameSplitter, this.newGameItem,
+            LifePresenter.ControlType.NEW_GAME, binds
+        );
+
+        setMenuItemBindingInfo
+        (
+            GENERATION_SAVE_STRING, menuNameSplitter, this.generationSaveItem,
+            LifePresenter.ControlType.GENERATION_SAVE, binds
+        );
+
+        setMenuItemBindingInfo
+        (
+            GENERATION_LOAD_STRING, menuNameSplitter, this.generationLoadItem,
+            LifePresenter.ControlType.GENERATION_LOAD, binds
+        );
+
+        setMenuItemBindingInfo
+        (
+            HELP_STRING, menuNameSplitter, this.helpItem,
+            LifePresenter.ControlType.HELP, binds
+        );
+
+        setButtonBindingInfo
+        (
+            STATE_TOGGLE_STRING, this.stateToggleButton, LifePresenter.ControlType.STATE_TOGGLE,
+            binds
+        );
+    }
+
+    private void setMenuItemBindingInfo
+    (
+        String name,
+        String splitter,
+        MenuItem item,
+        LifePresenter.ControlType ctrl,
+        ControlBindings<LifePresenter.ControlType, ? extends Displayable>... binds
+    )
+    {
+        String bindStr = ControlBindings.calculateControlName
+        (
+            name, splitter, FX.CONTROL_SPLITTER,
+            ctrl, binds
+        );
+        item.setText(bindStr);
+    }
+
+    private void setButtonBindingInfo
+    (
+        String name,
+        Button button,
+        LifePresenter.ControlType ctrl,
+        ControlBindings<LifePresenter.ControlType, ? extends Displayable>... binds
+    )
+    {
+        String bindStr = ControlBindings.calculateControlName
+        (
+            name, FX.CONTROL_NAME_SPLITTER,
+            FX.CONTROL_PREFIX, FX.CONTROL_SPLITTER, FX.CONTROL_SUFFIX,
+            ctrl, binds
+        );
+        button.setText(bindStr);
     }
 
     @Override
@@ -352,17 +431,17 @@ implements LifeView<Parent>
         this.zoomDefaultButton = new Button("default");
         this.zoomDefaultButton.getStyleClass().add(BUTTON_DEFAULT_CLASS);
 
-        this.stateToggleButton = new Button("Play/Pause");
+        this.stateToggleButton = new Button(STATE_TOGGLE_STRING);
         this.stateToggleButton.setId("button-state-toggle");
 
-        this.newGameItem = new MenuItem("New");
+        this.newGameItem = new MenuItem(NEW_GAME_STRING);
         this.newGameItem.getStyleClass().add(MENU_ITEM_CLASS);
 
-        this.generationSaveItem = new MenuItem("Save");
+        this.generationSaveItem = new MenuItem(GENERATION_SAVE_STRING);
         this.generationSaveItem.getStyleClass().add(MENU_ITEM_CLASS);
-        this.generationLoadItem = new MenuItem("Load");
+        this.generationLoadItem = new MenuItem(GENERATION_LOAD_STRING);
         this.generationLoadItem.getStyleClass().add(MENU_ITEM_CLASS);
-        this.helpItem = new MenuItem("Help");
+        this.helpItem = new MenuItem(HELP_STRING);
         this.helpItem.getStyleClass().add(MENU_ITEM_CLASS);
 
         this.generationNumberLabel = newValueLabel(false);

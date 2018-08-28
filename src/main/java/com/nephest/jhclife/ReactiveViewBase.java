@@ -22,10 +22,15 @@
 
 package com.nephest.jhclife;
 
-public interface ReactiveViewBase<N, L>
+import com.nephest.jhclife.io.*;
+
+public interface ReactiveViewBase<N, L, C extends Enum<C>>
 extends ViewBase<N>
 {
 
     public void setListener(L listener);
+
+    public void setControlBindingsInfo
+    (ControlBindings<C, ? extends Displayable>... binds);
 
 }

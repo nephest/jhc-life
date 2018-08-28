@@ -23,7 +23,7 @@
 package com.nephest.jhclife;
 
 public interface MainMenuView<N>
-extends ReactiveViewBase<N, MainMenuViewListener>
+extends ReactiveViewBase<N, MainMenuViewListener, MainMenuPresenter.ControlType>
 {
 
     public static enum Zone

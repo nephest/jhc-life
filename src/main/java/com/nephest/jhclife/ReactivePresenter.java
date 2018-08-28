@@ -25,7 +25,11 @@ package com.nephest.jhclife;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
-public class ReactivePresenter<V extends ReactiveViewBase<?, L>, M, L>
+public class ReactivePresenter
+<
+    V extends ReactiveViewBase<?, L, C>,
+    M, L, C extends Enum<C>
+>
 extends PresenterBase<V, M>
 {
 

@@ -30,7 +30,13 @@ import java.util.concurrent.Executor;
 import javafx.scene.input.*;
 
 public class MainMenuPresenter
-extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListener>
+extends ReactivePresenter
+<
+    MainMenuView<?>,
+    ClassicLifeModel,
+    MainMenuViewListener,
+    MainMenuPresenter.ControlType
+>
 {
 
     public static enum ControlType
@@ -63,6 +69,7 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
     {
         initActions();
         initKeyControl();
+        initControlBindingsInfo();
         listen();
     }
 
@@ -88,6 +95,12 @@ extends ReactivePresenter<MainMenuView<?>, ClassicLifeModel, MainMenuViewListene
             ControlType.CANCEL,
             DEFAULT_CANCEL_COMBINATION
         );
+    }
+
+    private void initControlBindingsInfo()
+    {
+        getView().setControlBindingsInfo
+            (DisplayableKeyCombination.toDisplayable(getKeyControl()));
     }
 
     private void listen()
