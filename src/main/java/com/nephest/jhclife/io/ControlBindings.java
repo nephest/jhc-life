@@ -36,6 +36,66 @@ public class ControlBindings<T extends Enum<T>, B>
         this.binds = new EnumMap(type);
     }
 
+    public static <C extends Enum<C>> String calculateBindingsString
+    (
+        String splitter,
+        C ctrl,
+        ControlBindings<C, ? extends Displayable>... binds
+    )
+    {
+        StringBuilder sb = new StringBuilder();
+        boolean found = false;
+        for (int i = 0; i < binds.length; i++)
+        {
+            Displayable displayable = binds[i].getBinding(ctrl);
+            String str = displayable == null ? null : displayable.getDisplayText();
+            if (str != null && !str.isEmpty())
+            {
+                if (found)
+                {
+                    sb.append(splitter);
+                }
+                sb.append(str);
+                found = true;
+            }
+        }
+        return sb.toString();
+    }
+
+    public static <C extends Enum<C>> String calculateControlName
+    (
+        String name,
+        String nameSplitter,
+        String prefix,
+        String splitter,
+        String suffix,
+        C ctrl,
+        ControlBindings<C, ? extends Displayable>... binds
+    )
+    {
+        String bindsStr = calculateBindingsString(splitter, ctrl, binds);
+        if (bindsStr.isEmpty()) return name;
+
+        StringBuilder sb = new StringBuilder(name);
+        sb.append(nameSplitter);
+        sb.append(prefix);
+        sb.append(bindsStr);
+        sb.append(suffix);
+        return sb.toString();
+    }
+
+    public static <C extends Enum<C>> String calculateControlName
+    (
+        String name,
+        String nameSplitter,
+        String splitter,
+        C ctrl,
+        ControlBindings<C, ? extends Displayable>... binds
+    )
+    {
+        return calculateControlName(name, nameSplitter, "", splitter, "", ctrl, binds);
+    }
+
     public Class<T> getType()
     {
         return this.type;
