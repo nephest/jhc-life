@@ -33,6 +33,11 @@ public final class FX
 
     public static final Logger LOG = Logger.getLogger(FX.class.getName());
 
+    public static final String CONTROL_NAME_SPLITTER = " ";
+    public static final String CONTROL_PREFIX = "[";
+    public static final String CONTROL_SUFFIX = "]";
+    public static final String CONTROL_SPLITTER = " | ";
+
     private FX() {}
 
     public static final <T> void filteredSpinner
