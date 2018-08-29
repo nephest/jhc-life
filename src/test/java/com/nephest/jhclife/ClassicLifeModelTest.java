@@ -163,11 +163,11 @@ public class ClassicLifeModelTest
     @Test
     public void testNumerousGenerations()
     {
-        int depth = this.rng.nextInt(250);
+        int depth = this.rng.nextInt(50);
         long seed = this.rng.nextLong();
         double prob = 0.5;
-        int width = 500 + this.rng.nextInt(50);
-        int height = 500 + this.rng.nextInt(50);
+        int width = 300 + this.rng.nextInt(50);
+        int height = 300 + this.rng.nextInt(50);
 
         this.model.createNewPopulation(width, height);
         this.model.populate(seed, prob);
