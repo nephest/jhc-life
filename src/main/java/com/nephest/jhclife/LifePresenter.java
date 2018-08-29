@@ -61,6 +61,15 @@ extends ReactivePresenter
         POPULATION_TOGGLE;
     }
 
+    public static enum Tip
+    {
+        WELCOME,
+        SPEED_CONTROL,
+        ZOOM_CONTROL,
+        ZOOM_PIVOT,
+        POPULATION_TOGGLE,
+    }
+
     private final Map<ControlType, EventConsumer<LifeView.Zone>> controlActions
         = new EnumMap(ControlType.class);
 
@@ -128,11 +137,13 @@ extends ReactivePresenter
     public static final KeyCombination DEFAULT_HELP_COMBINATION
         = new KeyCodeCombination(KeyCode.F1);
 
+    public static final String CONTROL_NAME_SPLITTER = " ";
+    public static final String CONTROL_PREFIX = "[";
+    public static final String CONTROL_SUFFIX = "]";
+    public static final String CONTROL_SPLITTER = " | ";
+
     public static final String PLAYING_STATUS = "PLAYING";
     public static final String PAUSED_STATUS = "PAUSED";
-
-    public static final String WELCOME_TIP = "Press the play button to begin. "
-        + "See the help section for the rules and key bindings info.";
 
     public static final String HELP_MSG_HEADER =
         "Info:\n"
@@ -151,6 +162,7 @@ extends ReactivePresenter
         + "GPL Version 3\n"
         + "Copyright (C) 2018 Oleksandr Masniuk\n";
 
+    private final Map<Tip, String> tips = new EnumMap(Tip.class);
 
     private FileIO fileIO = new StandardFileIO();
     private ObjectTranslator<Generation> generationTranslator;
@@ -404,10 +416,11 @@ extends ReactivePresenter
     private void initInfo()
     {
         initControlBindingsInfo();
+        initTips();
         changeSpeed(SPEED_INIT);
         changeZoom(ZOOM_FACTOR_INIT);
         getView().setStatus(PAUSED_STATUS);
-        getView().setTip(WELCOME_TIP);
+        getView().setTip(getTip(Tip.WELCOME));
     }
 
     private void initControlBindingsInfo()
@@ -418,6 +431,43 @@ extends ReactivePresenter
             getMouseControl(),
             getScrollControl()
         );
+    }
+
+    private void initTips()
+    {
+        String welcomeTip =
+            "Press the play button"
+            + getControlBindingsString(ControlType.STATE_TOGGLE, "")
+            + " to begin. "
+            + "See the help"
+            + getControlBindingsString(ControlType.HELP, "")
+            + " section for the rules and key bindings info.";
+        this.tips.put(Tip.WELCOME, welcomeTip);
+
+        String populationTip =
+            "You can edit the population"
+            + getControlBindingsString(ControlType.POPULATION_TOGGLE, "")
+            + " even while simulation is running";
+        this.tips.put(Tip.POPULATION_TOGGLE, populationTip);
+
+        String zoomControlTip =
+            getControlBindingsString(ControlType.ZOOM_UP, "Zoom+")
+            + " "
+            + getControlBindingsString(ControlType.ZOOM_DOWN, "Zoom-")
+            + " "
+            + getControlBindingsString(ControlType.ZOOM_DEFAULT, "Zoom default");
+        this.tips.put(Tip.ZOOM_CONTROL, zoomControlTip);
+
+        String speedControlTip =
+            getControlBindingsString(ControlType.SPEED_UP, "Speed+")
+            + " "
+            + getControlBindingsString(ControlType.SPEED_DOWN, "Speed-")
+            + " "
+            + getControlBindingsString(ControlType.SPEED_DEFAULT, "Speed default");
+        this.tips.put(Tip.SPEED_CONTROL, speedControlTip);
+
+        String zoomPivotTip = "Hover over the play field to zoom a specific area";
+        this.tips.put(Tip.ZOOM_PIVOT, zoomPivotTip);
     }
 
     private void listen()
@@ -737,14 +787,14 @@ extends ReactivePresenter
     {
         getModel().stop();
         getView().setStatus(PAUSED_STATUS);
-        getView().setTip(WELCOME_TIP);
+        getView().setTip(getTip(Tip.WELCOME));
     }
 
     private void play()
     {
         getModel().start();
         getView().setStatus(PLAYING_STATUS);
-        getView().setTip("You can edit the population even while simulation is running");
+        getView().setTip(getTip(Tip.POPULATION_TOGGLE));
     }
 
     private void newGame(double x, double y, LifeView.Zone zone)
@@ -988,19 +1038,21 @@ extends ReactivePresenter
     {
         getView().setGenerationZoom(factor, x, y);
         getView().updateZoomInfo(ZOOM_FORMAT);
-        getView().setTip("Hover over the play field to zoom a specific area");
+        getView().setTip(getTip(Tip.ZOOM_PIVOT));
     }
 
     private void changeZoom(double factor)
     {
         getView().setGenerationZoom(factor);
         getView().updateZoomInfo(ZOOM_FORMAT);
+        getView().setTip(getTip(Tip.ZOOM_CONTROL));
     }
 
     private void changeSpeed(double x, double y, LifeView.Zone zone, int speed)
     {
         if (zone == LifeView.Zone.GENERATION) return;
         changeSpeed(speed);
+        getView().setTip(getTip(Tip.SPEED_CONTROL));
     }
 
     private void changeSpeed(int speed)
@@ -1024,12 +1076,33 @@ extends ReactivePresenter
     {
         return ControlBindings.calculateBindingsString
         (
-            " | ",
+            CONTROL_SPLITTER,
             ctrl,
             DisplayableKeyCombination.toDisplayable(getKeyControl()),
             getMouseControl(),
             getScrollControl()
         );
+    }
+
+    private String getControlBindingsString(ControlType ctrl, String name)
+    {
+        return ControlBindings.calculateControlName
+        (
+            name,
+            CONTROL_NAME_SPLITTER,
+            CONTROL_PREFIX,
+            CONTROL_SPLITTER,
+            CONTROL_SUFFIX,
+            ctrl,
+            DisplayableKeyCombination.toDisplayable(getKeyControl()),
+            getMouseControl(),
+            getScrollControl()
+        );
+    }
+
+    private String getTip(Tip tip)
+    {
+        return this.tips.get(tip);
     }
 
     public int getSpeed()
