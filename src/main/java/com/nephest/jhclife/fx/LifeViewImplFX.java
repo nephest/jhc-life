@@ -540,6 +540,7 @@ implements LifeView<Parent>
     private void initCanvas()
     {
         this.canvas = new Canvas();
+        this.canvas.setId("population");
         this.canvas.getGraphicsContext2D().setFill(DEAD_COLOR);
         this.canvasGroup = new Group(canvas);
         this.canvasPane = new StackPane(this.canvasGroup);
