@@ -34,7 +34,6 @@ import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
-import javafx.scene.canvas.*;
 import javafx.scene.text.*;
 import javafx.scene.paint.*;
 import javafx.scene.image.*;
@@ -76,10 +75,11 @@ implements LifeView<Parent>
     private LifeViewListener listener;
     private AnimationTimer frameTimer;
 
-    private ScrollPane canvasScroll;
-    private StackPane canvasPane;
-    private Group canvasGroup;
-    private Canvas canvas;
+    private ScrollPane generationScroll;
+    private StackPane generationPane;
+    private Group generationGroup;
+    private WritableImage generationImage;
+    private ImageView generationImageView;
 
     public LifeViewImplFX(Window owner)
     {
@@ -177,21 +177,21 @@ implements LifeView<Parent>
         this.listener = listener;
         if (listener == null) return;
 
-        LifeView.Zone canvasZone = LifeView.Zone.GENERATION;
-        LifeView.Zone canvasPaneZone = LifeView.Zone.GENERATION_CONTAINER;
+        LifeView.Zone generationZone = LifeView.Zone.GENERATION;
+        LifeView.Zone generationPaneZone = LifeView.Zone.GENERATION_CONTAINER;
         LifeView.Zone topZone = LifeView.Zone.GLOBAL;
 
-        this.canvas.setOnMouseClicked((e)->listener.onMouseEvent(e, canvasZone));
-        this.canvas.setOnScroll((e)->listener.onScrollEvent(e, canvasZone));
-        this.canvas.setOnKeyPressed((e)->listener.onKeyEvent(e, canvasZone));
-        this.canvas.setOnKeyReleased((e)->listener.onKeyEvent(e, canvasZone));
-        this.canvas.setOnKeyTyped((e)->listener.onKeyEvent(e, canvasZone));
+        this.generationImageView.setOnMouseClicked((e)->listener.onMouseEvent(e, generationZone));
+        this.generationImageView.setOnScroll((e)->listener.onScrollEvent(e, generationZone));
+        this.generationImageView.setOnKeyPressed((e)->listener.onKeyEvent(e, generationZone));
+        this.generationImageView.setOnKeyReleased((e)->listener.onKeyEvent(e, generationZone));
+        this.generationImageView.setOnKeyTyped((e)->listener.onKeyEvent(e, generationZone));
 
-        this.canvasPane.setOnMouseClicked((e)->listener.onMouseEvent(e, canvasPaneZone));
-        this.canvasPane.setOnScroll((e)->listener.onScrollEvent(e, canvasPaneZone));
-        this.canvasPane.setOnKeyPressed((e)->listener.onKeyEvent(e, canvasPaneZone));
-        this.canvasPane.setOnKeyReleased((e)->listener.onKeyEvent(e, canvasPaneZone));
-        this.canvasPane.setOnKeyTyped((e)->listener.onKeyEvent(e, canvasPaneZone));
+        this.generationPane.setOnMouseClicked((e)->listener.onMouseEvent(e, generationPaneZone));
+        this.generationPane.setOnScroll((e)->listener.onScrollEvent(e, generationPaneZone));
+        this.generationPane.setOnKeyPressed((e)->listener.onKeyEvent(e, generationPaneZone));
+        this.generationPane.setOnKeyReleased((e)->listener.onKeyEvent(e, generationPaneZone));
+        this.generationPane.setOnKeyTyped((e)->listener.onKeyEvent(e, generationPaneZone));
 
         this.borderPane.setOnMouseClicked((e)->listener.onMouseEvent(e, topZone));
         this.borderPane.setOnScroll((e)->listener.onScrollEvent(e, topZone));
@@ -222,7 +222,7 @@ implements LifeView<Parent>
     public void render(Generation generation)
     {
         Objects.requireNonNull(generation);
-        prepareCanvas(generation);
+        prepareGenerationView(generation);
         if (isFirstGeneration(generation))
         {
             renderFirstGeneraiton(generation);
@@ -245,22 +245,26 @@ implements LifeView<Parent>
 
     private void renderFirstGeneraiton(Generation generation)
     {
-        this.canvas.getGraphicsContext2D()
-            .fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
-        PixelWriter pixelWriter = this.canvas.getGraphicsContext2D().getPixelWriter();
+        PixelWriter pixelWriter = this.generationImage.getPixelWriter();
         for (int col = 0; col < generation.getWidth(); col++)
         {
             for (int row = 0; row < generation.getHeight(); row++)
             {
                 if (generation.isPopulationAlive(col, row))
+                {
                     pixelWriter.setColor(col, row, ALIVE_COLOR);
+                }
+                else
+                {
+                    pixelWriter.setColor(col, row, DEAD_COLOR);
+                }
             }
         }
     }
 
     private void renderGenerationDelta(Generation prev, Generation next)
     {
-        PixelWriter pixelWriter = this.canvas.getGraphicsContext2D().getPixelWriter();
+        PixelWriter pixelWriter = this.generationImage.getPixelWriter();
         for (int col = 0; col < next.getWidth(); col++)
         {
             for (int row = 0; row < next.getHeight(); row++)
@@ -284,8 +288,14 @@ implements LifeView<Parent>
 
     private void doReset()
     {
-        GraphicsContext context = this.canvas.getGraphicsContext2D();
-        context.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+        PixelWriter pixelWriter = this.generationImage.getPixelWriter();
+        for (int col = 0; col < this.generationImage.getWidth(); col++)
+        {
+            for (int row = 0; row < this.generationImage.getHeight(); row++)
+            {
+                pixelWriter.setColor(col, row, DEAD_COLOR);
+            }
+        }
         this.generationNumberLabel.setText("0");
     }
 
@@ -297,7 +307,7 @@ implements LifeView<Parent>
 
     private void doSetGenerationZoom(double factor, int pivotX, int pivotY)
     {
-        scaleCanvas(factor, pivotX, pivotY);
+        scaleGenerationView(factor, pivotX, pivotY);
     }
 
     @Override
@@ -308,16 +318,16 @@ implements LifeView<Parent>
 
     private void doSetGenerationZoom(double factor)
     {
-        Bounds bounds = this.canvasScroll.getViewportBounds();
+        Bounds bounds = this.generationScroll.getViewportBounds();
         int pivotX = (int) (Math.abs(bounds.getMinX()) + bounds.getWidth() / 2);
         int pivotY = (int) (Math.abs(bounds.getMinY()) + bounds.getHeight() / 2);
-        scaleCanvas(factor, pivotX, pivotY);
+        scaleGenerationView(factor, pivotX, pivotY);
     }
 
     @Override
     public double getFinalGenerationZoom()
     {
-        return this.canvas.getScaleX();
+        return this.generationImageView.getScaleX();
     }
 
     @Override
@@ -349,17 +359,17 @@ implements LifeView<Parent>
 
     private void unsetListener()
     {
-        this.canvas.setOnMouseClicked(null);
-        this.canvas.setOnScroll(null);
-        this.canvas.setOnKeyPressed(null);
-        this.canvas.setOnKeyReleased(null);
-        this.canvas.setOnKeyTyped(null);
+        this.generationImageView.setOnMouseClicked(null);
+        this.generationImageView.setOnScroll(null);
+        this.generationImageView.setOnKeyPressed(null);
+        this.generationImageView.setOnKeyReleased(null);
+        this.generationImageView.setOnKeyTyped(null);
 
-        this.canvasPane.setOnMouseClicked(null);
-        this.canvasPane.setOnScroll(null);
-        this.canvasPane.setOnKeyPressed(null);
-        this.canvasPane.setOnKeyReleased(null);
-        this.canvasPane.setOnKeyTyped(null);
+        this.generationPane.setOnMouseClicked(null);
+        this.generationPane.setOnScroll(null);
+        this.generationPane.setOnKeyPressed(null);
+        this.generationPane.setOnKeyReleased(null);
+        this.generationPane.setOnKeyTyped(null);
 
         this.borderPane.setOnMouseClicked(null);
         this.borderPane.setOnScroll(null);
@@ -385,12 +395,18 @@ implements LifeView<Parent>
         getFrameTimer().stop();
     }
 
-    private void prepareCanvas(Generation generation)
+    private void prepareGenerationView(Generation generation)
     {
-        if(this.canvas.getWidth() != generation.getWidth())
-            this.canvas.setWidth(generation.getWidth());
-        if(this.canvas.getHeight() != generation.getHeight())
-            this.canvas.setHeight(generation.getHeight());
+        if
+        (
+            this.generationImage == null
+            || this.generationImage.getWidth() != generation.getWidth()
+            || this.generationImage.getHeight() != generation.getHeight()
+        )
+        {
+            this.generationImage = new WritableImage(generation.getWidth(), generation.getHeight());
+            this.generationImageView.setImage(this.generationImage);
+        }
     }
 
     private void init()
@@ -398,7 +414,7 @@ implements LifeView<Parent>
         initBorderPane();
         initControls();
         layoutControls();
-        initCanvas();
+        initGenerationView();
         initFrameTimer();
     }
 
@@ -537,34 +553,33 @@ implements LifeView<Parent>
         return box;
     }
 
-    private void initCanvas()
+    private void initGenerationView()
     {
-        this.canvas = new Canvas();
-        this.canvas.setId("population");
-        this.canvas.getGraphicsContext2D().setFill(DEAD_COLOR);
-        this.canvasGroup = new Group(canvas);
-        this.canvasPane = new StackPane(this.canvasGroup);
-        this.canvasGroup.layoutBoundsProperty().addListener
+        this.generationImageView = new ImageView();
+        this.generationImageView.setId("population");
+        this.generationGroup = new Group(this.generationImageView);
+        this.generationPane = new StackPane(this.generationGroup);
+        this.generationGroup.layoutBoundsProperty().addListener
         (
             (o, ov, nv)->
             {
-                this.canvasPane.setMinWidth(nv.getWidth());
-                this.canvasPane.setMinHeight(nv.getHeight());
+                this.generationPane.setMinWidth(nv.getWidth());
+                this.generationPane.setMinHeight(nv.getHeight());
             }
         );
 
-        this.canvasScroll = new ScrollPane(this.canvasPane);
-        this.canvasScroll.setPannable(true);
-        this.canvasScroll.viewportBoundsProperty().addListener
+        this.generationScroll = new ScrollPane(this.generationPane);
+        this.generationScroll.setPannable(true);
+        this.generationScroll.viewportBoundsProperty().addListener
         (
             (o, ov, nv)->
             {
-                this.canvasPane.setPrefWidth(nv.getWidth());
-                this.canvasPane.setPrefHeight(nv.getHeight());
+                this.generationPane.setPrefWidth(nv.getWidth());
+                this.generationPane.setPrefHeight(nv.getHeight());
             }
         );
 
-        this.borderPane.setCenter(this.canvasScroll);
+        this.borderPane.setCenter(this.generationScroll);
     }
 
     private void initFrameTimer()
@@ -594,41 +609,41 @@ implements LifeView<Parent>
         return this.frameTimer;
     }
 
-    private void scaleCanvas(double factor, int pivotX, int pivotY)
+    private void scaleGenerationView(double factor, int pivotX, int pivotY)
     {
         if (factor == 0.0)
         {
-            this.canvas.setScaleX(1);
-            this.canvas.setScaleY(1);
+            this.generationImageView.setScaleX(1);
+            this.generationImageView.setScaleY(1);
             return;
         }
 
-        Bounds groupBounds = this.canvasGroup.getLayoutBounds();
-        Bounds viewportBounds = canvasScroll.getViewportBounds();
+        Bounds groupBounds = this.generationGroup.getLayoutBounds();
+        Bounds viewportBounds = generationScroll.getViewportBounds();
 
-        double valX = this.canvasScroll.getHvalue()
+        double valX = this.generationScroll.getHvalue()
             * (groupBounds.getWidth() - viewportBounds.getWidth());
-        double valY = this.canvasScroll.getVvalue()
+        double valY = this.generationScroll.getVvalue()
             * (groupBounds.getHeight() - viewportBounds.getHeight());
 
-        Point2D posInZoomTarget = this.canvas
-            .parentToLocal(this.canvasGroup.parentToLocal(new Point2D(pivotX, pivotY)));
+        Point2D posInZoomTarget = this.generationImageView
+            .parentToLocal(this.generationGroup.parentToLocal(new Point2D(pivotX, pivotY)));
 
-        Point2D adjustment = this.canvas.getLocalToParentTransform()
+        Point2D adjustment = this.generationImageView.getLocalToParentTransform()
             .deltaTransform(posInZoomTarget.multiply(factor - 1));
 
-        this.canvas.setScaleX(factor * this.canvas.getScaleX());
-        this.canvas.setScaleY(factor * this.canvas.getScaleY());
+        this.generationImageView.setScaleX(factor * this.generationImageView.getScaleX());
+        this.generationImageView.setScaleY(factor * this.generationImageView.getScaleY());
 
-        this.canvasScroll.layout();
+        this.generationScroll.layout();
 
-        groupBounds = this.canvasGroup.getLayoutBounds();
-        this.canvasScroll.setHvalue
+        groupBounds = this.generationGroup.getLayoutBounds();
+        this.generationScroll.setHvalue
         (
             (valX + adjustment.getX())
             / (groupBounds.getWidth() - viewportBounds.getWidth())
         );
-        this.canvasScroll.setVvalue
+        this.generationScroll.setVvalue
         (
             (valY + adjustment.getY())
             / (groupBounds.getHeight() - viewportBounds.getHeight())
