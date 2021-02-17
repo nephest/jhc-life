@@ -26,6 +26,7 @@ import com.nephest.jhclife.*;
 import com.nephest.jhclife.io.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 import javafx.application.Platform;
 import javafx.animation.*;
@@ -79,7 +80,11 @@ implements LifeView<Parent>
     private StackPane generationPane;
     private Group generationGroup;
     private WritableImage generationImage;
+    private WritableImage generationImage2;
+    private WritableImage currentGenerationImage = generationImage;
     private ImageView generationImageView;
+
+    private Map<WritableImage, Generation> generationImageMap = new HashMap();
 
     public LifeViewImplFX(Window owner)
     {
@@ -223,29 +228,42 @@ implements LifeView<Parent>
     {
         Objects.requireNonNull(generation);
         prepareGenerationView(generation);
+        nextGenerationImage();
+        backgroundRender(generation);
+    }
+
+    private void backgroundRender(Generation generation)
+    {
         if (isFirstGeneration(generation))
         {
             renderFirstGeneraiton(generation);
         }
         else
         {
-            renderGenerationDelta(getLastGeneration(), generation);
+            renderGenerationDelta(this.generationImageMap.get(this.currentGenerationImage), generation);
         }
+        this.lastGeneration = generation;
+        this.generationImageMap.put(this.currentGenerationImage, generation);
+
+        this.generationImageView.setImage(currentGenerationImage);
         this.generationNumberLabel
             .setText(String.valueOf(generation.getGenerationNumber()));
-        this.lastGeneration = generation;
+
     }
 
     private boolean isFirstGeneration(Generation generation)
     {
-        return getLastGeneration() == null
+        return this.generationImageMap.get(generationImage) == null
+            || this.generationImageMap.get(generationImage2) == null
+            || this.generationImageMap.get(generationImage).getId()
+                != this.generationImageMap.get(generationImage2).getId()
             || getLastGeneration().getWidth() != generation.getWidth()
             || getLastGeneration().getHeight() != generation.getHeight();
     }
 
     private void renderFirstGeneraiton(Generation generation)
     {
-        PixelWriter pixelWriter = this.generationImage.getPixelWriter();
+        PixelWriter pixelWriter = this.currentGenerationImage.getPixelWriter();
         for (int col = 0; col < generation.getWidth(); col++)
         {
             for (int row = 0; row < generation.getHeight(); row++)
@@ -264,20 +282,9 @@ implements LifeView<Parent>
 
     private void renderGenerationDelta(Generation prev, Generation next)
     {
-        PixelWriter pixelWriter = this.generationImage.getPixelWriter();
-        for (int col = 0; col < next.getWidth(); col++)
-        {
-            for (int row = 0; row < next.getHeight(); row++)
-            {
-                Color nColor = next.isPopulationAlive(col, row)
-                    ? ALIVE_COLOR
-                    : DEAD_COLOR;
-                Color pColor = prev.isPopulationAlive(col, row)
-                    ? ALIVE_COLOR
-                    : DEAD_COLOR;
-                if (nColor != pColor) pixelWriter.setColor(col, row, nColor);
-            }
-        }
+        PixelWriter pixelWriter = this.currentGenerationImage.getPixelWriter();
+        ForkJoinPool.commonPool()
+            .invoke( new MatrixPixelWriter(prev, next, pixelWriter));
     }
 
     @Override
@@ -296,6 +303,17 @@ implements LifeView<Parent>
                 pixelWriter.setColor(col, row, DEAD_COLOR);
             }
         }
+
+        PixelWriter pixelWriter2 = this.generationImage2.getPixelWriter();
+        for (int col = 0; col < this.generationImage2.getWidth(); col++)
+        {
+            for (int row = 0; row < this.generationImage2.getHeight(); row++)
+            {
+                pixelWriter2.setColor(col, row, DEAD_COLOR);
+            }
+        }
+
+        this.generationImageMap.clear();
         this.generationNumberLabel.setText("0");
     }
 
@@ -405,7 +423,8 @@ implements LifeView<Parent>
         )
         {
             this.generationImage = new WritableImage(generation.getWidth(), generation.getHeight());
-            this.generationImageView.setImage(this.generationImage);
+            this.generationImage2 = new WritableImage(generation.getWidth(), generation.getHeight());
+            this.generationImageMap.clear();
         }
     }
 
@@ -592,6 +611,16 @@ implements LifeView<Parent>
                 if (getListener() != null) getListener().readyForNextFrame();
             }
         };
+    }
+
+    private WritableImage nextGenerationImage()
+    {
+        WritableImage next =
+            this.generationImage == this.currentGenerationImage
+            ? this.generationImage2
+            : this.generationImage;
+        this.currentGenerationImage = next;
+        return this.currentGenerationImage;
     }
 
     private Generation getLastGeneration()
