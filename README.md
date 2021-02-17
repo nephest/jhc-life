@@ -11,8 +11,3 @@ A John Horton Conway's Game of Life implementation
 * Zoom/speed correction
 * Manual cell editing
 * Keyboard + mouse control
-
-# Links
-* [Latest release jar](https://www.nephest.com/files/jhc-life/jhc-life-latest.jar)
-* [Project's page](https://www.nephest.com/en/projects/jhc-life/)
-
