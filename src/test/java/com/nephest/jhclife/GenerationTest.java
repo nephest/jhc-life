@@ -26,11 +26,9 @@
 
 package com.nephest.jhclife;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
-import org.mockito.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
 
 public class GenerationTest
 {

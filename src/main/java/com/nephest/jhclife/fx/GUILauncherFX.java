@@ -27,14 +27,18 @@
 package com.nephest.jhclife.fx;
 
 import com.nephest.jhclife.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-
 import javafx.application.Application;
-import javafx.stage.*;
-import javafx.scene.*;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GUILauncherFX
 extends Application

@@ -26,7 +26,8 @@
 
 package com.nephest.jhclife;
 
-import com.nephest.jhclife.io.*;
+import com.nephest.jhclife.io.ControlBindings;
+import com.nephest.jhclife.io.Displayable;
 
 public interface ReactiveViewBase<N, L, C extends Enum<C>>
 extends ViewBase<N>

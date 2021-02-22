@@ -26,9 +26,12 @@
 
 package com.nephest.jhclife;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClassicLifeModel
 implements java.io.Closeable

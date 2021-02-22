@@ -26,11 +26,13 @@
 
 package com.nephest.jhclife.fx;
 
-import java.util.logging.*;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextFormatter;
+
 import java.util.Objects;
 import java.util.function.UnaryOperator;
-
-import javafx.scene.control.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class FX
 {

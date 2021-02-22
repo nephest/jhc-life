@@ -26,14 +26,19 @@
 
 package com.nephest.jhclife;
 
-import java.util.*;
-import java.util.concurrent.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.internal.matchers.LessOrEqual;
 
-import org.junit.*;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.*;
-
-import org.mockito.*;
-import org.mockito.internal.matchers.*;
 import static org.mockito.Mockito.*;
 
 public class ClassicLifeModelTest

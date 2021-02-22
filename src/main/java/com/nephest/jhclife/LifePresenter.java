@@ -28,14 +28,17 @@ package com.nephest.jhclife;
 
 import com.nephest.jhclife.io.*;
 import com.nephest.jhclife.util.ObjectTranslator;
-
-import java.io.*;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.logging.*;
-
 import javafx.scene.input.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LifePresenter
 extends ReactivePresenter

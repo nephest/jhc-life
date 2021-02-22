@@ -26,8 +26,12 @@
 
 package com.nephest.jhclife.io;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 
 public interface FileIO
 {

@@ -26,7 +26,8 @@
 
 package com.nephest.jhclife.io;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
 
 public class ControlBindings<T extends Enum<T>, B>
 {

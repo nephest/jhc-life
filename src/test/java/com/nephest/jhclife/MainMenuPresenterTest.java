@@ -26,15 +26,15 @@
 
 package com.nephest.jhclife;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+
 import java.util.concurrent.Executor;
 
-import javafx.event.*;
-import javafx.scene.input.*;
-
-import org.junit.*;
-import static org.junit.Assert.*;
-
-import org.mockito.*;
 import static org.mockito.Mockito.*;
 
 public class MainMenuPresenterTest

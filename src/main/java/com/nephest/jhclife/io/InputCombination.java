@@ -26,7 +26,8 @@
 
 package com.nephest.jhclife.io;
 
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 
 public class InputCombination<T>
 implements Displayable

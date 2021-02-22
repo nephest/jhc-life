@@ -26,7 +26,8 @@
 
 package com.nephest.jhclife.io;
 
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.ScrollEvent;
 
 public class ScrollDirectionCombination
 extends InputCombination<ScrollDirectionCombination.Direction>

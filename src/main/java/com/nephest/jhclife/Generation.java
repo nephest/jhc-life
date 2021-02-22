@@ -27,7 +27,8 @@
 package com.nephest.jhclife;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.BitSet;
 
 public class Generation
 {

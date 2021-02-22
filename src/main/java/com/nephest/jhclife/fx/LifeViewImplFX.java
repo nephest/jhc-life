@@ -26,23 +26,28 @@
 
 package com.nephest.jhclife.fx;
 
-import com.nephest.jhclife.*;
-import com.nephest.jhclife.io.*;
-
-import java.util.*;
-
+import com.nephest.jhclife.Generation;
+import com.nephest.jhclife.LifePresenter;
+import com.nephest.jhclife.LifeView;
+import com.nephest.jhclife.LifeViewListener;
+import com.nephest.jhclife.io.ControlBindings;
+import com.nephest.jhclife.io.Displayable;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
-import javafx.animation.*;
-import javafx.beans.value.*;
-import javafx.stage.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
+import javafx.geometry.Bounds;
+import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.canvas.*;
-import javafx.scene.text.*;
-import javafx.scene.paint.*;
-import javafx.scene.image.*;
-import javafx.geometry.*;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Window;
+
+import java.util.Objects;
 
 public class LifeViewImplFX
 extends ViewBaseImplFX

@@ -26,7 +26,9 @@
 
 package com.nephest.jhclife.io;
 
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 public class MouseKeyCombination
 extends InputCombination<MouseButton>

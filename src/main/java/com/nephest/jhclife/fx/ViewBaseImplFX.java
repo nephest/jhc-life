@@ -26,17 +26,21 @@
 
 package com.nephest.jhclife.fx;
 
-import com.nephest.jhclife.*;
+import com.nephest.jhclife.ViewBase;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.layout.Region;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
-
-import javafx.application.*;
-import javafx.scene.layout.Region;
-import javafx.scene.control.*;
-import javafx.scene.*;
-import javafx.stage.*;
 
 public abstract class ViewBaseImplFX
 implements ViewBase<Parent>

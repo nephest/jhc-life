@@ -26,12 +26,16 @@
 
 package com.nephest.jhclife;
 
-import com.nephest.jhclife.io.*;
+import com.nephest.jhclife.io.ControlBindings;
+import com.nephest.jhclife.io.DisplayableKeyCombination;
+import com.nephest.jhclife.io.EventConsumer;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
-
-import javafx.scene.input.*;
 
 public class MainMenuPresenter
 extends ReactivePresenter

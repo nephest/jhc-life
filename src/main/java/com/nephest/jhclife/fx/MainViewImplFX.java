@@ -26,14 +26,16 @@
 
 package com.nephest.jhclife.fx;
 
-import com.nephest.jhclife.*;
-
-import java.util.*;
-import java.util.logging.*;
-
+import com.nephest.jhclife.MainView;
+import com.nephest.jhclife.ViewBase;
 import javafx.application.Platform;
-import javafx.stage.Stage;
-import javafx.scene.*;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainViewImplFX
 extends ViewBaseImplFX

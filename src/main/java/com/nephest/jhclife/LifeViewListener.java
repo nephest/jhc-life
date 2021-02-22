@@ -26,9 +26,9 @@
 
 package com.nephest.jhclife;
 
-import java.io.File;
-
-import javafx.scene.input.*;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 public interface LifeViewListener
 {

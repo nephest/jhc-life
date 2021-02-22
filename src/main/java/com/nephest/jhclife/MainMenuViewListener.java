@@ -26,7 +26,7 @@
 
 package com.nephest.jhclife;
 
-import javafx.scene.input.*;
+import javafx.scene.input.KeyEvent;
 
 public interface MainMenuViewListener
 {

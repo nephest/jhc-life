@@ -26,7 +26,7 @@
 
 package com.nephest.jhclife;
 
-import java.util.concurrent.*;
+import java.util.concurrent.RecursiveAction;
 
 public class GenerationCalculator
 extends RecursiveAction

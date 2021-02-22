@@ -26,13 +26,18 @@
 
 package com.nephest.jhclife.fx;
 
-import com.nephest.jhclife.*;
-import com.nephest.jhclife.io.*;
-
-import javafx.stage.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.control.*;
+import com.nephest.jhclife.MainMenuPresenter;
+import com.nephest.jhclife.MainMenuView;
+import com.nephest.jhclife.MainMenuViewListener;
+import com.nephest.jhclife.io.ControlBindings;
+import com.nephest.jhclife.io.Displayable;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Window;
 
 public class MainMenuViewImplFX
 extends ViewBaseImplFX
