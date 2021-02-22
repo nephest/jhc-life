@@ -26,8 +26,8 @@
 
 package com.nephest.jhclife;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.matchers.LessOrEqual;
 
@@ -38,7 +38,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ClassicLifeModelTest
@@ -52,7 +52,7 @@ public class ClassicLifeModelTest
     private ScheduledExecutorService executorMock;
     private ScheduledFuture generationFutureMock;
 
-    @Before
+    @BeforeEach
     public void init()
     {
         this.executorMock = mock(ScheduledExecutorService.class);

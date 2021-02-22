@@ -28,8 +28,8 @@ package com.nephest.jhclife;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
@@ -50,7 +50,7 @@ public class MainMenuPresenterTest
 
     private MainMenuPresenter presenter;
 
-    @Before
+    @BeforeEach
     public void init()
     {
         this.viewMock = mock(MainMenuView.class);

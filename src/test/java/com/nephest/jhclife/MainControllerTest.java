@@ -26,8 +26,8 @@
 
 package com.nephest.jhclife;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -38,7 +38,7 @@ public class MainControllerTest
     private MainController controller;
     private MainView mainViewMock;
 
-    @Before
+    @BeforeEach
     public void init()
     {
         this.mainViewMock = mock(MainView.class);

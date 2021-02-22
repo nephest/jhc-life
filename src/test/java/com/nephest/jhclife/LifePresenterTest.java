@@ -29,8 +29,8 @@ package com.nephest.jhclife;
 import com.nephest.jhclife.io.FileIO;
 import com.nephest.jhclife.util.ObjectTranslator;
 import javafx.scene.input.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
@@ -43,8 +43,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.and;
 import static org.mockito.Mockito.*;
 
@@ -88,7 +88,7 @@ public class LifePresenterTest
     private FileIO fileIOMock;
     private ObjectTranslator<Generation> generationTranslatorMock;
 
-    @Before
+    @BeforeEach
     public void init()
     {
         this.viewMock = mock(LifeView.class);
