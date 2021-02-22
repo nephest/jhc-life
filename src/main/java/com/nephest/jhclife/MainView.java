@@ -30,14 +30,14 @@ public interface MainView<N>
 extends ViewBase<N>
 {
 
-    public static enum ViewType
+    enum ViewType
     {
         MAIN_MENU, LIFE
     }
 
-    public void setViewType(ViewType type);
+    void setViewType(ViewType type);
 
-    public ViewType getCurrentViewType();
+    ViewType getCurrentViewType();
 
 }
 

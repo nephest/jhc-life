@@ -26,6 +26,7 @@
 
 package com.nephest.jhclife;
 
+import javafx.scene.Parent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,7 @@ public class MainControllerTest
 {
 
     private MainController controller;
-    private MainView mainViewMock;
+    private MainView<Parent> mainViewMock;
 
     @BeforeEach
     public void init()

@@ -66,7 +66,7 @@ implements Displayable
         return this.prefix;
     }
 
-    public static final String getShortcutKeyString()
+    public static String getShortcutKeyString()
     {
         return System.getProperty("os.name").toLowerCase().contains("mac ")
             ? "Meta"

@@ -36,13 +36,13 @@ import java.nio.file.Path;
 public interface FileIO
 {
 
-    public OutputStream getOutputStream(File file)
+    OutputStream getOutputStream(File file)
     throws FileNotFoundException;
 
-    public void write(Path path, byte[] bytes, OpenOption... options)
+    void write(Path path, byte[] bytes, OpenOption... options)
     throws IOException;
 
-    public byte[] readAllBytes(Path path)
+    byte[] readAllBytes(Path path)
     throws IOException;
 
 }

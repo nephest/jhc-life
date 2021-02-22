@@ -36,7 +36,7 @@ extends RecursiveAction
     private final boolean[][] src, dest;
     private final GenerationCalculator next;
 
-    private int begin;
+    private final int begin;
     private int end;
 
     public GenerationCalculator

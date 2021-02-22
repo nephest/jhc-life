@@ -33,9 +33,8 @@ public interface ReactiveViewBase<N, L, C extends Enum<C>>
 extends ViewBase<N>
 {
 
-    public void setListener(L listener);
+    void setListener(L listener);
 
-    public void setControlBindingsInfo
-    (ControlBindings<C, ? extends Displayable>... binds);
+    void setControlBindingsInfo(ControlBindings<C, ? extends Displayable>... binds);
 
 }

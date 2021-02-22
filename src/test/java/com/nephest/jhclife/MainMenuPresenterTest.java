@@ -179,7 +179,7 @@ public class MainMenuPresenterTest
         inOrder.verify(this.viewMock, times(times)).fireErrorAlert(header, alert);
         inOrder.verify(this.viewMock, times(times)).unlock();
 
-        verifyZeroInteractions(this.modelMock);
+        verifyNoInteractions(this.modelMock);
     }
 
     private void stubView(int width, int height, long seed, double prob)

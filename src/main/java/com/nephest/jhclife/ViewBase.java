@@ -33,44 +33,36 @@ import java.util.function.Consumer;
 public interface ViewBase<N>
 {
 
-    public static enum AlertType
+    enum AlertType
     {
-        INFO, ERROR;
+        INFO, ERROR
     }
 
-    public static enum FileSelectionMode
+    enum FileSelectionMode
     {
-        SELECT_SINGLE, SELECT_MULTIPLE, SAVE;
+        SELECT_SINGLE, SELECT_MULTIPLE, SAVE
     }
 
-    public void fireAlert(AlertType type, String header, String text);
+    void fireAlert(AlertType type, String header, String text);
 
-    public void fireInfoAlert(String header, String text);
+    void fireInfoAlert(String header, String text);
 
-    public void fireConfirmationAlert
-    (
-        String header,
-        String text,
-        Runnable onYes,
-        Runnable onNo
+    void fireConfirmationAlert(
+        String header, String text, Runnable onYes, Runnable onNo
     );
 
-    public void fireErrorAlert(String header, String text);
+    void fireErrorAlert(String header, String text);
 
-    public void selectFile
-    (
-        FileSelectionMode mode,
-        String title,
-        String initialName,
-        Consumer<List<File>> onSelect
+    void selectFile(
+        FileSelectionMode mode, String title, String initialName, Consumer<List<File>> onSelect
     );
 
-    public void lock();
+    void lock();
 
-    public void unlock();
+    void unlock();
 
-    public boolean isLocked();
+    boolean isLocked();
 
-    public N getRoot();
+    N getRoot();
 
 }

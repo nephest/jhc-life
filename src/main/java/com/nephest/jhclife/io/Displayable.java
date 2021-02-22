@@ -29,6 +29,6 @@ package com.nephest.jhclife.io;
 public interface Displayable
 {
 
-    public String getDisplayText();
+    String getDisplayText();
 
 }

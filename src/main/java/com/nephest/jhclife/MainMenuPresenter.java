@@ -47,19 +47,19 @@ extends ReactivePresenter
 >
 {
 
-    public static enum ControlType
+    public enum ControlType
     {
-        NEW_GAME, CANCEL;
+        NEW_GAME, CANCEL
     }
 
     private final Map<ControlType, EventConsumer<MainMenuView.Zone>> controlActions
-        = new EnumMap(ControlType.class);
+        = new EnumMap<>(ControlType.class);
 
     public static final KeyCombination DEFAULT_CANCEL_COMBINATION
         = LifePresenter.DEFAULT_NEW_GAME_COMBINATION;
 
     private final ControlBindings<ControlType, KeyCombination> keyControl
-        = new ControlBindings(ControlType.class);
+        = new ControlBindings<>(ControlType.class);
 
     public MainMenuPresenter
     (
@@ -85,14 +85,12 @@ extends ReactivePresenter
     {
         getControlActions().put
         (
-            ControlType.NEW_GAME,
-            (x, y, zone)->{ newGame(x, y, zone); }
+            ControlType.NEW_GAME, this::newGame
         );
 
         getControlActions().put
         (
-            ControlType.CANCEL,
-            (x, y, zone)->{ cancel(x, y, zone); }
+            ControlType.CANCEL, this::cancel
         );
     }
 
@@ -128,11 +126,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.NEW_GAME)
-                        .consume(Double.NaN, Double.NaN, MainMenuView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.NEW_GAME)
+                    .consume(Double.NaN, Double.NaN, MainMenuView.Zone.GLOBAL)
                 );
             }
 
@@ -141,11 +136,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.CANCEL)
-                        .consume(Double.NaN, Double.NaN, MainMenuView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.CANCEL)
+                    .consume(Double.NaN, Double.NaN, MainMenuView.Zone.GLOBAL)
                 );
             }
         };

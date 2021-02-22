@@ -51,7 +51,7 @@ public class Generation
         this.population = population;
         this.id = id;
         this.generationNumber = generationNumber;
-        this.width = population.length > 0 ? population.length : 0;
+        this.width = Math.max(population.length, 0);
         this.height = this.width > 0 ? population[0].length : 0;
     }
 
@@ -97,10 +97,9 @@ public class Generation
     public static Generation fromByteArray(byte[] bytes)
     {
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        for (int i = 0; i < MAGIC_BYTES.length; i++)
+        for (byte magicByte : MAGIC_BYTES)
         {
-            if (buf.get() != MAGIC_BYTES[i])
-                throw new IllegalArgumentException("Invalid magic header");
+            if (buf.get() != magicByte) throw new IllegalArgumentException("Invalid magic header");
         }
         long id = buf.getLong();
         long generationNumber = buf.getLong();
@@ -125,7 +124,7 @@ public class Generation
         return new Generation(population, id, generationNumber);
     }
 
-    private static final void checkGenerationDimensions(int width, int height)
+    private static void checkGenerationDimensions(int width, int height)
     {
         try
         {

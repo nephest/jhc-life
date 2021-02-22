@@ -108,9 +108,9 @@ implements LifeView<Parent>
     }
 
     // do not set the control accelerators directly, only show info about bindings
+    @SafeVarargs
     @Override
-    public void setControlBindingsInfo
-    (ControlBindings<LifePresenter.ControlType, ? extends Displayable>... binds)
+    public final void setControlBindingsInfo(ControlBindings<LifePresenter.ControlType, ? extends Displayable>... binds)
     {
         String menuNameSplitter = "\t\t";
 
@@ -145,6 +145,7 @@ implements LifeView<Parent>
         );
     }
 
+    @SafeVarargs
     private void setMenuItemBindingInfo
     (
         String name,
@@ -162,6 +163,7 @@ implements LifeView<Parent>
         item.setText(bindStr);
     }
 
+    @SafeVarargs
     private void setButtonBindingInfo
     (
         String name,
@@ -288,7 +290,7 @@ implements LifeView<Parent>
     @Override
     public void reset()
     {
-        Platform.runLater( ()->doReset() );
+        Platform.runLater(this::doReset);
     }
 
     private void doReset()

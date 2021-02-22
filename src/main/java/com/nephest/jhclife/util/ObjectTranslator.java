@@ -29,8 +29,8 @@ package com.nephest.jhclife.util;
 public interface ObjectTranslator<T>
 {
 
-    public byte[] toByteArray(T t);
+    byte[] toByteArray(T t);
 
-    public T fromByteArray(byte[] bytes);
+    T fromByteArray(byte[] bytes);
 
 }

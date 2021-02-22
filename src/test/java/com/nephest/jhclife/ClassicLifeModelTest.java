@@ -143,14 +143,21 @@ public class ClassicLifeModelTest
         double diff = Math.abs(prob - probActual);
         if (diff > threshold)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.append("population probability threshold exceeded. expected:")
-            .append(threshold)
-            .append(" got: ").append(diff)
-            .append(", expected probability: ").append(prob)
-            .append(", actual probability: ").append(probActual)
-            .append(", pop count: ").append(popCount).append("/").append(popMax);
-            fail(sb.toString());
+            String
+                sb =
+                "population probability threshold exceeded. expected:"
+                    + threshold
+                    + " got: "
+                    + diff
+                    + ", expected probability: "
+                    + prob
+                    + ", actual probability: "
+                    + probActual
+                    + ", pop count: "
+                    + popCount
+                    + "/"
+                    + popMax;
+            fail(sb);
         }
     }
 
@@ -269,7 +276,7 @@ public class ClassicLifeModelTest
         verify(executorMock).scheduleAtFixedRate
         (
             any(),
-            longThat(new LessOrEqual(count)),
+            longThat(new LessOrEqual<>(count)),
             eq(count),
             eq(unit)
         );
@@ -284,7 +291,7 @@ public class ClassicLifeModelTest
         verify(executorMock).scheduleAtFixedRate
         (
             any(),
-            longThat(new LessOrEqual(newCount)),
+            longThat(new LessOrEqual<>(newCount)),
             eq(newCount),
             eq(newUnit)
         );
@@ -451,7 +458,7 @@ public class ClassicLifeModelTest
         verify(this.executorMock, times(times)).scheduleAtFixedRate
         (
             captor.capture(),
-            longThat(new LessOrEqual(count)),
+            longThat(new LessOrEqual<>(count)),
             eq(count),
             eq(unit)
         );

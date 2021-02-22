@@ -46,7 +46,7 @@ public final class FX
 
     private FX() {}
 
-    public static final <T> void filteredSpinner
+    public static <T> void filteredSpinner
     (
         Spinner<T> spinner,
         T def,
@@ -83,7 +83,7 @@ public final class FX
             return result;
         };
 
-        TextFormatter formatter = new TextFormatter
+        TextFormatter formatter = new TextFormatter<>
         (
             spinner.getValueFactory().getConverter(),
             def,
@@ -92,7 +92,7 @@ public final class FX
         spinner.getEditor().setTextFormatter(formatter);
     }
 
-    public static final void focusCommitedSpinner(Spinner spinner)
+    public static void focusCommitedSpinner(Spinner<?> spinner)
     {
         Objects.requireNonNull(spinner);
 
@@ -100,7 +100,7 @@ public final class FX
             .addListener((l, ov, nv)->{if (!nv) spinner.increment(0);});
     }
 
-    public static final <T> void standardSpinner
+    public static <T> void standardSpinner
     (
         Spinner<T> spinner,
         T def,

@@ -709,7 +709,7 @@ public class LifePresenterTest
         if (times == 0) return;
 
         //save if a file was selected
-        List<File> selectedFiles = new ArrayList();
+        List<File> selectedFiles = new ArrayList<>();
         selectedFiles.add(file);
         consumerCaptor.getValue().accept(selectedFiles);
         verifyRunInBackground(captor, 2);
@@ -826,7 +826,7 @@ public class LifePresenterTest
         if (times == 0) return;
 
         //load if a file was selected
-        List<File> files = new ArrayList();
+        List<File> files = new ArrayList<>();
         files.add(file);
         consumerCaptor.getValue().accept(files);
         verifyRunInBackground(captor, 2);
@@ -912,8 +912,8 @@ public class LifePresenterTest
     public void testReadyForNextFrame()
     {
         Generation generation = mock(Generation.class);
-        when(generation.getId()).thenReturn(10l);
-        when(generation.getGenerationNumber()).thenReturn(2l);
+        when(generation.getId()).thenReturn(10L);
+        when(generation.getGenerationNumber()).thenReturn(2L);
         when(this.modelMock.getLastGeneration()).thenReturn(generation);
 
         //the rendering request is running in the rendering thread to avoid missed frames

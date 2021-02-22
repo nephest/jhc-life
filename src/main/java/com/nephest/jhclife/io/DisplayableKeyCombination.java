@@ -39,12 +39,12 @@ implements Displayable
         this.combination = combination;
     }
 
-    public static final <T extends Enum<T>, B extends KeyCombination>
+    public static <T extends Enum<T>, B extends KeyCombination>
     ControlBindings<T, DisplayableKeyCombination>
     toDisplayable(ControlBindings<T, B> binds)
     {
         ControlBindings<T, DisplayableKeyCombination> result
-            = new ControlBindings(binds.getType());
+            = new ControlBindings<>(binds.getType());
         for (T enumConst : binds.getType().getEnumConstants())
         {
             result.setBinding

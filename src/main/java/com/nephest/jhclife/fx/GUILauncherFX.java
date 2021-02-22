@@ -78,10 +78,10 @@ extends Application
         mainMenuView.addExternalElementsCss(STYLESHEET_RESOURCE);
         lifeView.addExternalElementsCss(STYLESHEET_RESOURCE);
         Map<MainView.ViewType, ViewBase<Parent>> views
-            = new EnumMap(MainView.ViewType.class);
+            = new EnumMap<>(MainView.ViewType.class);
         views.put(MainView.ViewType.MAIN_MENU, mainMenuView);
         views.put(MainView.ViewType.LIFE, lifeView);
-        MainView mainView = new MainViewImplFX(scene, views);
+        MainView<Parent> mainView = new MainViewImplFX(scene, views);
 
         MainController mainController = new MainController(mainView);
         MainMenuPresenter MainMenuPresenter = new MainMenuPresenter

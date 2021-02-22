@@ -225,7 +225,7 @@ implements java.io.Closeable
             throw new IllegalStateException("Can't start model. Resources are closed");
         this.generationFuture = getExecutor().scheduleAtFixedRate
         (
-            ()->nextGeneration(),
+            this::nextGeneration,
             calculateFinalDelay(),
             this.generationLifeTimePeriod,
             this.generationLifeTimeUnit

@@ -35,7 +35,7 @@ extends InputCombination<ScrollDirectionCombination.Direction>
 
     public enum Direction
     {
-        UP, DOWN, NONE;
+        UP, DOWN, NONE
     }
 
     public ScrollDirectionCombination(Direction direction, KeyCombination.Modifier... modifiers)

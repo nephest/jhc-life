@@ -30,27 +30,27 @@ public interface LifeView<N>
 extends ReactiveViewBase<N, LifeViewListener, LifePresenter.ControlType>
 {
 
-    public static enum Zone
+    enum Zone
     {
         GLOBAL, GENERATION_CONTAINER, GENERATION
     }
 
-    public void render(Generation generation);
+    void render(Generation generation);
 
-    public void reset();
+    void reset();
 
-    public void setGenerationZoom(double factor, int pivotX, int pivotY);
+    void setGenerationZoom(double factor, int pivotX, int pivotY);
 
-    public void setGenerationZoom(double factor);
+    void setGenerationZoom(double factor);
 
-    public double getFinalGenerationZoom();
+    double getFinalGenerationZoom();
 
-    public void updateZoomInfo(String format);
+    void updateZoomInfo(String format);
 
-    public void setSpeedInfo(String speed);
+    void setSpeedInfo(String speed);
 
-    public void setStatus(String status);
+    void setStatus(String status);
 
-    public void setTip(String tip);
+    void setTip(String tip);
 
 }

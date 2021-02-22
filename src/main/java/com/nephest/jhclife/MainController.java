@@ -26,17 +26,19 @@
 
 package com.nephest.jhclife;
 
+import javafx.scene.Parent;
+
 public class MainController
 {
 
-    private final MainView mainView;
+    private final MainView<Parent> mainView;
 
-    public MainController(MainView view)
+    public MainController(MainView<Parent> view)
     {
         this.mainView = view;
     }
 
-    private MainView getMainView()
+    private MainView<Parent> getMainView()
     {
         return this.mainView;
     }

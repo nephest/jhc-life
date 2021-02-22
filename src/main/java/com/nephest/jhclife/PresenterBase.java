@@ -28,7 +28,7 @@ package com.nephest.jhclife;
 
 import java.util.Objects;
 
-public class PresenterBase<V extends ViewBase, M>
+public class PresenterBase<V extends ViewBase<?>, M>
 {
 
     private final V view;

@@ -33,35 +33,35 @@ import javafx.scene.input.ScrollEvent;
 public interface LifeViewListener
 {
 
-    public void onMouseEvent(MouseEvent evt, LifeView.Zone zone);
+    void onMouseEvent(MouseEvent evt, LifeView.Zone zone);
 
-    public void onScrollEvent(ScrollEvent evt, LifeView.Zone zone);
+    void onScrollEvent(ScrollEvent evt, LifeView.Zone zone);
 
-    public void onKeyEvent(KeyEvent evt, LifeView.Zone zone);
+    void onKeyEvent(KeyEvent evt, LifeView.Zone zone);
 
-    public void onZoomUp();
+    void onZoomUp();
 
-    public void onZoomDown();
+    void onZoomDown();
 
-    public void onZoomDefault();
+    void onZoomDefault();
 
-    public void onSpeedUp();
+    void onSpeedUp();
 
-    public void onSpeedDown();
+    void onSpeedDown();
 
-    public void onSpeedDefault();
+    void onSpeedDefault();
 
-    public void onStateToggle();
+    void onStateToggle();
 
-    public void onNewGame();
+    void onNewGame();
 
-    public void onGenerationSave();
+    void onGenerationSave();
 
-    public void onGenerationLoad();
+    void onGenerationLoad();
 
-    public void onHelp();
+    void onHelp();
 
-    public void readyForNextFrame();
+    void readyForNextFrame();
 
 }
 

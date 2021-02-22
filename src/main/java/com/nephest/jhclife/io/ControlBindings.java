@@ -38,9 +38,10 @@ public class ControlBindings<T extends Enum<T>, B>
     public ControlBindings(Class<T> type)
     {
         this.type = type;
-        this.binds = new EnumMap(type);
+        this.binds = new EnumMap<>(type);
     }
 
+    @SafeVarargs
     public static <C extends Enum<C>> String calculateBindingsString
     (
         String splitter,
@@ -50,9 +51,9 @@ public class ControlBindings<T extends Enum<T>, B>
     {
         StringBuilder sb = new StringBuilder();
         boolean found = false;
-        for (int i = 0; i < binds.length; i++)
+        for (ControlBindings<C, ? extends Displayable> bind : binds)
         {
-            Displayable displayable = binds[i].getBinding(ctrl);
+            Displayable displayable = bind.getBinding(ctrl);
             String str = displayable == null ? null : displayable.getDisplayText();
             if (str != null && !str.isEmpty())
             {
@@ -67,6 +68,7 @@ public class ControlBindings<T extends Enum<T>, B>
         return sb.toString();
     }
 
+    @SafeVarargs
     public static <C extends Enum<C>> String calculateControlName
     (
         String name,
@@ -81,14 +83,10 @@ public class ControlBindings<T extends Enum<T>, B>
         String bindsStr = calculateBindingsString(splitter, ctrl, binds);
         if (bindsStr.isEmpty()) return name;
 
-        StringBuilder sb = new StringBuilder(name);
-        sb.append(nameSplitter);
-        sb.append(prefix);
-        sb.append(bindsStr);
-        sb.append(suffix);
-        return sb.toString();
+        return name + nameSplitter + prefix + bindsStr + suffix;
     }
 
+    @SafeVarargs
     public static <C extends Enum<C>> String calculateControlName
     (
         String name,

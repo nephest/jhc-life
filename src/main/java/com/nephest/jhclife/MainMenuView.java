@@ -30,17 +30,17 @@ public interface MainMenuView<N>
 extends ReactiveViewBase<N, MainMenuViewListener, MainMenuPresenter.ControlType>
 {
 
-    public static enum Zone
+    enum Zone
     {
-        GLOBAL;
+        GLOBAL
     }
 
-    public int getWidth();
+    int getWidth();
 
-    public int getHeight();
+    int getHeight();
 
-    public long getSeed();
+    long getSeed();
 
-    public double getPopulationProbability();
+    double getPopulationProbability();
 
 }

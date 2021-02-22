@@ -175,7 +175,7 @@ implements ViewBase<Parent>
         this.fileChooser.setTitle(title);
         this.fileChooser.setInitialFileName(initialName);
 
-        List<File> files = new ArrayList();
+        List<File> files = new ArrayList<>();
         switch(mode)
         {
             case SELECT_SINGLE:

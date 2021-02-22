@@ -31,11 +31,11 @@ import javafx.scene.input.KeyEvent;
 public interface MainMenuViewListener
 {
 
-    public void onKeyEvent(KeyEvent evt, MainMenuView.Zone zone);
+    void onKeyEvent(KeyEvent evt, MainMenuView.Zone zone);
 
-    public void onNewGame();
+    void onNewGame();
 
-    public void onCancel();
+    void onCancel();
 
 }
 

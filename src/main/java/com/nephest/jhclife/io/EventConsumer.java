@@ -30,6 +30,6 @@ package com.nephest.jhclife.io;
 public interface EventConsumer<T>
 {
 
-    public void consume(double x, double y, T zone);
+    void consume(double x, double y, T zone);
 
 }

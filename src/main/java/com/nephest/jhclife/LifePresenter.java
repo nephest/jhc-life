@@ -52,7 +52,7 @@ extends ReactivePresenter
 
     private static final Logger LOG = Logger.getLogger(LifePresenter.class.getName());
 
-    public static enum ControlType
+    public enum ControlType
     {
         NEW_GAME,
         GENERATION_LOAD,
@@ -65,10 +65,10 @@ extends ReactivePresenter
         SPEED_UP,
         SPEED_DOWN,
         SPEED_DEFAULT,
-        POPULATION_TOGGLE;
+        POPULATION_TOGGLE
     }
 
-    public static enum Tip
+    public enum Tip
     {
         WELCOME,
         SPEED_CONTROL,
@@ -78,7 +78,7 @@ extends ReactivePresenter
     }
 
     private final Map<ControlType, EventConsumer<LifeView.Zone>> controlActions
-        = new EnumMap(ControlType.class);
+        = new EnumMap<>(ControlType.class);
 
     public static final double ZOOM_FACTOR_UP = 2;
     public static final double ZOOM_FACTOR_DOWN = 0.5;
@@ -169,17 +169,17 @@ extends ReactivePresenter
         + "GPL Version 3\n"
         + "Copyright (C) 2018 Oleksandr Masniuk\n";
 
-    private final Map<Tip, String> tips = new EnumMap(Tip.class);
+    private final Map<Tip, String> tips = new EnumMap<>(Tip.class);
 
     private FileIO fileIO = new StandardFileIO();
     private ObjectTranslator<Generation> generationTranslator;
 
     private final ControlBindings<ControlType, KeyCombination> keyControl
-        = new ControlBindings(ControlType.class);
+        = new ControlBindings<>(ControlType.class);
     private final ControlBindings<ControlType, MouseKeyCombination> mouseControl
-        = new ControlBindings(ControlType.class);
+        = new ControlBindings<>(ControlType.class);
     private final ControlBindings<ControlType, ScrollDirectionCombination> scrollControl
-        = new ControlBindings(ControlType.class);
+        = new ControlBindings<>(ControlType.class);
     private Generation lastGeneration;
     private int speed = SPEED_INIT;
 
@@ -205,7 +205,7 @@ extends ReactivePresenter
 
     private void initTranslators()
     {
-        this.generationTranslator = new ObjectTranslator<Generation>()
+        this.generationTranslator = new ObjectTranslator<>()
         {
 
             @Override
@@ -235,83 +235,69 @@ extends ReactivePresenter
     {
         getControlActions().put
         (
-            ControlType.NEW_GAME,
-            (x, y, zone)->{ newGame(x, y, zone); }
+            ControlType.NEW_GAME, this::newGame
         );
 
         getControlActions().put
         (
-            ControlType.GENERATION_LOAD,
-            (x, y, zone)->{ generationLoad(x, y, zone); }
+            ControlType.GENERATION_LOAD, this::generationLoad
         );
 
         getControlActions().put
         (
-            ControlType.GENERATION_SAVE,
-            (x, y, zone)->{ generationSave(x, y, zone); }
+            ControlType.GENERATION_SAVE, this::generationSave
         );
 
         getControlActions().put
         (
-            ControlType.HELP,
-            (x, y, zone)->{ help(x, y, zone); }
+            ControlType.HELP, this::help
         );
 
         getControlActions().put
         (
-            ControlType.STATE_TOGGLE,
-            (x, y, zone)->{ toggleState(x, y, zone); }
+            ControlType.STATE_TOGGLE, this::toggleState
         );
 
         getControlActions().put
         (
             ControlType.ZOOM_UP,
-            (x, y, zone)->
-            {
-                changeZoom(x, y, zone, ZOOM_FACTOR_UP);
-            }
+            (x, y, zone)-> changeZoom(x, y, zone, ZOOM_FACTOR_UP)
         );
 
         getControlActions().put
         (
             ControlType.ZOOM_DOWN,
-            (x, y, zone)->
-            {
-                changeZoom(x, y, zone, ZOOM_FACTOR_DOWN);
-            }
+            (x, y, zone)-> changeZoom(x, y, zone, ZOOM_FACTOR_DOWN)
         );
 
         getControlActions().put
         (
             ControlType.ZOOM_DEFAULT,
-            (x, y, zone)->
-            {
-                changeZoom(x, y, zone, ZOOM_FACTOR_INIT);
-            }
+            (x, y, zone)-> changeZoom(x, y, zone, ZOOM_FACTOR_INIT)
         );
 
         getControlActions().put
         (
             ControlType.SPEED_UP,
-            (x, y, zone)->{ changeSpeed(x, y, zone, getSpeed() + SPEED_STEP); }
+            (x, y, zone)-> changeSpeed(x, y, zone, getSpeed() + SPEED_STEP)
         );
 
         getControlActions().put
         (
             ControlType.SPEED_DOWN,
-            (x, y, zone)->{ changeSpeed(x, y, zone, getSpeed() - SPEED_STEP); }
+            (x, y, zone)-> changeSpeed(x, y, zone, getSpeed() - SPEED_STEP)
         );
 
         getControlActions().put
         (
             ControlType.SPEED_DEFAULT,
-            (x, y, zone)->{ changeSpeed(x, y, zone, SPEED_INIT); }
+            (x, y, zone)-> changeSpeed(x, y, zone, SPEED_INIT)
         );
 
         getControlActions().put
         (
             ControlType.POPULATION_TOGGLE,
-            (x, y, zone)->{ togglePopulation((int)x, (int)y, zone); }
+            (x, y, zone)-> togglePopulation((int)x, (int)y, zone)
         );
     }
 
@@ -507,11 +493,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.ZOOM_UP)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.ZOOM_UP)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -520,11 +503,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.ZOOM_DOWN)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.ZOOM_DOWN)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -533,11 +513,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.ZOOM_DEFAULT)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.ZOOM_DEFAULT)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -546,11 +523,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.SPEED_UP)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.SPEED_UP)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -559,11 +533,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.SPEED_DOWN)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.SPEED_DOWN)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -572,11 +543,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.SPEED_DEFAULT)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.SPEED_DEFAULT)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -585,11 +553,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.STATE_TOGGLE)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.STATE_TOGGLE)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -598,11 +563,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.NEW_GAME)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.NEW_GAME)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -611,11 +573,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.GENERATION_SAVE)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.GENERATION_SAVE)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -624,11 +583,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.GENERATION_LOAD)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.GENERATION_LOAD)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -637,11 +593,8 @@ extends ReactivePresenter
             {
                 getExecutor().execute
                 (
-                    ()->
-                    {
-                        getControlActions().get(ControlType.HELP)
-                        .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL);
-                    }
+                    ()-> getControlActions().get(ControlType.HELP)
+                    .consume(Double.NaN, Double.NaN, LifeView.Zone.GLOBAL)
                 );
             }
 
@@ -843,7 +796,7 @@ extends ReactivePresenter
             (
                 "File already exists",
                 "Do you want to overwrite the existing file?",
-                ()->{ getExecutor().execute(()->doSaveGeneration(file, generation)); },
+                ()-> getExecutor().execute(()->doSaveGeneration(file, generation)),
                 null
             );
         }
@@ -914,57 +867,47 @@ extends ReactivePresenter
     private void help(double x, double y, LifeView.Zone zone)
     {
         if (zone != LifeView.Zone.GLOBAL) return;
-        StringBuilder sb = new StringBuilder(HELP_MSG_HEADER);
-        sb.append("Binds:\n")
-
-        .append("Zoom+\t\t")
-        .append(getControlBindingsString(ControlType.ZOOM_UP))
-        .append("\n")
-
-        .append("Zoom-\t\t")
-        .append(getControlBindingsString(ControlType.ZOOM_DOWN))
-        .append("\n")
-
-        .append("Zoom default\t")
-        .append(getControlBindingsString(ControlType.ZOOM_DEFAULT))
-        .append("\n")
-        .append("\n")
-
-        .append("Speed+\t\t")
-        .append(getControlBindingsString(ControlType.SPEED_UP))
-        .append("\n")
-
-        .append("Speed-\t\t")
-        .append(getControlBindingsString(ControlType.SPEED_DOWN))
-        .append("\n")
-
-        .append("Speed default\t")
-        .append(getControlBindingsString(ControlType.SPEED_DEFAULT))
-        .append("\n")
-        .append("\n")
-
-        .append("Population\t")
-        .append(getControlBindingsString(ControlType.POPULATION_TOGGLE))
-        .append("\n")
-
-        .append("Play/Pause\t")
-        .append(getControlBindingsString(ControlType.STATE_TOGGLE))
-        .append("\n")
-
-        .append("New game\t")
-        .append(getControlBindingsString(ControlType.NEW_GAME))
-        .append("\n")
-
-        .append("Load game\t")
-        .append(getKeyControl().getBinding(ControlType.GENERATION_LOAD).getDisplayText())
-        .append("\n")
-
-        .append("Save game\t")
-        .append(getKeyControl().getBinding(ControlType.GENERATION_SAVE).getDisplayText())
-        .append("\n")
-
-        .append(HELP_MSG_FOOTER);
-        getView().fireInfoAlert("Help", sb.toString());
+        String
+            sb =
+            HELP_MSG_HEADER
+                + "Binds:\n"
+                + "Zoom+\t\t"
+                + getControlBindingsString(ControlType.ZOOM_UP)
+                + "\n"
+                + "Zoom-\t\t"
+                + getControlBindingsString(ControlType.ZOOM_DOWN)
+                + "\n"
+                + "Zoom default\t"
+                + getControlBindingsString(ControlType.ZOOM_DEFAULT)
+                + "\n"
+                + "\n"
+                + "Speed+\t\t"
+                + getControlBindingsString(ControlType.SPEED_UP)
+                + "\n"
+                + "Speed-\t\t"
+                + getControlBindingsString(ControlType.SPEED_DOWN)
+                + "\n"
+                + "Speed default\t"
+                + getControlBindingsString(ControlType.SPEED_DEFAULT)
+                + "\n"
+                + "\n"
+                + "Population\t"
+                + getControlBindingsString(ControlType.POPULATION_TOGGLE)
+                + "\n"
+                + "Play/Pause\t"
+                + getControlBindingsString(ControlType.STATE_TOGGLE)
+                + "\n"
+                + "New game\t"
+                + getControlBindingsString(ControlType.NEW_GAME)
+                + "\n"
+                + "Load game\t"
+                + getKeyControl().getBinding(ControlType.GENERATION_LOAD).getDisplayText()
+                + "\n"
+                + "Save game\t"
+                + getKeyControl().getBinding(ControlType.GENERATION_SAVE).getDisplayText()
+                + "\n"
+                + HELP_MSG_FOOTER;
+        getView().fireInfoAlert("Help", sb);
     }
 
     private void nextFrame()
@@ -1064,7 +1007,7 @@ extends ReactivePresenter
 
     private void changeSpeed(int speed)
     {
-        speed = speed < 1 ? 1 : speed;
+        speed = Math.max(speed, 1);
         long nanos = 1_000_000_000;
         long period = nanos / speed;
         getModel().setGenerationLifeTime(period, TimeUnit.NANOSECONDS);
