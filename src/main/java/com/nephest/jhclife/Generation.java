@@ -29,6 +29,7 @@ package com.nephest.jhclife;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.stream.IntStream;
 
 public class Generation
 {
@@ -38,6 +39,7 @@ public class Generation
     private final boolean[][] population;
     private final long id;
     private final long generationNumber;
+    private final long populationCount;
     private final int width;
     private final int height;
 
@@ -51,6 +53,7 @@ public class Generation
         this.population = population;
         this.id = id;
         this.generationNumber = generationNumber;
+        this.populationCount = countPopulation(population);
         this.width = Math.max(population.length, 0);
         this.height = this.width > 0 ? population[0].length : 0;
     }
@@ -124,6 +127,15 @@ public class Generation
         return new Generation(population, id, generationNumber);
     }
 
+    public static long countPopulation(boolean[][] population)
+    {
+        long[] counts = new long[population.length];
+        IntStream.range(0, population.length).boxed()
+            .parallel()
+            .forEach(i->{for(boolean pop : population[i] ) if(pop) counts[i]++;});
+        return Arrays.stream(counts).sum();
+    }
+
     private static void checkGenerationDimensions(int width, int height)
     {
         try
@@ -165,6 +177,11 @@ public class Generation
     public long getGenerationNumber()
     {
         return this.generationNumber;
+    }
+
+    public long getPopulationCount()
+    {
+        return populationCount;
     }
 
     public int getWidth()

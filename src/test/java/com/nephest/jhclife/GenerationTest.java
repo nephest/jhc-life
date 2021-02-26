@@ -67,4 +67,14 @@ public class GenerationTest
         }
     }
 
+    @Test
+    public void testPopulationCount()
+    {
+        boolean[][] pop = new boolean[3][3];
+        pop[0][0] = true;
+        pop[1][1] = true;
+        pop[2][2] = true;
+        assertEquals(3, Generation.countPopulation(pop));
+    }
+
 }

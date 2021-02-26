@@ -79,7 +79,7 @@ implements LifeView<Parent>
     private Button stateToggleButton,
         speedUpButton, speedDownButton, speedDefaultButton,
         zoomUpButton, zoomDownButton, zoomDefaultButton;
-    private Label generationNumberLabel, tipLabel, statusLabel, speedLabel, zoomLabel;
+    private Label generationNumberLabel, populationCountLabel, tipLabel, statusLabel, speedLabel, zoomLabel;
     private MenuItem newGameItem, generationSaveItem, generationLoadItem, helpItem;
 
     private LifeViewListener listener;
@@ -245,6 +245,8 @@ implements LifeView<Parent>
         }
         this.generationNumberLabel
             .setText(String.valueOf(generation.getGenerationNumber()));
+        this.populationCountLabel
+            .setText(String.valueOf(generation.getPopulationCount()));
         this.lastGeneration = generation;
     }
 
@@ -309,6 +311,7 @@ implements LifeView<Parent>
             }
         }
         this.generationNumberLabel.setText("0");
+        this.populationCountLabel.setText("0");
     }
 
     @Override
@@ -474,6 +477,8 @@ implements LifeView<Parent>
 
         this.generationNumberLabel = newValueLabel(false);
         this.generationNumberLabel.setId("label-generation-number");
+        this.populationCountLabel = newValueLabel(false);
+        this.populationCountLabel.setId("label-population-count");
 
         this.tipLabel = newValueLabel(true);
         this.tipLabel.setId("label-tip");
@@ -510,6 +515,8 @@ implements LifeView<Parent>
         HBox info = new HBox
         (
             newLabel("Generation:"), this.generationNumberLabel,
+            newSeparator(Orientation.VERTICAL),
+            newLabel("Population:"), this.populationCountLabel,
             newSeparator(Orientation.VERTICAL),
             newLabel("Status:"), this.statusLabel,
             newSeparator(Orientation.VERTICAL),
