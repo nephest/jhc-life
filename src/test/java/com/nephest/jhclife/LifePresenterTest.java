@@ -37,6 +37,7 @@ import org.mockito.InOrder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -74,9 +75,9 @@ public class LifePresenterTest
     public static final String HELP_MSG_FOOTER =
         "\n"
         + "Misc:\n"
-        + "nephest.com/projects/jhc-life\n"
-        + "GPL Version 3\n"
-        + "Copyright (C) 2018 Oleksandr Masniuk\n";
+        + "github.com/nephest/jhc-life\n"
+        + "MIT License\n"
+        + "Copyright (C) 2018-" + LocalDate.now().getYear() + " Oleksandr Masniuk\n";
 
     private LifeView<?> viewMock;
     private ClassicLifeModel modelMock;

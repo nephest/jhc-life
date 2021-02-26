@@ -32,6 +32,7 @@ import javafx.scene.input.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -165,9 +166,9 @@ extends ReactivePresenter
     public static final String HELP_MSG_FOOTER =
         "\n"
         + "Misc:\n"
-        + "nephest.com/projects/jhc-life\n"
-        + "GPL Version 3\n"
-        + "Copyright (C) 2018 Oleksandr Masniuk\n";
+        + "github.com/nephest/jhc-life\n"
+        + "MIT License\n"
+        + "Copyright (C) 2018-" + LocalDate.now().getYear() + " Oleksandr Masniuk\n";
 
     private final Map<Tip, String> tips = new EnumMap<>(Tip.class);
 
