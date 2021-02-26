@@ -158,10 +158,10 @@ extends ReactivePresenter
         + "This is a basic Conway's Game of Life implementation.\n"
         + "\n"
         + "Rules:\n"
-        + "Any live cell with fewer than two live neighbors dies.\n"
-        + "Any live cell with two or three live neighbors lives on.\n"
-        + "Any live cell with more than three live neighbors dies.\n"
-        + "Any dead cell with exactly three live neighbors becomes a live cell.\n"
+        + "Any living cell with fewer than two living neighbors dies.\n"
+        + "Any living cell with two or three living neighbors lives on.\n"
+        + "Any living cell with more than three living neighbors dies.\n"
+        + "Any dead cell with exactly three living neighbors becomes a living cell.\n"
         + "\n";
     public static final String HELP_MSG_FOOTER =
         "\n"
