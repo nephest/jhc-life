@@ -5,6 +5,7 @@ A John Horton Conway's Game of Life implementation
 ![demo](https://user-images.githubusercontent.com/4586789/44157982-5f6bdb80-a0bc-11e8-96ba-767ea6114d4f.gif)
 
 # Features
+* Cross-platform: Windows, Linux, OS X
 * Seed based generation
 * Save/Load game
 * Unlimited play field
