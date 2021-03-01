@@ -11,9 +11,3 @@ A John Horton Conway's Game of Life implementation
 * Zoom/speed correction
 * Manual cell editing
 * Keyboard + mouse control
-
-# Disclaimer
-I found this old code with a bunch of uncommited changes. I've completed the
-code as well as I could, but I'm not sure that it's working as intended. I created
-this repo so I could easily move the old code between my PCs. I will remove this
-notice after I finish the game.
