@@ -46,6 +46,10 @@ implements MainMenuView<Parent>
 
     public static final String NEW_GAME_STRING = "New Game";
     public static final String CANCEL_STRING = "Cancel";
+    public static final int DEFAULT_WIDTH = 800;
+    public static final int DEFAULT_HEIGHT = 600;
+    public static final int DEFAULT_SEED = 0;
+    public static final double DEFAULT_DENSITY = 15.0;
 
     private GridPane grid;
     private Spinner<Integer> widthSpinner, heightSpinner, seedSpinner;
@@ -173,22 +177,22 @@ implements MainMenuView<Parent>
 
     private void initControls()
     {
-        this.widthSpinner = new Spinner<>(1, Integer.MAX_VALUE, 800, 1);
+        this.widthSpinner = new Spinner<>(1, Integer.MAX_VALUE, DEFAULT_WIDTH, 1);
         this.widthSpinner.setEditable(true);
-        FX.standardSpinner(this.widthSpinner, 800, 1);
+        FX.standardSpinner(this.widthSpinner, DEFAULT_WIDTH, 1);
 
-        this.heightSpinner = new Spinner<>(1, Integer.MAX_VALUE, 600, 1);
+        this.heightSpinner = new Spinner<>(1, Integer.MAX_VALUE, DEFAULT_HEIGHT, 1);
         this.heightSpinner.setEditable(true);
-        FX.standardSpinner(this.heightSpinner, 600, 1);
+        FX.standardSpinner(this.heightSpinner, DEFAULT_HEIGHT, 1);
 
-        this.seedSpinner = new Spinner<>(Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 1);
+        this.seedSpinner = new Spinner<>(Integer.MIN_VALUE, Integer.MAX_VALUE, DEFAULT_SEED, 1);
         this.seedSpinner.setEditable(true);
-        FX.standardSpinner(this.seedSpinner, 0, 0);
+        FX.standardSpinner(this.seedSpinner, DEFAULT_SEED, 0);
         this.seedSpinner.setTooltip(new Tooltip("Provide the same seed and density to get the same population layout"));
 
-        this.probabilitySpinner = new Spinner<>(0.0, 100.0, 50.0, 1.0);
+        this.probabilitySpinner = new Spinner<>(0.0, 100.0, DEFAULT_DENSITY, 1.0);
         this.probabilitySpinner.setEditable(true);
-        FX.standardSpinner(this.probabilitySpinner, 50.0, 0.0);
+        FX.standardSpinner(this.probabilitySpinner, DEFAULT_DENSITY, 0.0);
         this.probabilitySpinner.setTooltip(new Tooltip("Population density percentage"));
 
         this.newGameButton = new Button(NEW_GAME_STRING);

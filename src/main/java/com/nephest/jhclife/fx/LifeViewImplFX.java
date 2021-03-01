@@ -54,8 +54,8 @@ extends ViewBaseImplFX
 implements LifeView<Parent>
 {
 
-    public static final Color ALIVE_COLOR = Color.BLACK;
-    public static final Color DEAD_COLOR = Color.WHITE;
+    public static final Color ALIVE_COLOR = Color.BLUE;
+    public static final Color DEAD_COLOR = Color.BLACK;
 
     public static final String BUTTON_PLUS_CLASS="button-plus";
     public static final String BUTTON_MINUS_CLASS="button-minus";
