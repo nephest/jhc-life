@@ -8,6 +8,7 @@ calculation model.
 
 # Features
 * Cross-platform: Windows, Linux, OS X
+* Multithreading
 * Seed based generation
 * Save/Load game
 * Unlimited play field
