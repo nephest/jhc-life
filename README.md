@@ -1,5 +1,6 @@
 # jhc-life
-A John Horton Conway's Game of Life implementation
+A John Horton Conway's Game of Life implementation. This is a JavaFX app that uses a classical life
+calculation model.
 
 # Dependencies
 * Java 11+
