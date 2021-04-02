@@ -187,24 +187,22 @@ extends RecursiveAction
     {
         int xLeft = x - 1;
         int yUp = y + 1;
-        return calculateNighborCountRow(xLeft, yUp, population, true)
-            + calculateNighborCountRow(xLeft, yUp - 1, population, false)
-            + calculateNighborCountRow(xLeft, yUp - 2, population, true);
+        return calculateAliveCountRow(xLeft, yUp, population)
+            + calculateAliveCountRow(xLeft, yUp - 1, population)
+            + calculateAliveCountRow(xLeft, yUp - 2, population)
+            + (population[x][y] ? - 1 : 0);
     }
 
-    private int calculateNighborCountRow
+    private int calculateAliveCountRow
     (
         int x, int y,
-        boolean[][] population,
-        boolean includeMiddle
+        boolean[][] population
     )
     {
         int result = 0;
         int mody = mod(y, getHeight());
         for (int i = 0; i < 3; i++)
         {
-            if (i == 1 && !includeMiddle) continue;
-
             int modx = mod(x + i, getWidth());
             if (population[modx][mody]) result++;
         }
