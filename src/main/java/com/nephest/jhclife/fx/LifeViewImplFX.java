@@ -247,9 +247,9 @@ implements LifeView<Parent>
     private void renderGeneration(Generation next)
     {
         PixelWriter pixelWriter = this.generationImage.getPixelWriter();
-        boolean[] pop = next.copyPopulation1D();
+        int[] pop = next.copyPopulation1D();
         int[] colors = new int[pop.length];
-        for(int i = 0; i < pop.length; i++) colors[i] = pop[i] ? ALIVE_ARGB : DEAD_ARGB;
+        for(int i = 0; i < pop.length; i++) colors[i] = pop[i] == 1 ? ALIVE_ARGB : DEAD_ARGB;
         WritablePixelFormat<IntBuffer> pixelFormat = PixelFormat.getIntArgbPreInstance();
         pixelWriter.setPixels(0, 0, next.getWidth(), next.getHeight(), pixelFormat, colors, 0, next.getWidth());
     }

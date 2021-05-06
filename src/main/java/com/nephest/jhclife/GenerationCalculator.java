@@ -33,7 +33,7 @@ extends RecursiveAction
 {
     public static final int SURPLUS_MAX = 3;
 
-    private final boolean[][] src, dest;
+    private final int[][] src, dest;
     private final GenerationCalculator next;
 
     private final int begin;
@@ -41,7 +41,7 @@ extends RecursiveAction
 
     public GenerationCalculator
     (
-        boolean[][] src, boolean[][] dest,
+        int[][] src, int[][] dest,
         int begin, int end,
         GenerationCalculator next
     )
@@ -55,7 +55,7 @@ extends RecursiveAction
         this.next = next;
     }
 
-    public GenerationCalculator(boolean[][] src, boolean[][] dest)
+    public GenerationCalculator(int[][] src, int[][] dest)
     {
         this
         (
@@ -102,12 +102,12 @@ extends RecursiveAction
         }
     }
 
-    private boolean[][] getSource()
+    private int[][] getSource()
     {
         return this.src;
     }
 
-    private boolean[][] getDestination()
+    private int[][] getDestination()
     {
         return this.dest;
     }
@@ -150,16 +150,16 @@ extends RecursiveAction
         {
             for (int y = 0; y < getSource()[x].length; y++)
             {
-                getDestination()[x][y] = willLive(x, y, getSource());
+                getDestination()[x][y] = willLive(x, y, getSource()) ? 1 : 0;
             }
         }
     }
 
-    private boolean willLive(int x, int y, boolean[][] population)
+    private boolean willLive(int x, int y, int[][] population)
     {
         boolean result = false;
         int neighborCount = calculateNeighborCount(x, y, population);
-        if(population[x][y])
+        if(population[x][y] == 1)
         {
             if
             (
@@ -183,20 +183,20 @@ extends RecursiveAction
         return result;
     }
 
-    private int calculateNeighborCount(int x, int y, boolean[][] population)
+    private int calculateNeighborCount(int x, int y, int[][] population)
     {
         int xLeft = x - 1;
         int yUp = y + 1;
         return calculateAliveCountRow(xLeft, yUp, population)
             + calculateAliveCountRow(xLeft, yUp - 1, population)
             + calculateAliveCountRow(xLeft, yUp - 2, population)
-            + (population[x][y] ? - 1 : 0);
+            - population[x][y];
     }
 
     private int calculateAliveCountRow
     (
         int x, int y,
-        boolean[][] population
+        int[][] population
     )
     {
         int result = 0;
@@ -204,7 +204,7 @@ extends RecursiveAction
         for (int i = 0; i < 3; i++)
         {
             int modx = mod(x + i, getWidth());
-            if (population[modx][mody]) result++;
+            result += population[modx][mody];
         }
         return result;
     }

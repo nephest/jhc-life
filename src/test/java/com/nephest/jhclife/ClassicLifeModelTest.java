@@ -107,13 +107,13 @@ public class ClassicLifeModelTest
 
             lastId = this.model.getId();
             this.model.populate(seed, prob);
-            boolean[][] first = deepCopy(this.model.getPopulation());
+            int[][] first = deepCopy(this.model.getPopulation());
             assertTrue(Arrays.deepEquals(first, this.model.getLastPopulation()));
             assertTrue(this.model.getId() != lastId);
 
             lastId = this.model.getId();
             this.model.populate(seed, prob);
-            boolean[][] second = deepCopy(this.model.getPopulation());
+            int[][] second = deepCopy(this.model.getPopulation());
             assertTrue(Arrays.deepEquals(second, this.model.getLastPopulation()));
             assertTrue(this.model.getId() != lastId);
 
@@ -165,13 +165,13 @@ public class ClassicLifeModelTest
     public void testGeneration()
     {
         this.model.populate(this.rng.nextLong(), 0.5);
-        boolean[][] pop = this.model.getLastPopulation();
+        int[][] pop = this.model.getLastPopulation();
         Generation gen = this.model.getLastGeneration();
         for (int col = 0; col < pop.length; col++)
         {
             for(int row = 0; row < pop[col].length; row++)
             {
-                assertEquals(pop[col][row], gen.isPopulationAlive(col, row));
+                assertEquals(pop[col][row] == 1, gen.isPopulationAlive(col, row));
             }
         }
     }
@@ -357,10 +357,10 @@ public class ClassicLifeModelTest
         long id = 80312;
         long generationNumber = 6421890;
 
-        boolean[][] pop = new boolean[width][height];
-        pop[0][0] = true;
-        pop[width - 1][height - 1] = true;
-        pop[width / 2][height / 2] = true;
+        int[][] pop = new int[width][height];
+        pop[0][0] = 1;
+        pop[width - 1][height - 1] = 1;
+        pop[width / 2][height / 2] = 1;
 
         Generation gen = mock(Generation.class);
         when(gen.getWidth()).thenReturn(width);
@@ -425,9 +425,9 @@ public class ClassicLifeModelTest
         assertFalse(this.model.getLastGeneration().isPopulationAlive(1, 1));
     }
 
-    private boolean[][] deepCopy(boolean[][] src)
+    private int[][] deepCopy(int[][] src)
     {
-        boolean[][] result = new boolean[src.length][];
+        int[][] result = new int[src.length][];
         for (int i = 0; i < src.length; i++)
         {
             result[i] = Arrays.copyOf(src[i], src[i].length);
@@ -435,14 +435,14 @@ public class ClassicLifeModelTest
         return result;
     }
 
-    private int calculatePopCount(boolean[][] pops)
+    private int calculatePopCount(int[][] pops)
     {
         int count = 0;
-        for (boolean[] col : pops)
+        for (int[] col : pops)
         {
-            for (boolean pop : col)
+            for (int pop : col)
             {
-                if (pop) count++;
+                count+=pop;
             }
         }
         return count;

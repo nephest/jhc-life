@@ -41,10 +41,10 @@ public class GenerationTest
         long id = 10;
         long generationNumber = 123;
 
-        boolean[][] pop = new boolean[width][height];
-        pop[0][0] = true;
-        pop[width - 1][height - 1] = true;
-        pop[width / 2][height / 2] = true;
+        int[][] pop = new int[width][height];
+        pop[0][0] = 1;
+        pop[width - 1][height - 1] = 1;
+        pop[width / 2][height / 2] = 1;
 
         Generation original = new Generation(pop, id, generationNumber);
         Generation copy = Generation.fromByteArray(Generation.toByteArray(original));
@@ -70,10 +70,10 @@ public class GenerationTest
     @Test
     public void testPopulationCount()
     {
-        boolean[][] pop = new boolean[3][3];
-        pop[0][0] = true;
-        pop[1][1] = true;
-        pop[2][2] = true;
+        int[][] pop = new int[3][3];
+        pop[0][0] = 1;
+        pop[1][1] = 1;
+        pop[2][2] = 1;
         assertEquals(3, Generation.countPopulation(pop));
     }
 

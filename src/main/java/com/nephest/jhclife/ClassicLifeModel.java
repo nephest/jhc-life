@@ -52,8 +52,8 @@ implements java.io.Closeable
 
     private int width;
     private int height;
-    private boolean[][] population;
-    private boolean[][] lastPopulation;
+    private int[][] population;
+    private int[][] lastPopulation;
     private Generation lastGeneration;
     private double populationProbability = 0.5;
     private long generation = 0;
@@ -120,8 +120,8 @@ implements java.io.Closeable
     {
         this.width = width;
         this.height = height;
-        this.population = new boolean[width][height];
-        this.lastPopulation = new boolean[width][height];
+        this.population = new int[width][height];
+        this.lastPopulation = new int[width][height];
     }
 
     @Override
@@ -173,12 +173,12 @@ implements java.io.Closeable
         return this.height;
     }
 
-    protected boolean[][] getPopulation()
+    protected int[][] getPopulation()
     {
         return this.population;
     }
 
-    protected boolean[][] getLastPopulation()
+    protected int[][] getLastPopulation()
     {
         return this.lastPopulation;
     }
@@ -317,9 +317,9 @@ implements java.io.Closeable
         }
     }
 
-    private boolean[][] copyLastPopulation()
+    private int[][] copyLastPopulation()
     {
-        boolean[][] copy = new boolean[getWidth()][getHeight()];
+        int[][] copy = new int[getWidth()][getHeight()];
         for(int i = 0; i < getLastPopulation().length; i++)
         {
             copy[i]
@@ -328,9 +328,9 @@ implements java.io.Closeable
         return copy;
     }
 
-    protected boolean nextPopulation()
+    protected int nextPopulation()
     {
-        return getRandom().nextDouble() < getPopulationProbability();
+        return getRandom().nextDouble() < getPopulationProbability() ? 1 : 0;
     }
 
     protected void nextGeneration()
@@ -356,7 +356,7 @@ implements java.io.Closeable
             throw new IllegalArgumentException("y out of bounds");
         boolean wasRunning = isRunning();
         if (wasRunning) stop();
-        getLastPopulation()[x][y] = pop;
+        getLastPopulation()[x][y] = pop ? 1 : 0;
         externalModification();
         if (wasRunning) start();
     }

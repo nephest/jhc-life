@@ -36,7 +36,7 @@ public class Generation
 
     public static final byte[] MAGIC_BYTES = new byte[]{0xE, 0xA, 0xE, 0x1};
 
-    private final boolean[][] population;
+    private final int[][] population;
     private final long id;
     private final long generationNumber;
     private final long populationCount;
@@ -45,7 +45,7 @@ public class Generation
 
     public Generation
     (
-        boolean[][] population,
+        int[][] population,
         long id,
         long generationNumber
     )
@@ -109,7 +109,7 @@ public class Generation
         int width = buf.getInt();
         int height = buf.getInt();
         checkGenerationDimensions(width, height);
-        boolean[][] population = new boolean[width][height];
+        int[][] population = new int[width][height];
 
         byte[] populationBytes = new byte[buf.remaining()];
         buf.get(populationBytes);
@@ -120,19 +120,19 @@ public class Generation
         {
             for (int row = 0; row < height; row++, ix++)
             {
-                if (bits.get(ix)) population[col][row] = true;
+                if (bits.get(ix)) population[col][row] = 1;
             }
         }
 
         return new Generation(population, id, generationNumber);
     }
 
-    public static long countPopulation(boolean[][] population)
+    public static long countPopulation(int[][] population)
     {
         long[] counts = new long[population.length];
         IntStream.range(0, population.length).boxed()
             .parallel()
-            .forEach(i->{for(boolean pop : population[i] ) if(pop) counts[i]++;});
+            .forEach(i->{for(int pop : population[i] ) counts[i] += pop;});
         return Arrays.stream(counts).sum();
     }
 
@@ -155,12 +155,12 @@ public class Generation
             throw new IllegalArgumentException("x out of bounds");
         if (y < 0 || y > getHeight())
             throw new IllegalArgumentException("y out of bounds");
-        return this.population[x][y];
+        return this.population[x][y] == 1;
     }
 
-    public boolean[][] copyPopulation()
+    public int[][] copyPopulation()
     {
-        boolean[][] copy = new boolean[getWidth()][getHeight()];
+        int[][] copy = new int[getWidth()][getHeight()];
         for(int i = 0; i < this.population.length; i++)
         {
             copy[i]
@@ -169,10 +169,10 @@ public class Generation
         return copy;
     }
 
-    public boolean[] copyPopulation1D()
+    public int[] copyPopulation1D()
     {
-        boolean[][] b2d = population;
-        boolean[] b1d = new boolean[b2d.length * b2d[0].length];
+        int[][] b2d = population;
+        int[] b1d = new int[b2d.length * b2d[0].length];
         int k = 0;
         for(int y = 0; y < b2d[0].length; y++)
             for(int x = 0; x < b2d.length; x++)
