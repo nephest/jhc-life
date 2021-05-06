@@ -169,6 +169,17 @@ public class Generation
         return copy;
     }
 
+    public boolean[] copyPopulation1D()
+    {
+        boolean[][] b2d = population;
+        boolean[] b1d = new boolean[b2d.length * b2d[0].length];
+        int k = 0;
+        for(int y = 0; y < b2d[0].length; y++)
+            for(int x = 0; x < b2d.length; x++)
+                b1d[k++] = b2d[x][y];
+        return b1d;
+    }
+
     public long getId()
     {
         return this.id;
