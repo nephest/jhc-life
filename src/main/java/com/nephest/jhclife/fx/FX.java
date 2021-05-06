@@ -28,6 +28,7 @@ package com.nephest.jhclife.fx;
 
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.paint.Color;
 
 import java.util.Objects;
 import java.util.function.UnaryOperator;
@@ -109,6 +110,15 @@ public final class FX
     {
         FX.filteredSpinner(spinner, def, empty);
         FX.focusCommitedSpinner(spinner);
+    }
+
+    public static int colorToArgb(Color c)
+    {
+        int r = (int) Math.round(c.getRed() * 255);
+        int g = (int) Math.round(c.getGreen() * 255);
+        int b = (int) Math.round(c.getBlue() * 255);
+
+        return 0xFF000000 | (r << 16) | (g << 8) | b;
     }
 
 }
