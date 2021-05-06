@@ -40,13 +40,12 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
 
+import java.nio.IntBuffer;
 import java.util.Objects;
 
 public class LifeViewImplFX
@@ -56,6 +55,8 @@ implements LifeView<Parent>
 
     public static final Color ALIVE_COLOR = Color.BLUE;
     public static final Color DEAD_COLOR = Color.BLACK;
+    public static final int ALIVE_ARGB = FX.colorToArgb(ALIVE_COLOR);
+    public static final int DEAD_ARGB = FX.colorToArgb(DEAD_COLOR);
 
     public static final String BUTTON_PLUS_CLASS="button-plus";
     public static final String BUTTON_MINUS_CLASS="button-minus";
@@ -235,14 +236,7 @@ implements LifeView<Parent>
     {
         Objects.requireNonNull(generation);
         prepareGenerationView(generation);
-        if (isFirstGeneration(generation))
-        {
-            renderFirstGeneraiton(generation);
-        }
-        else
-        {
-            renderGenerationDelta(getLastGeneration(), generation);
-        }
+        renderGeneration(generation);
         this.generationNumberLabel
             .setText(String.valueOf(generation.getGenerationNumber()));
         this.populationCountLabel
@@ -250,48 +244,14 @@ implements LifeView<Parent>
         this.lastGeneration = generation;
     }
 
-    private boolean isFirstGeneration(Generation generation)
-    {
-        return getLastGeneration() == null
-            || getLastGeneration().getWidth() != generation.getWidth()
-            || getLastGeneration().getHeight() != generation.getHeight();
-    }
-
-    private void renderFirstGeneraiton(Generation generation)
+    private void renderGeneration(Generation next)
     {
         PixelWriter pixelWriter = this.generationImage.getPixelWriter();
-        for (int col = 0; col < generation.getWidth(); col++)
-        {
-            for (int row = 0; row < generation.getHeight(); row++)
-            {
-                if (generation.isPopulationAlive(col, row))
-                {
-                    pixelWriter.setColor(col, row, ALIVE_COLOR);
-                }
-                else
-                {
-                    pixelWriter.setColor(col, row, DEAD_COLOR);
-                }
-            }
-        }
-    }
-
-    private void renderGenerationDelta(Generation prev, Generation next)
-    {
-        PixelWriter pixelWriter = this.generationImage.getPixelWriter();
-        for (int col = 0; col < next.getWidth(); col++)
-        {
-            for (int row = 0; row < next.getHeight(); row++)
-            {
-                Color nColor = next.isPopulationAlive(col, row)
-                    ? ALIVE_COLOR
-                    : DEAD_COLOR;
-                Color pColor = prev.isPopulationAlive(col, row)
-                    ? ALIVE_COLOR
-                    : DEAD_COLOR;
-                if (nColor != pColor) pixelWriter.setColor(col, row, nColor);
-            }
-        }
+        boolean[] pop = next.copyPopulation1D();
+        int[] colors = new int[pop.length];
+        for(int i = 0; i < pop.length; i++) colors[i] = pop[i] ? ALIVE_ARGB : DEAD_ARGB;
+        WritablePixelFormat<IntBuffer> pixelFormat = PixelFormat.getIntArgbPreInstance();
+        pixelWriter.setPixels(0, 0, next.getWidth(), next.getHeight(), pixelFormat, colors, 0, next.getWidth());
     }
 
     @Override
